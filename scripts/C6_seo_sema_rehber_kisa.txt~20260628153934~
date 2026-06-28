@@ -1,0 +1,20 @@
+C6 — Zengin sonuç / şema genişletmeleri (yol haritası notu)
+============================================================
+
+Projede JSON-LD tek çıkış: `includes/seo_runtime` → `schema_factory` (tema rastgele
+`<script type="application/ld+json">` eklemez).
+
+Aşağıdakiler, ihtiyaç / içerik olduğunda `jsonld_encode_and_schema.php` ve
+`pipeline_page_type` ile uyumlu genişletilebilir:
+
+- HowTo: Blog tarafında (A3) içerik + pipeline ile uyum; yeni postlarda adım/FAQ
+  bölümler şema ile çelişmeyecek şekilde üretilmeli.
+- Person: Hakkımızda / ekip; `team` veya about pipeline ile `Person` düğümleri.
+- SpeakableSpecification: Özet paragraflar `speakable` için işaretlendiyse eklenebilir
+  (sesli asistan; TR içerik dikkatle).
+- PriceSpecification: Teklif/İletişim sayfalarında sabit fiyat yok; teklif "0" Offer
+  zaten Service şemasında; gerçek fiyat bandı sadece gerçek veri varsa.
+
+Öncelik: Ölçülebilir tıklama/CTR önce; şema, içerikle tutarlı olmalı (Google yönergeleri).
+
+Bu dosya operasyonel nottur; sitede yayımlanmaz.

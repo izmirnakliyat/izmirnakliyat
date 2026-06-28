@@ -1,0 +1,3 @@
+<?php
+// ... (Gerekli init ayarları buraya eklenebilir) ...
+// Bu dosyada sadece gerekli başlangıç/init kodları olmalı. Tablo güncelleme kodları tamamen kaldırıldı. 

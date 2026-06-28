@@ -9,9 +9,9 @@ cache/
 *.log
 error_log
 
-# Yüklemeler (depo şişmesin; geri alma çoğunlukla kod içindir)
-uploads/
-wp-content/
+# Büyük yedek arşivler
+mynakliyat.zip
+.cursor_sc_drilldown.zip
 
 # Yedek klasörü
 .snapshots/
