@@ -240,7 +240,7 @@ RewriteRule ^ index.php [L,QSA]
   # HSTS: doğrudan HTTPS veya Cloudflare/proxy (X-Forwarded-Proto). <If> yerine SetEnvIf — uyumsuz hostlarda satırları yorum satırı yapın.
   SetEnvIf HTTPS "on" MYNAK_HSTS=1
   SetEnvIf X-Forwarded-Proto "^https$" MYNAK_HSTS=1
-  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains" env=MYNAK_HSTS
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" env=MYNAK_HSTS
 </IfModule>
 
 # ----------------------------------------------------------------------

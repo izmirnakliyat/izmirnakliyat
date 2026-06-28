@@ -1,9 +1,12 @@
-# MyNakliyat — yedek robots.txt (şablon; kök robots.txt ile aynı kural seti; senkron tutun)
-# Güncelleme: 2026-04-24
+# MyNakliyat — kök robots.txt (şablon; HTTP tüm /robots.txt .htaccess ile index.php'ye gider)
+# Kural seti: _static_backup/robots.txt ile aynı olmalı; biri değişince diğerini eşleştirin.
+# Güncelleme: 2026-05-14
 #
-# Sitemap yalnızca parametresiz URL içerir (seo_runtime_sitemap_allow_loc). Aşağıdaki
-# Disallow kuralları aynı parametreli URL’lerin taranmasını keser; kanonik adresler path tabanlıdır
-# (/blog/etiket/…/, /blog/kategori/…/, /blog/sayfa/N/). (Clean-param kullanılmıyor.)
+# Sitemap: satırı yalnızca mynak_handler_robots_txt() çıktısına (SITE_URL + sitemap-index.xml) eklenir.
+# Sitemap yalnızca kanonik path-tabanlı URL içerir (/blog/etiket/X, /blog/kategori/X, /blog/sayfa/N).
+# Parametreli varyantlar (?tag=, ?page=, ?kategori=) ARTIK ENGELLENMEZ — blog.php başında 301
+# ile kanonik path'e yönlendirilirler. (Önceki sürümde Disallow Google'ın 301'i görmesini
+# engelliyor ve "Robots.txt tarafından engellendi" raporunu şişiriyordu.)
 
 User-agent: *
 Allow: /
@@ -15,13 +18,21 @@ Disallow: /xmlrpc.php
 # Sistem ve iç olmayan yollar
 Disallow: /admin/
 Disallow: /config/
-Disallow: /includes/
 Disallow: /logs/
 Disallow: /cache/
 Disallow: /scripts/
 Disallow: /cron/
 Disallow: /_static_backup/
 Disallow: /_dev_backup/
+
+# includes/ kapalı AMA dinamik endpoint'ler izin ver (Google render edebilsin)
+Allow: /includes/handlers/
+Allow: /includes/pipeline/
+Disallow: /includes/
+
+# Statik kaynaklar (CSS/JS/font/image) açık — render engelini kaldır
+Allow: /assets/
+Allow: /uploads/
 
 # Parametreli blog URL'leri ARTIK ENGELLENMEZ.
 # Google'ın resmi tavsiyesi: duplicate URL'leri robots ile engelleme; 301 ile kanonik path'e yönlendir.
@@ -118,6 +129,9 @@ Disallow: /uploads/temp/
 
 # LLM / yapay zekâ botları — Tam site zaten User-agent: * ile Allow: / ile açıktır.
 # Aşağıdaki grup, llms.* uçlarının ve /api/v1/* JSON API'nin özellikle listelenmesi içindir.
+# NOT: /llms-full.txt YOK (handler tanımlı değil); /llms-full-tr.txt aktif.
+# Bu uçlar X-Robots-Tag: noindex,follow ile servis edilir (Google indexlemesin ama LLM içeriği
+# okuyabilir / linkleri takip edebilir).
 User-agent: GPTBot
 User-agent: ChatGPT-User
 User-agent: OAI-SearchBot
@@ -149,4 +163,7 @@ Allow: /api/v1/authors.json
 Allow: /api/v1/organization.json
 Allow: /api/v1/locations.json
 
-# Sitemap satırı PHP ön kumanda (mynak_handler_robots_txt) çıktısına dinamik eklenir; bu dosya yalnızca şablon.
+# Markdown content negotiation (Accept: text/markdown veya ?format=markdown / ?format=md):
+# Aynı URL'ye AI bot'lar markdown sürümü ister; X-Robots-Tag: noindex,follow ile servis edilir.
+
+# Sitemap satırı dinamik eklenir; yukarıda yok (handler).

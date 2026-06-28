@@ -18,13 +18,21 @@ Disallow: /xmlrpc.php
 # Sistem ve iç olmayan yollar
 Disallow: /admin/
 Disallow: /config/
-Disallow: /includes/
 Disallow: /logs/
 Disallow: /cache/
 Disallow: /scripts/
 Disallow: /cron/
 Disallow: /_static_backup/
 Disallow: /_dev_backup/
+
+# includes/ kapalı AMA dinamik endpoint'ler izin ver (Google render edebilsin)
+Allow: /includes/handlers/
+Allow: /includes/pipeline/
+Disallow: /includes/
+
+# Statik kaynaklar (CSS/JS/font/image) açık — render engelini kaldır
+Allow: /assets/
+Allow: /uploads/
 
 # Parametreli blog URL'leri ARTIK ENGELLENMEZ.
 # Google'ın resmi tavsiyesi: duplicate URL'leri robots ile engelleme; 301 ile kanonik path'e yönlendir.

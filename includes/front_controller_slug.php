@@ -316,10 +316,14 @@ function mynak_fc_dispatch_slug(string $slug, mysqli $conn): void
     }
 
     $stmt = $conn->prepare('SELECT * FROM services WHERE slug = ? AND status = 1');
-    $stmt->bind_param('s', $slug);
-    $stmt->execute();
-    $service_rows = mysqli_stmt_fetch_all_assoc($stmt);
-    $stmt->close();
+    if (!$stmt) {
+        $service_rows = [];
+    } else {
+        $stmt->bind_param('s', $slug);
+        $stmt->execute();
+        $service_rows = mysqli_stmt_fetch_all_assoc($stmt);
+        $stmt->close();
+    }
 
     if (!empty($service_rows)) {
         $service = $service_rows[0];
@@ -355,10 +359,14 @@ function mynak_fc_dispatch_slug(string $slug, mysqli $conn): void
     if (preg_match('#^blog-detay/(.+)$#', $slug, $blogDetayMatch)) {
         $blogSlug = $blogDetayMatch[1];
         $stmt = $conn->prepare('SELECT slug FROM blog_posts WHERE slug = ? AND durum = 3 LIMIT 1');
-        $stmt->bind_param('s', $blogSlug);
-        $stmt->execute();
-        $bd_rows = mysqli_stmt_fetch_all_assoc($stmt);
-        $stmt->close();
+        if ($stmt) {
+            $stmt->bind_param('s', $blogSlug);
+            $stmt->execute();
+            $bd_rows = mysqli_stmt_fetch_all_assoc($stmt);
+            $stmt->close();
+        } else {
+            $bd_rows = [];
+        }
         if (!empty($bd_rows)) {
             header('Location: ' . mynak_abs_url_from_public_path(mynak_public_path($blogSlug)), true, 301);
             exit;
@@ -366,10 +374,14 @@ function mynak_fc_dispatch_slug(string $slug, mysqli $conn): void
     }
 
     $stmt = $conn->prepare('SELECT * FROM blog_posts WHERE slug = ? AND durum = 3');
-    $stmt->bind_param('s', $slug);
-    $stmt->execute();
-    $blog_rows = mysqli_stmt_fetch_all_assoc($stmt);
-    $stmt->close();
+    if (!$stmt) {
+        $blog_rows = [];
+    } else {
+        $stmt->bind_param('s', $slug);
+        $stmt->execute();
+        $blog_rows = mysqli_stmt_fetch_all_assoc($stmt);
+        $stmt->close();
+    }
 
     if (!empty($blog_rows)) {
         $blog = $blog_rows[0];
