@@ -170,8 +170,11 @@ $favicon = isset($site_settings['favicon']) ? (string) $site_settings['favicon']
     <link rel="shortcut icon" type="image/x-icon" href="<?php echo ASSET_PATH; ?>img/favicon.png">
 
     <link rel="stylesheet" href="<?php echo ASSET_PATH; ?>css/bootstrap.min.css">
-    <link rel="stylesheet" href="<?php echo ASSET_PATH; ?>css/animate.min.css">
-    <link rel="stylesheet" href="<?php echo ASSET_PATH; ?>css/keyframe-animation.min.css">
+    <?php
+    // animate + keyframe-animation: scroll-trigger animasyonları — ilk render için gerekli değil
+    echo mynak_link_stylesheet_deferred(ASSET_PATH . 'css/animate.min.css');
+    echo mynak_link_stylesheet_deferred(ASSET_PATH . 'css/keyframe-animation.min.css');
+    ?>
     <!-- Font Awesome 6 Free CDN (ikonlar üst bölümde; Pro CSS aşağıda ertelenir) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
     <?php
