@@ -232,17 +232,21 @@ require_once __DIR__ . '/includes/header.php';
                             $image_basename = pathinfo($slide['image'], PATHINFO_FILENAME);
                             $slide_dir = mynak_slide_detect_upload_dir((string) $slide['image']);
                             $img_src = mynak_slide_upload_public_path($slide_dir, (string) $slide['image']);
+                            $picture_sources = mynak_slide_hero_picture_sources_html($slide_dir, $image_basename);
                         ?>
-                        <img src="<?php echo htmlspecialchars($img_src); ?>" alt="<?php echo htmlspecialchars(mynak_public_image_alt((string) ($slide['title'] ?? ''), '', $img_src, 'İzmir evden eve nakliyat')); ?>"
-                            sizes="100vw"<?php
-                        if ($is_first_hero_slide) {
-                            echo ' fetchpriority="high" decoding="async" loading="eager"';
-                        } elseif ($is_second_hero_slide) {
-                            echo ' loading="eager" decoding="async"';
-                        } else {
-                            echo ' loading="lazy" decoding="async"';
-                        }
-                        ?>>
+                        <picture>
+                            <?php if ($picture_sources !== '') echo $picture_sources; ?>
+                            <img src="<?php echo htmlspecialchars($img_src); ?>" alt="<?php echo htmlspecialchars(mynak_public_image_alt((string) ($slide['title'] ?? ''), '', $img_src, 'İzmir evden eve nakliyat')); ?>"
+                                sizes="100vw"<?php
+                            if ($is_first_hero_slide) {
+                                echo ' fetchpriority="high" decoding="async" loading="eager"';
+                            } elseif ($is_second_hero_slide) {
+                                echo ' loading="eager" decoding="async"';
+                            } else {
+                                echo ' loading="lazy" decoding="async"';
+                            }
+                            ?>>
+                        </picture>
                     </div>
                     <?php
                         $truck_bg_style = '';
@@ -253,7 +257,13 @@ require_once __DIR__ . '/includes/header.php';
                             } elseif (file_exists(__DIR__ . '/uploads/blog/' . $slide['image2'])) {
                                 $truck_dir = 'blog/';
                             }
-                            if (file_exists(__DIR__ . '/uploads/' . $truck_dir . $slide['image2'])) {
+                            $truck_basename = pathinfo($slide['image2'], PATHINFO_FILENAME);
+                            $truck_base_dir = __DIR__ . '/uploads/' . $truck_dir;
+                            if (file_exists($truck_base_dir . $truck_basename . '.avif')) {
+                                $truck_bg_style = "background-image: url('uploads/{$truck_dir}" . htmlspecialchars($truck_basename . '.avif') . "');";
+                            } elseif (file_exists($truck_base_dir . $truck_basename . '.webp')) {
+                                $truck_bg_style = "background-image: url('uploads/{$truck_dir}" . htmlspecialchars($truck_basename . '.webp') . "');";
+                            } elseif (file_exists($truck_base_dir . $slide['image2'])) {
                                 $truck_bg_style = "background-image: url('uploads/{$truck_dir}" . htmlspecialchars($slide['image2']) . "');";
                             }
                         }
@@ -377,8 +387,20 @@ require_once __DIR__ . '/includes/header.php';
                         <?php endif; ?>
                         <div class="service-item wow fade-in-bottom" data-wow-delay="<?php echo $delay; ?>ms">
                             <div class="service-thumb">
-                                <?php if (!empty($service['foto'])): ?>
-                                    <img src="<?php echo SITE_URL; ?>/uploads/services/<?php echo htmlspecialchars($service['foto']); ?>" alt="<?php echo htmlspecialchars(mynak_public_image_alt((string) ($service['ana_baslik'] ?? ''), 'İzmir nakliyat hizmeti — MY Nakliyat')); ?>" loading="lazy" decoding="async">
+                                <?php if (!empty($service['foto'])):
+                                    $svc_bn = pathinfo($service['foto'], PATHINFO_FILENAME);
+                                    $svc_webp = 'uploads/services/' . $svc_bn . '.webp';
+                                    $svc_avif = 'uploads/services/' . $svc_bn . '.avif';
+                                ?>
+                                    <picture>
+                                        <?php if (file_exists(__DIR__ . '/' . $svc_avif)): ?>
+                                            <source srcset="<?php echo htmlspecialchars(SITE_URL . '/' . $svc_avif); ?>" type="image/avif">
+                                        <?php endif; ?>
+                                        <?php if (file_exists(__DIR__ . '/' . $svc_webp)): ?>
+                                            <source srcset="<?php echo htmlspecialchars(SITE_URL . '/' . $svc_webp); ?>" type="image/webp">
+                                        <?php endif; ?>
+                                        <img src="<?php echo SITE_URL; ?>/uploads/services/<?php echo htmlspecialchars($service['foto']); ?>" alt="<?php echo htmlspecialchars(mynak_public_image_alt((string) ($service['ana_baslik'] ?? ''), 'İzmir nakliyat hizmeti — MY Nakliyat')); ?>" loading="lazy" decoding="async">
+                                    </picture>
                                 <?php endif; ?>
                     </div>
                             <div class="service-content">
@@ -479,8 +501,21 @@ $homeVideoSiteUrl = rtrim((string) SITE_URL, '/');
 <?php if (isset($section_content['projects'])): ?>
 <section class="project-section padding">
     <div class="bg-half">
-        <?php if ($gallery_cover_image): ?>
-            <img src="<?php echo htmlspecialchars($gallery_cover_image); ?>" alt="<?php echo htmlspecialchars(mynak_public_image_alt('', 'İzmir nakliyat projeleri galeri kapak görseli')); ?>" loading="lazy" decoding="async">
+        <?php if ($gallery_cover_image):
+            $gal_bn = pathinfo($gallery_cover_image, PATHINFO_FILENAME);
+            $gal_dir = dirname($gallery_cover_image);
+            $gal_webp = ($gal_dir !== '.' ? $gal_dir . '/' : '') . $gal_bn . '.webp';
+            $gal_avif = ($gal_dir !== '.' ? $gal_dir . '/' : '') . $gal_bn . '.avif';
+        ?>
+            <picture>
+                <?php if (file_exists(__DIR__ . '/' . $gal_avif)): ?>
+                    <source srcset="<?php echo htmlspecialchars($gal_avif); ?>" type="image/avif">
+                <?php endif; ?>
+                <?php if (file_exists(__DIR__ . '/' . $gal_webp)): ?>
+                    <source srcset="<?php echo htmlspecialchars($gal_webp); ?>" type="image/webp">
+                <?php endif; ?>
+                <img src="<?php echo htmlspecialchars($gallery_cover_image); ?>" alt="<?php echo htmlspecialchars(mynak_public_image_alt('', 'İzmir nakliyat projeleri galeri kapak görseli')); ?>" loading="lazy" decoding="async">
+            </picture>
                         <?php endif; ?>
                     </div>
     <div class="container">
@@ -505,8 +540,21 @@ $homeVideoSiteUrl = rtrim((string) SITE_URL, '/');
                     <div class="swiper-slide">
                         <div class="project-item wow fade-in-bottom" data-wow-delay="<?php echo $delay; ?>ms">
                             <div class="project-thumb project-view">
+                                <?php
+                                    $gal_img_bn = pathinfo($image['image'], PATHINFO_FILENAME);
+                                    $gal_img_webp = 'uploads/gallery/' . $gal_img_bn . '.webp';
+                                    $gal_img_avif = 'uploads/gallery/' . $gal_img_bn . '.avif';
+                                ?>
                                 <a class="venobox" href="<?php echo SITE_URL; ?>/uploads/gallery/<?php echo htmlspecialchars($image['image']); ?>" data-gall="projects">
-                                    <img src="<?php echo SITE_URL; ?>/uploads/gallery/<?php echo htmlspecialchars($image['image']); ?>" alt="<?php echo htmlspecialchars(mynak_public_image_alt((string) ($image['title'] ?? ''), 'İzmir nakliyat taşıma projesi galeri fotoğrafı')); ?>" loading="lazy" decoding="async">
+                                    <picture>
+                                        <?php if (file_exists(__DIR__ . '/' . $gal_img_avif)): ?>
+                                            <source srcset="<?php echo htmlspecialchars(SITE_URL . '/' . $gal_img_avif); ?>" type="image/avif">
+                                        <?php endif; ?>
+                                        <?php if (file_exists(__DIR__ . '/' . $gal_img_webp)): ?>
+                                            <source srcset="<?php echo htmlspecialchars(SITE_URL . '/' . $gal_img_webp); ?>" type="image/webp">
+                                        <?php endif; ?>
+                                        <img src="<?php echo SITE_URL; ?>/uploads/gallery/<?php echo htmlspecialchars($image['image']); ?>" alt="<?php echo htmlspecialchars(mynak_public_image_alt((string) ($image['title'] ?? ''), 'İzmir nakliyat taşıma projesi galeri fotoğrafı')); ?>" loading="lazy" decoding="async">
+                                    </picture>
                                 </a>
                             </div>
                         </div>
@@ -886,8 +934,20 @@ $homeVideoSiteUrl = rtrim((string) SITE_URL, '/');
                     <?php $homePostHref = htmlspecialchars(mynak_public_path($blog['slug']), ENT_QUOTES, 'UTF-8'); ?>
                     <a href="<?php echo $homePostHref; ?>" class="post-thumb-link">
                         <div class="post-thumb">
-                            <?php if (!empty($blog['kapak_foto'])): ?>
-                                <img src="uploads/blog/<?php echo htmlspecialchars($blog['kapak_foto']); ?>" alt="<?php echo mynak_esc_html(mynak_public_image_alt((string) $blog['baslik'], 'MY Nakliyat blog yazısı', 'uploads/blog/' . ($blog['kapak_foto'] ?? ''))); ?>" loading="lazy" decoding="async">
+                            <?php if (!empty($blog['kapak_foto'])):
+                                $blog_bn = pathinfo($blog['kapak_foto'], PATHINFO_FILENAME);
+                                $blog_webp = 'uploads/blog/' . $blog_bn . '.webp';
+                                $blog_avif = 'uploads/blog/' . $blog_bn . '.avif';
+                            ?>
+                                <picture>
+                                    <?php if (file_exists(__DIR__ . '/' . $blog_avif)): ?>
+                                        <source srcset="<?php echo htmlspecialchars($blog_avif); ?>" type="image/avif">
+                                    <?php endif; ?>
+                                    <?php if (file_exists(__DIR__ . '/' . $blog_webp)): ?>
+                                        <source srcset="<?php echo htmlspecialchars($blog_webp); ?>" type="image/webp">
+                                    <?php endif; ?>
+                                    <img src="uploads/blog/<?php echo htmlspecialchars($blog['kapak_foto']); ?>" alt="<?php echo mynak_esc_html(mynak_public_image_alt((string) $blog['baslik'], 'MY Nakliyat blog yazısı', 'uploads/blog/' . ($blog['kapak_foto'] ?? ''))); ?>" loading="lazy" decoding="async">
+                                </picture>
                             <?php endif; ?>
                         </div>
                     </a>
