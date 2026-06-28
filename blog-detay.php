@@ -58,10 +58,10 @@ if (isset($blog['baslik'])) {
 }
 
 // Meta Açıklama
+require_once __DIR__ . '/includes/mynak_meta_description.php';
 if (!empty($blog['meta_description'])) {
-    $page_meta_description = $blog['meta_description'];
+    $page_meta_description = mynak_meta_description_clamp((string) $blog['meta_description'], 160);
 } else {
-    require_once __DIR__ . '/includes/mynak_meta_description.php';
     $clean_content = trim(preg_replace('/\s+/u', ' ', strip_tags((string) ($blog['icerik'] ?? ''))) ?? '');
     $page_meta_description = $clean_content !== ''
         ? mynak_meta_description_clamp($clean_content, 160)
