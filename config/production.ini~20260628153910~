@@ -1,3 +1,0 @@
-; Üretim PHP davranışı — bootstrap.php bu dosyayı okuyup ini_set uygular.
-display_errors=0
-log_errors=1
