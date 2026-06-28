@@ -503,17 +503,49 @@ function mynak_fc_dispatch_slug(string $slug, mysqli $conn): void
     // Son seans: normalize + partial match ile kirik link kurtarma
     mynak_fc_try_broken_link_recovery($conn, $slug);
 
-    // Blog-stili slug (3+ tire, 16+ karakter, sadece tek segment) → 410 Gone
-    // Bu tür slug'lar genellikle silinmiş WP yazıları. 410 Google'ın indeksten daha hızlı düşürmesini sağlar.
-    $isBlogStyleDead = $slug !== ''
-        && !str_contains($slug, '/')
-        && strlen($slug) >= 16
-        && substr_count($slug, '-') >= 3
-        && preg_match('#^[a-z0-9][a-z0-9-]*[a-z0-9]$#', $slug) === 1;
+    // 410 Gone yalnızca DB'de gerçekten var olup silinmiş/pasif içerik için.
+    // Hiç var olmamış URL'ler 404 döner — 410 yalnızca kanıtlanmış silme durumunda.
+    $isConfirmedDeleted = false;
+    if ($slug !== '' && !str_contains($slug, '/')) {
+        $stmtDead = $conn->prepare(
+            'SELECT 1 FROM blog_posts WHERE slug = ? AND durum != 3 LIMIT 1'
+        );
+        if ($stmtDead instanceof mysqli_stmt) {
+            $stmtDead->bind_param('s', $slug);
+            $stmtDead->execute();
+            $stmtDead->store_result();
+            $isConfirmedDeleted = $stmtDead->num_rows > 0;
+            $stmtDead->close();
+        }
+        if (!$isConfirmedDeleted) {
+            $stmtDead2 = $conn->prepare(
+                'SELECT 1 FROM services WHERE slug = ? AND status != 1 LIMIT 1'
+            );
+            if ($stmtDead2 instanceof mysqli_stmt) {
+                $stmtDead2->bind_param('s', $slug);
+                $stmtDead2->execute();
+                $stmtDead2->store_result();
+                $isConfirmedDeleted = $stmtDead2->num_rows > 0;
+                $stmtDead2->close();
+            }
+        }
+        if (!$isConfirmedDeleted) {
+            $stmtDead3 = $conn->prepare(
+                'SELECT 1 FROM pages WHERE slug = ? AND status != 1 LIMIT 1'
+            );
+            if ($stmtDead3 instanceof mysqli_stmt) {
+                $stmtDead3->bind_param('s', $slug);
+                $stmtDead3->execute();
+                $stmtDead3->store_result();
+                $isConfirmedDeleted = $stmtDead3->num_rows > 0;
+                $stmtDead3->close();
+            }
+        }
+    }
 
-    $statusCode = $isBlogStyleDead ? 410 : 404;
-    $statusLabel = $isBlogStyleDead ? '410 — Kalıcı olarak kaldırıldı' : '404 — İçerik bulunamadı';
-    $statusBody = $isBlogStyleDead
+    $statusCode = $isConfirmedDeleted ? 410 : 404;
+    $statusLabel = $isConfirmedDeleted ? '410 — Kalıcı olarak kaldırıldı' : '404 — İçerik bulunamadı';
+    $statusBody = $isConfirmedDeleted
         ? 'Aradığınız içerik kalıcı olarak kaldırılmıştır.'
         : 'Aradığınız adres taşınmış veya kaldırılmış olabilir.';
 
