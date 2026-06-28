@@ -5,6 +5,7 @@ require_once __DIR__ . '/mynak_legacy_url_recovery.php';
 require_once __DIR__ . '/mynak_gsc_404_slug_redirects.php';
 require_once __DIR__ . '/mynak_gsc_legacy_path_redirects.php';
 require_once __DIR__ . '/mynak_canonical_slug_redirects.php';
+require_once __DIR__ . '/mynak_broken_link_recovery.php';
 
 /**
  * Slug çözümleyici (eski slug-router.php mantığı). Çağıran mutlaka exit eder.
@@ -491,6 +492,9 @@ function mynak_fc_dispatch_slug(string $slug, mysqli $conn): void
 
     mynak_fc_try_wp_appendage_redirect($conn, $slug);
     mynak_fc_try_fuzzy_blog_slug_redirect($conn, $slug, false);
+
+    // Son seans: normalize + partial match ile kirik link kurtarma
+    mynak_fc_try_broken_link_recovery($conn, $slug);
 
     // Blog-stili slug (3+ tire, 16+ karakter, sadece tek segment) → 410 Gone
     // Bu tür slug'lar genellikle silinmiş WP yazıları. 410 Google'ın indeksten daha hızlı düşürmesini sağlar.
