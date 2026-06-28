@@ -1,0 +1,12 @@
+# Canlı: proje kökünde ".env" olarak kopyalayın, doldurun. Repoya şifre commit etmeyin.
+# Yerel XAMPP: .env şart değil (localhost’ta db.php sabitleri kullanılır).
+
+DB_HOST=localhost
+DB_USER=
+DB_PASS=
+DB_NAME=
+DB_PORT=3306
+
+# İsteğe bağlı: boş bırakılırsa https://www.mynakliyat.com.tr kullanılır.
+# Staging veya farklı domain için tam kanonik adres (sonunda / olmasın):
+# SITE_URL=https://www.mynakliyat.com.tr

@@ -1,0 +1,45 @@
+# Ortam / gizli (db.php repoda güvenli şablon; canlı sırlar yalnızca .env)
+.env
+*.env.local
+admin/error_log
+
+# Log ve önbellek
+logs/
+cache/
+*.log
+error_log
+
+# Yüklemeler (depo şişmesin; geri alma çoğunlukla kod içindir)
+uploads/
+wp-content/
+
+# Yedek klasörü
+.snapshots/
+storage/db_backups/*.sql
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# cPanel paket zip (scripts/package-cpanel-upload.ps1)
+mynakliyat-cpanel-*.zip
+
+# Composer (kullanılırsa)
+/vendor/
+composer.lock
+
+# PHPStan
+tools/phpstan.phar
+.phpstan.cache/
+phpstan-tmp-*
+
+# Geçici test dosyaları
+tmp_*.html
+tmp_*.txt
+tmp_*.php

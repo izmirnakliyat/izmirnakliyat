@@ -1,0 +1,9 @@
+﻿cPanel yukleme (kisa)
+=====================
+1) Zip acilir; TUM icerigi public_html (veya subdomain Document Root) icine atin — fazladan ic klasor birakmayin.
+2) MySQL: veritabani + kullanici olustur, phpMyAdmin ile SQL yedeğini ice aktarin.
+3) CPANEL-ENV-ORNEGI.txt icerigini kopyalayip sunucuda .env adiyla kaydedin (dosya adi tam .env olmali); DB bilgilerini doldurun.
+4) uploads/ klasoru zip'te yoksa: yerelden FTP ile yukleyin veya -IncludeUploads ile yeniden zip alin.
+5) SSL acik olsun; PHP 8.1+ secin.
+
+Sunucuda (SSH varsa): php scripts/verify-deploy.php --strict

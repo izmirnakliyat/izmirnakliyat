@@ -1,0 +1,285 @@
+<?php
+require_once '../config/db.php';
+
+// JSON yanıtı için header
+header('Content-Type: application/json');
+
+// Debug log fonksiyonu
+function debug_log($message) {
+    try {
+        $logDir = '../logs';
+        if (!file_exists($logDir)) {
+            @mkdir($logDir, 0777, true);
+        }
+        @error_log(date('Y-m-d H:i:s') . ' - FORM DEBUG: ' . $message . PHP_EOL, 3, '../logs/form_debug.log');
+    } catch (Exception $e) {
+        // Log yazma hatası varsa sessizce geç
+    }
+}
+
+debug_log("=== Form işlemi başladı ===");
+debug_log("POST Data: " . json_encode($_POST));
+
+// POST isteği değilse hata döndür
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    echo json_encode([
+        'success' => false,
+        'message' => 'Geçersiz istek metodu.'
+    ]);
+    exit;
+}
+
+// Form verilerini al
+$formData = $_POST;
+$popupId = isset($formData['popup_id']) ? (int)$formData['popup_id'] : 0;
+$formId = isset($formData['form_id']) ? (int)$formData['form_id'] : 0;
+$isPopupForm = isset($formData['popup_form']) && $formData['popup_form'] == '1';
+
+// Form ID veya Popup ID kontrolü
+if ($formId <= 0 && $popupId <= 0) {
+    echo json_encode([
+        'success' => false,
+        'message' => 'Geçersiz form veya popup ID.'
+    ]);
+    exit;
+}
+
+// Form veya Popup bilgilerini al
+$formTitle = '';
+$formFields = [];
+$emailNotifications = '';
+
+if ($formId > 0) {
+    // Form builder formu
+    $stmt = $conn->prepare("SELECT title, fields, email_notifications FROM forms WHERE id = ? AND status = 1");
+    $stmt->bind_param("i", $formId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    if ($result->num_rows === 0) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Form bulunamadı.'
+        ]);
+        exit;
+    }
+    
+    $form = $result->fetch_assoc();
+    $formTitle = $form['title'];
+    $formFields = json_decode($form['fields'], true) ?: [];
+    $emailNotifications = $form['email_notifications'];
+} else {
+    // Popup formu
+    $stmt = $conn->prepare("SELECT title FROM popups WHERE id = ?");
+    $stmt->bind_param("i", $popupId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    if ($result->num_rows === 0) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Popup bulunamadı.'
+        ]);
+        exit;
+    }
+    
+    $popup = $result->fetch_assoc();
+    $formTitle = $popup['title'];
+}
+
+// Form verilerini kaydet
+try {
+    // Form verilerini ayır
+    unset($formData['popup_id']); // popup_id'yi kaldır
+    unset($formData['form_id']); // form_id'yi kaldır
+    unset($formData['popup_form']); // popup_form flagini kaldır
+    
+    // Form field verilerini düzenle (form builder için)
+    if (!empty($formFields)) {
+        $processedData = [];
+        foreach ($formFields as $index => $field) {
+            $fieldName = 'field_' . $index;
+            if (isset($formData[$fieldName])) {
+                $processedData[$field['label']] = $formData[$fieldName];
+                unset($formData[$fieldName]);
+            }
+        }
+        // Kalan verileri de ekle
+        $formData = array_merge($processedData, $formData);
+    }
+    
+    // Form girişleri tablosunu kontrol et ve oluştur
+    $tableCheck = $conn->query("SHOW TABLES LIKE 'form_submissions'");
+    if ($tableCheck->num_rows === 0) {
+        $createTable = "CREATE TABLE IF NOT EXISTS `form_submissions` (
+            `id` int(11) NOT NULL AUTO_INCREMENT,
+            `popup_id` int(11) NULL,
+            `form_id` int(11) NULL,
+            `form_title` varchar(255) NOT NULL,
+            `form_data` text NOT NULL,
+            `ip_address` varchar(45) NOT NULL,
+            `user_agent` varchar(255) NOT NULL,
+            `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (`id`),
+            KEY `popup_id` (`popup_id`),
+            KEY `form_id` (`form_id`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+        
+        $conn->query($createTable);
+    } else {
+        // Tablo var, sütunları kontrol et ve gerekirse ekle
+        
+        // form_id sütununu kontrol et
+        $columnCheck = $conn->query("SHOW COLUMNS FROM `form_submissions` LIKE 'form_id'");
+        if ($columnCheck->num_rows === 0) {
+            $conn->query("ALTER TABLE `form_submissions` ADD COLUMN `form_id` int(11) NULL AFTER `popup_id`");
+        }
+        
+        // form_title sütununu kontrol et
+        $columnCheck = $conn->query("SHOW COLUMNS FROM `form_submissions` LIKE 'form_title'");
+        if ($columnCheck->num_rows === 0) {
+            // form_title sütunu yoksa ekle
+            $conn->query("ALTER TABLE `form_submissions` ADD COLUMN `form_title` varchar(255) NOT NULL AFTER `form_id`");
+        }
+        
+        // user_agent sütununu kontrol et
+        $columnCheck = $conn->query("SHOW COLUMNS FROM `form_submissions` LIKE 'user_agent'");
+        if ($columnCheck->num_rows === 0) {
+            // user_agent sütunu yoksa ekle
+            $conn->query("ALTER TABLE `form_submissions` ADD COLUMN `user_agent` varchar(255) NOT NULL AFTER `ip_address`");
+        }
+        
+        // ip_address sütununu kontrol et
+        $columnCheck = $conn->query("SHOW COLUMNS FROM `form_submissions` LIKE 'ip_address'");
+        if ($columnCheck->num_rows === 0) {
+            // ip_address sütunu yoksa ekle
+            $conn->query("ALTER TABLE `form_submissions` ADD COLUMN `ip_address` varchar(45) NOT NULL AFTER `form_data`");
+        }
+        
+        // created_at sütununu kontrol et ve varsa güncelle
+        $columnCheck = $conn->query("SHOW COLUMNS FROM `form_submissions` LIKE 'created_at'");
+        if ($columnCheck->num_rows === 0) {
+            // created_at sütunu yoksa ekle
+            $conn->query("ALTER TABLE `form_submissions` ADD COLUMN `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP");
+        } else {
+            // created_at sütunu var, varsayılan değer atamasını güncelle
+            $conn->query("ALTER TABLE `form_submissions` MODIFY COLUMN `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP");
+        }
+    }
+    
+    // Form verilerini JSON'a dönüştür
+    $formDataJson = json_encode($formData, JSON_UNESCAPED_UNICODE);
+    
+    // IP ve kullanıcı bilgilerini al
+    $ipAddress = $_SERVER['REMOTE_ADDR'];
+    $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? '';
+    $currentTime = date('Y-m-d H:i:s');
+    
+    // Verileri kaydet - NULL popup_id sorununu çöz
+    if ($popupId !== null) {
+        $stmt = $conn->prepare("INSERT INTO form_submissions (popup_id, form_id, form_title, form_data, ip_address, user_agent, created_at) VALUES (?, ?, ?, ?, ?, ?, NOW())");
+        $stmt->bind_param("iissss", $popupId, $formId, $formTitle, $formDataJson, $ipAddress, $userAgent);
+    } else {
+        // popup_id NULL ise sadece diğer alanları kullan
+        $stmt = $conn->prepare("INSERT INTO form_submissions (form_id, form_title, form_data, ip_address, user_agent, created_at) VALUES (?, ?, ?, ?, ?, NOW())");
+        $stmt->bind_param("issss", $formId, $formTitle, $formDataJson, $ipAddress, $userAgent);
+    }
+    
+    if ($stmt->execute()) {
+        // E-posta gönderme işlemi (isteğe bağlı)
+        $adminEmails = [];
+        
+        // Form builder formları için email_notifications kullan
+        if (!empty($emailNotifications)) {
+            $emailList = explode(',', $emailNotifications);
+            foreach ($emailList as $email) {
+                $email = trim($email);
+                if (!empty($email) && filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    $adminEmails[] = $email;
+                }
+            }
+        }
+        
+        // Popup formları için genel ayarları kullan
+        if (empty($adminEmails)) {
+            // Yönetici e-posta adreslerini alın
+            $emailQuery = $conn->query("SELECT value FROM settings WHERE name = 'admin_email'");
+            if ($emailQuery && $emailQuery->num_rows > 0) {
+                $adminEmail = $emailQuery->fetch_assoc()['value'];
+                if (!empty($adminEmail)) {
+                    $adminEmails[] = $adminEmail;
+                }
+            }
+            
+            // Ek e-postaları alın
+            $additionalEmailsQuery = $conn->query("SELECT value FROM settings WHERE name = 'notification_emails'");
+            if ($additionalEmailsQuery && $additionalEmailsQuery->num_rows > 0) {
+                $additionalEmails = $additionalEmailsQuery->fetch_assoc()['value'];
+                if (!empty($additionalEmails)) {
+                    $emailList = explode(',', $additionalEmails);
+                    foreach ($emailList as $email) {
+                        $email = trim($email);
+                        if (!empty($email)) {
+                            $adminEmails[] = $email;
+                        }
+                    }
+                }
+            }
+        }
+        
+        // E-posta gönder
+        if (!empty($adminEmails)) {
+            // E-posta içeriğini oluştur
+            $emailSubject = 'Yeni Form Gönderimi: ' . $formTitle;
+            $emailBody = '<h2>Yeni Form Gönderimi</h2>';
+            $emailBody .= '<p><strong>Form Adı:</strong> ' . htmlspecialchars($formTitle) . '</p>';
+            $emailBody .= '<p><strong>Gönderim Zamanı:</strong> ' . $currentTime . '</p>';
+            $emailBody .= '<p><strong>IP Adresi:</strong> ' . $ipAddress . '</p>';
+            $emailBody .= '<hr>';
+            $emailBody .= '<h3>Form Verileri:</h3>';
+            $emailBody .= '<table border="1" cellpadding="5" cellspacing="0" style="border-collapse: collapse;">';
+            
+            foreach ($formData as $key => $value) {
+                if (is_array($value)) {
+                    $value = implode(', ', $value);
+                }
+                $emailBody .= '<tr>';
+                $emailBody .= '<td><strong>' . htmlspecialchars($key) . '</strong></td>';
+                $emailBody .= '<td>' . htmlspecialchars($value) . '</td>';
+                $emailBody .= '</tr>';
+            }
+            
+            $emailBody .= '</table>';
+            
+            // E-posta başlıkları
+            $headers = "MIME-Version: 1.0\r\n";
+            $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+            $headers .= "From: " . $_SERVER['SERVER_NAME'] . " <noreply@" . $_SERVER['SERVER_NAME'] . ">\r\n";
+            
+            // Her e-posta adresine gönder
+            foreach ($adminEmails as $email) {
+                @mail($email, $emailSubject, $emailBody, $headers);
+            }
+        }
+        
+        // Başarılı yanıt döndür
+        echo json_encode([
+            'success' => true,
+            'message' => 'Form başarıyla gönderildi.'
+        ]);
+    } else {
+        throw new Exception("Form kaydedilemedi: " . $stmt->error);
+    }
+} catch (Exception $e) {
+    debug_log("EXCEPTION: " . $e->getMessage());
+    debug_log("Stack trace: " . $e->getTraceAsString());
+    
+    // Hata yanıtı döndür
+    echo json_encode([
+        'success' => false,
+        'message' => 'Form işlenirken bir hata oluştu: ' . $e->getMessage()
+    ]);
+}
+
+debug_log("=== Form işlemi tamamlandı ===");
+?> 

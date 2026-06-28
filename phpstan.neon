@@ -1,0 +1,26 @@
+parameters:
+    level: 1
+    paths:
+        - includes
+        - admin
+        - scripts
+        - config
+    excludePaths:
+        analyse:
+            - vendor
+            - _static_backup
+            - tools
+            - deploy
+            - cache
+            - logs
+            - uploads
+            - tmp_*
+            - admin/blog_edit_test.php
+    treatPhpDocTypesAsCertain: false
+    reportUnmatchedIgnoredErrors: false
+    bootstrapFiles:
+        - tools/phpstan-bootstrap.php
+    # ignoreErrors burada elle yazılmaz — `phpstan-baseline.neon` üzerinden
+    # otomatik baseline kullanılır. Yeni hata = CI kırılır.
+includes:
+    - phpstan-baseline.neon

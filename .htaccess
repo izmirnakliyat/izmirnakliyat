@@ -1,0 +1,284 @@
+RewriteEngine On
+# RewriteBase KULLANILMIYOR: alt klasör (örn. /mynakliyat/) iç yönlendirmeleri .htaccess dizinine göre çözülür.
+#
+
+# ----------------------------------------------------------------------
+# | Security: Hassas dosya türlerini HTTP erişiminden kapat            |
+# ----------------------------------------------------------------------
+# .env, php.ini, composer.json, *.sql, *.log, *.bak, *.swp vb. web
+# kökünde dahi olsa direkt HTTP ile okunamasın. Tüm alt klasörleri de kapsar.
+<IfModule mod_authz_core.c>
+    <FilesMatch "^(\.env.*|\.user\.ini|php\.ini|\.htaccess|\.htpasswd|\.gitignore|\.gitattributes|composer\.(json|lock)|package(-lock)?\.json|yarn\.lock|phpstan(-baseline)?\.neon(\.dist)?|phpcs\.xml(\.dist)?|phpunit\.xml(\.dist)?|Dockerfile|docker-compose\.ya?ml|Makefile|.*\.(sql|log|bak|swp|swo|orig|sh|ini\.bak|tpl\.bak))$">
+        Require all denied
+    </FilesMatch>
+    # Dosya adi "." ile baslayanlar (.env, .git, .DS_Store vb). Dizinleri etkilemez;
+    # .well-known/ dizinine erisim acik kalir (ACME/HSTS preload icin).
+    <FilesMatch "^\.">
+        Require all denied
+    </FilesMatch>
+</IfModule>
+<IfModule !mod_authz_core.c>
+    <FilesMatch "^(\.env.*|\.user\.ini|php\.ini|\.htaccess|\.htpasswd|\.gitignore|\.gitattributes|composer\.(json|lock)|package(-lock)?\.json|yarn\.lock|phpstan(-baseline)?\.neon(\.dist)?|phpcs\.xml(\.dist)?|phpunit\.xml(\.dist)?|Dockerfile|docker-compose\.ya?ml|Makefile|.*\.(sql|log|bak|swp|swo|orig|sh|ini\.bak|tpl\.bak))$">
+        Order allow,deny
+        Deny from all
+    </FilesMatch>
+    <FilesMatch "^\.">
+        Order allow,deny
+        Deny from all
+    </FilesMatch>
+</IfModule>
+
+#
+# --- Windows / XAMPP kritik: REQUEST_URI bazen /C:/xampp/... veya /mynakliyat/C:/xampp/... (ön ekli sızıntı) gelir.
+# Göreli blog/ 301’leri zehirli tabanda /C:/… üretir; önce tek web yoluna 301.
+RewriteCond %{REQUEST_URI} ^/[A-Za-z](?:\:|%3A)/(?:[^?]*/)?(?:htdocs|www)/([^/]+)(/.*)?$ [NC]
+RewriteRule ^ /%1%2 [R=301,L,QSA]
+RewriteCond %{REQUEST_URI} ^/(?:[^/?]+/)+[A-Za-z](?:\:|%3A)/(?:[^?]*/)?(?:htdocs|www)/([^/]+)(/.*)?$ [NC]
+RewriteRule ^ /%1%2 [R=301,L,QSA]
+#
+# Kanonik köken (.htaccess bu dosya + aşağıdaki kurallar):
+#   - config/site_url_define.php → canlıda SITE_URL = https://www.mynakliyat.com.tr (apex/http .env düzeltmesi)
+#   - PHP header(Location: …) ve canonical üretimi aynı SITE_URL’i kullanır.
+# Blog kökü: /blog/ (satır 31–32); sitemap_build.php içindeki <loc> ile aynı sondalı slash.
+
+# Yüklemeler: PHP/PHAR çalıştırılamaz
+RewriteRule ^uploads/.*\.(php\d*|phtml|phar)$ - [F,L,NC]
+RewriteRule ^wp-content/uploads/.*\.(php\d*|phtml|phar)$ - [F,L,NC]
+
+# Kanonik: apex → www (localhost eşleşmez)
+RewriteCond %{HTTP_HOST} ^mynakliyat\.com\.tr$ [NC]
+RewriteRule ^ https://www.mynakliyat.com.tr%{REQUEST_URI} [L,R=301]
+
+RewriteCond %{HTTP_HOST} ^www\.mynakliyat\.com\.tr$ [NC]
+RewriteCond %{HTTPS} off
+RewriteCond %{HTTP:X-Forwarded-Proto} !https
+RewriteRule ^ https://www.mynakliyat.com.tr%{REQUEST_URI} [L,R=301]
+
+# Eski WP category-sitemap → ana site haritası
+RewriteRule ^category-sitemap\.xml$ sitemap.xml [R=301,L]
+RewriteRule ^post-sitemap\.xml$ sitemap.xml [R=301,L]
+RewriteRule ^page-sitemap\.xml$ sitemap.xml [R=301,L]
+RewriteRule ^wp-sitemap\.xml$ sitemap-index.xml [R=301,L]
+RewriteRule ^wp-sitemap-index\.xml$ sitemap-index.xml [R=301,L]
+
+# JS template-literal kazası: /${item.slug} ve /$%7Bitem.slug%7D → 410 Gone (Google indeksten düşürsün)
+RewriteRule ^\$\{item\.slug\}/?$ - [G,L,NC]
+RewriteRule ^\$%7Bitem\.slug%7D/?$ - [G,L,NC]
+
+# Galeri direkt index.php çağrısı (eski WP); kanonik /galeri
+RewriteRule ^galeri/index\.php$ galeri [R=301,L,NC]
+
+# Spam/dış kaynaklı pattern (bahis, casino, vb.) → 410 Gone
+RewriteRule ^[a-z]?[0-9]+bet(?:-[a-z]+)?/?$ - [G,L,NC]
+RewriteRule ^[a-z0-9-]*(?:casino|slot|jackpot|poker|bahis|bet365)(?:[a-z0-9-]*)/?$ - [G,L,NC]
+
+# Eski /tag/ ve kök /etiket/ → kanonik /blog/etiket/ (Apache; PHP yönlendirmeleri de var)
+# Hedef URL'ler trailing slash'sız (GSC "Yönlendirmeli sayfa" tutarsızlığı kaldırıldı).
+RewriteRule ^tag/([^/]+)/feed/?$ blog/etiket/$1 [R=301,L,NC,QSA]
+RewriteRule ^tag/([^/]+)/page/1/?$ blog/etiket/$1 [R=301,L,NC,QSA]
+RewriteRule ^tag/([^/]+)/page/([0-9]+)/?$ blog/etiket/$1/sayfa/$2 [R=301,L,NC,QSA]
+RewriteRule ^tag/([^/]+)/?$ blog/etiket/$1 [R=301,L,NC,QSA]
+RewriteRule ^etiket/([^/]+)/feed/?$ blog/etiket/$1 [R=301,L,NC,QSA]
+RewriteRule ^etiket/([^/]+)/page/1/?$ blog/etiket/$1 [R=301,L,NC,QSA]
+RewriteRule ^etiket/([^/]+)/page/([0-9]+)/?$ blog/etiket/$1/sayfa/$2 [R=301,L,NC,QSA]
+RewriteRule ^etiket/([^/]+)/?$ blog/etiket/$1 [R=301,L,NC,QSA]
+RewriteRule ^blog/page/1/?$ blog [R=301,L,NC,QSA]
+RewriteRule ^blog/page/([0-9]+)/?$ blog/sayfa/$1 [R=301,L,NC,QSA]
+
+# cache/ — kök cache/.htaccess ile doğrudan HTTP erişimi kapalı (önbellek JSON / iç dosyalar)
+
+# SEO: kökte statik dosya olsa bile robots / sitemap / llms istekleri ön kumandaya (dinamik içerik + Sitemap satırı)
+RewriteRule ^robots\.txt$ index.php [L]
+RewriteRule ^sitemap\.xml$ index.php [L]
+RewriteRule ^sitemap-index\.xml$ index.php [L]
+RewriteRule ^llms\.txt$ index.php [L,QSA]
+RewriteRule ^llms-corpus\.txt$ index.php [L,QSA]
+RewriteRule ^llms-full-tr\.txt$ index.php [L,QSA]
+
+# Admin / statik alanlar: yeniden yazma yok
+RewriteCond %{REQUEST_URI} /admin/ [NC,OR]
+RewriteCond %{REQUEST_URI} /uploads/ [NC,OR]
+RewriteCond %{REQUEST_URI} /assets/ [NC,OR]
+RewriteCond %{REQUEST_URI} /cache/ [NC,OR]
+RewriteCond %{REQUEST_URI} /ajax/ [NC,OR]
+RewriteCond %{REQUEST_URI} /config/ [NC,OR]
+RewriteCond %{REQUEST_URI} /includes/ [NC,OR]
+RewriteCond %{REQUEST_URI} /logs/ [NC]
+RewriteRule ^ - [L]
+
+# Trailing slash kaldırma (tek + çok segment); admin/uploads/assets/cache/ajax istisna.
+# GSC: "/x" ve "/x/" iki URL → tek kanonik = slash'sız (kararlı).
+# ÖNEMLİ-1: Aşağıdaki ^blog kuralından ÖNCE olmalı; aksi halde [L] flag durdurur.
+# ÖNEMLİ-2: Yalnızca QUERY_STRING boşken çalışır. Query varsa (örn. /blog/?tag=X)
+#   PHP runtime (seo_runtime_strip_amp_query_redirect + blog.php) tek 301 ile
+#   hem trailing slash hem passive parametreyi tek seferde temizler. Bu, GSC
+#   "Yönlendirmeli sayfa" raporundaki çift redirect zincirini azaltır.
+RewriteCond %{QUERY_STRING} ^$
+RewriteCond %{REQUEST_URI} !/(admin)(/|$) [NC]
+RewriteCond %{REQUEST_URI} !/(uploads)(/|$) [NC]
+RewriteCond %{REQUEST_URI} !/(assets)(/|$) [NC]
+RewriteCond %{REQUEST_URI} !/(cache)(/|$) [NC]
+RewriteCond %{REQUEST_URI} !/(ajax)(/|$) [NC]
+RewriteCond %{REQUEST_URI} !/(\.well-known)(/|$) [NC]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.+)/$ /$1 [R=301,L]
+
+# Sanal /blog: fiziksel blog/ dizini veya Indexes kapalıyken dizin isteği 403 vermesin (XAMPP / alt klasör)
+RewriteRule ^blog(?:/.*)?$ index.php [L,QSA,NC]
+
+# Tek seferlik DB entity migration (bitince bu 3 satırı kaldırın)
+RewriteRule ^mynak_db_clean/?$ mynak_db_clean.php [L,QSA]
+RewriteRule ^mynak_db_clean\.php$ - [L]
+
+# Gerçek dosya (PHP dışı) doğrudan sun
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteCond %{REQUEST_URI} !\.php$ [NC]
+RewriteRule ^ - [L]
+
+# Doğrudan .php (admin hariç) → ön kumanda
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteCond %{REQUEST_URI} \.php$ [NC]
+RewriteCond %{REQUEST_URI} !/admin/ [NC]
+RewriteCond %{REQUEST_URI} !^/mynak_db_clean\.php$ [NC]
+RewriteRule ^ index.php [L,QSA]
+
+# index.php → uzantısız (kök + alt dizin) — Windows sürücü path'inde %1 asla kullanılmaz
+RewriteCond %{REQUEST_URI} !^/[A-Za-z](?:\:|%3A)/
+RewriteCond %{REQUEST_URI} ^(.+)/index\.php$ [NC]
+RewriteRule ^index\.php$ %1/ [R=301,L,QSA]
+
+RewriteCond %{REQUEST_URI} ^/index\.php$ [NC]
+RewriteRule ^index\.php$ / [R=301,L,QSA]
+
+# Eski alias: /teklif-al -> /teklif-alin (context-aware; yerel + canli)
+# Yerelde /mynakliyat/ alt dizininde, canlida site kokunde calisir; ikisi de dogru mutlak URL uretir.
+RewriteCond %{HTTP_HOST} ^localhost(:[0-9]+)?$ [NC]
+RewriteRule ^teklif-al/?$ /mynakliyat/teklif-alin [R=301,L]
+RewriteCond %{HTTP_HOST} !^localhost(:[0-9]+)?$ [NC]
+RewriteRule ^teklif-al/?$ /teklif-alin [R=301,L]
+
+# 2026-04-24: Duplicate slug canonical — pages tablosunda eski kayıt, services canonical.
+#   /sehirler-arasi-nakliyat    -> /sehirlerarasi-nakliyat    (301, yerel + canli)
+#   /antika-ve-piyano-tasima    -> /antika-piyano-tasimaciligi (301, yerel + canli)
+# Her iki duplicate pages kaydı status=0 yapıldı; içerik DB'de yedek.
+RewriteCond %{HTTP_HOST} ^localhost(:[0-9]+)?$ [NC]
+RewriteRule ^sehirler-arasi-nakliyat/?$ /mynakliyat/sehirlerarasi-nakliyat [R=301,L]
+RewriteCond %{HTTP_HOST} !^localhost(:[0-9]+)?$ [NC]
+RewriteRule ^sehirler-arasi-nakliyat/?$ /sehirlerarasi-nakliyat [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^localhost(:[0-9]+)?$ [NC]
+RewriteRule ^antika-ve-piyano-tasima/?$ /mynakliyat/antika-piyano-tasimaciligi [R=301,L]
+RewriteCond %{HTTP_HOST} !^localhost(:[0-9]+)?$ [NC]
+RewriteRule ^antika-ve-piyano-tasima/?$ /antika-piyano-tasimaciligi [R=301,L]
+
+# 2026-04-24: Boş/kısa service slug'ları → canonical uzun sürüm (301).
+#   /izmir-evden-eve-nakliyat-hizmeti  ->  /izmir-evden-eve-nakliyat
+#   /kurumsal-nakliye-ofis-tasima      ->  /kurumsal-nakliye-hizmetleri
+# Services tablosunda status=0; ana sayfa kartlarında kullanılmıyordu (0 ref).
+RewriteCond %{HTTP_HOST} ^localhost(:[0-9]+)?$ [NC]
+RewriteRule ^izmir-evden-eve-nakliyat-hizmeti/?$ /mynakliyat/izmir-evden-eve-nakliyat [R=301,L]
+RewriteCond %{HTTP_HOST} !^localhost(:[0-9]+)?$ [NC]
+RewriteRule ^izmir-evden-eve-nakliyat-hizmeti/?$ /izmir-evden-eve-nakliyat [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^localhost(:[0-9]+)?$ [NC]
+RewriteRule ^kurumsal-nakliye-ofis-tasima/?$ /mynakliyat/kurumsal-nakliye-hizmetleri [R=301,L]
+RewriteCond %{HTTP_HOST} !^localhost(:[0-9]+)?$ [NC]
+RewriteRule ^kurumsal-nakliye-ofis-tasima/?$ /kurumsal-nakliye-hizmetleri [R=301,L]
+
+# 2026-06: İç rekabet — zayıf blog slug'ları → kanonik hizmet /sehirici-nakliyat (döngü yok; hedef kaynak listede değil)
+RewriteCond %{HTTP_HOST} ^localhost(:[0-9]+)?$ [NC]
+RewriteRule ^sehir-ici-nakliyat/?$ /mynakliyat/sehirici-nakliyat [R=301,L]
+RewriteCond %{HTTP_HOST} !^localhost(:[0-9]+)?$ [NC]
+RewriteRule ^sehir-ici-nakliyat/?$ /sehirici-nakliyat [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^localhost(:[0-9]+)?$ [NC]
+RewriteRule ^profesyonel-ve-ozenli-sehir-ici-nakliyat/?$ /mynakliyat/sehirici-nakliyat [R=301,L]
+RewriteCond %{HTTP_HOST} !^localhost(:[0-9]+)?$ [NC]
+RewriteRule ^profesyonel-ve-ozenli-sehir-ici-nakliyat/?$ /sehirici-nakliyat [R=301,L]
+
+# .php uzantılı istekler → uzantısız URL (admin hariç)
+RewriteCond %{REQUEST_URI} !^/[A-Za-z](?:\:|%3A)/
+RewriteCond %{REQUEST_URI} !^/(?:[^/?]+/)+[A-Za-z](?:\:|%3A)/
+RewriteCond %{THE_REQUEST} \s/+(.+?)\.php[\s?] [NC]
+RewriteCond %{REQUEST_URI} !/admin/ [NC]
+RewriteCond %{REQUEST_URI} !^/mynak_db_clean\.php$ [NC]
+RewriteRule ^(.+)\.php$ $1 [R=301,L,QSA]
+
+# Kalan tüm rotalar → index.php (bootstrap + front controller)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [L,QSA]
+
+# ----------------------------------------------------------------------
+# | Font MIME Types ve CORS                                            |
+# ----------------------------------------------------------------------
+<IfModule mod_mime.c>
+  # llms-full.txt vb. Türkçe karakterler; botların yanlış kod sayfası varsaymaması için
+  AddCharset utf-8 .txt
+  AddType font/woff2 .woff2
+  AddType font/woff .woff
+  AddType font/ttf .ttf
+  AddType font/otf .otf
+  AddType image/svg+xml .svg
+</IfModule>
+
+<IfModule mod_headers.c>
+  <FilesMatch "\.(woff2?|ttf|otf|eot|svg)$">
+    Header set Access-Control-Allow-Origin "*"
+    Header set Cache-Control "public, max-age=31536000"
+  </FilesMatch>
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=()"
+  Header always set X-Permitted-Cross-Domain-Policies "none"
+  Header always set Cross-Origin-Opener-Policy "same-origin"
+  # Sızıntı riskine karşı: hassas response'larda sunucu versiyonu göstermesin
+  Header unset X-Powered-By
+  Header always unset X-Powered-By
+  # HSTS: doğrudan HTTPS veya Cloudflare/proxy (X-Forwarded-Proto). <If> yerine SetEnvIf — uyumsuz hostlarda satırları yorum satırı yapın.
+  SetEnvIf HTTPS "on" MYNAK_HSTS=1
+  SetEnvIf X-Forwarded-Proto "^https$" MYNAK_HSTS=1
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains" env=MYNAK_HSTS
+</IfModule>
+
+# ----------------------------------------------------------------------
+# | Compression                                                        |
+# ----------------------------------------------------------------------
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css application/javascript application/json
+</IfModule>
+
+# ----------------------------------------------------------------------
+# | Browser Caching                                                    |
+# ----------------------------------------------------------------------
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType image/jpg "access plus 1 year"
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/gif "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/webp "access plus 1 year"
+  ExpiresByType text/css "access plus 1 month"
+  ExpiresByType application/pdf "access plus 1 month"
+  ExpiresByType text/javascript "access plus 1 month"
+  ExpiresByType application/javascript "access plus 1 month"
+  ExpiresByType application/x-javascript "access plus 1 month"
+  ExpiresByType image/x-icon "access plus 1 year"
+  ExpiresDefault "access plus 2 days"
+</IfModule>
+
+# PHP sürümü: MultiPHP Manager belirler. Sabit ea-php84 AddHandler, 8.3 seçildiğinde 500 / yanlış handler üretebilirdi — kaldırıldı.
+
+# Cache Buster - 2026-05-11 17:53:46
+<IfModule mod_rewrite.c>
+    RewriteRule ^assets/.*\.(css|js)$ - [E=CACHE_VERSION:1778511226]
+</IfModule>
+
+# php -- BEGIN cPanel-generated handler, do not edit
+# “ea-php83” paketini varsayılan “PHP” programlama dili olarak ayarlayın.
+<IfModule mime_module>
+  AddHandler application/x-httpd-ea-php83 .php .php8 .phtml
+</IfModule>
+# php -- END cPanel-generated handler, do not edit
