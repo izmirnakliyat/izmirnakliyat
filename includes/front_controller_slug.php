@@ -435,6 +435,13 @@ function mynak_fc_dispatch_slug(string $slug, mysqli $conn): void
 
     if (!empty($page_rows)) {
         $page = $page_rows[0];
+        // LLM bot'lar için markdown content negotiation (pages)
+        if (!function_exists('mynak_cn_wants_markdown')) {
+            require_once __DIR__ . '/handlers/content_negotiation.php';
+        }
+        if (mynak_cn_wants_markdown() && mynak_cn_try_emit_page_markdown($conn, (string) $page['slug'])) {
+            exit;
+        }
         if (!isset($page['type']) || (string) $page['type'] === '') {
             require_once $root . '/includes/mynak_faz2_ilce_seo.php';
             if (mynak_faz2_is_ilce_slug((string) ($page['slug'] ?? ''))) {
