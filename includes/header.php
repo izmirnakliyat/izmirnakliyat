@@ -80,13 +80,7 @@ $favicon = isset($site_settings['favicon']) ? (string) $site_settings['favicon']
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <?php
-    $mynak_google_fonts_href = 'https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap';
-    ?>
-    <link rel="preload" as="style" href="<?php echo htmlspecialchars($mynak_google_fonts_href, ENT_QUOTES, 'UTF-8'); ?>">
-    <link rel="stylesheet" href="<?php echo htmlspecialchars($mynak_google_fonts_href, ENT_QUOTES, 'UTF-8'); ?>">
+    <link rel="stylesheet" href="<?php echo ASSET_PATH; ?>css/dm-sans.css">
     <link rel="dns-prefetch" href="https://www.googletagmanager.com">
     <?php
     if (!function_exists('mynak_microsoft_clarity_head_markup')) {
@@ -183,7 +177,7 @@ $favicon = isset($site_settings['favicon']) ? (string) $site_settings['favicon']
     echo mynak_link_stylesheet_deferred(ASSET_PATH . 'css/odometer.min.css');
     echo mynak_link_stylesheet_deferred(ASSET_PATH . 'css/nice-select.min.css');
     ?>
-    <link rel="stylesheet" href="<?php echo ASSET_PATH; ?>css/swiper.min.css">
+    <?php echo mynak_link_stylesheet_deferred(ASSET_PATH . 'css/swiper.min.css'); ?>
     <?php echo mynak_link_stylesheet_deferred(ASSET_PATH . 'css/venobox.min.css'); ?>
     <link rel="stylesheet" href="<?php echo ASSET_PATH; ?>css/slider.min.css">
     <link rel="stylesheet" href="<?php echo ASSET_PATH; ?>css/common-style.min.css">
