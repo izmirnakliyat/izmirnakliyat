@@ -5,6 +5,7 @@ require_once __DIR__ . '/mynak_legacy_url_recovery.php';
 require_once __DIR__ . '/mynak_gsc_404_slug_redirects.php';
 require_once __DIR__ . '/mynak_gsc_legacy_path_redirects.php';
 require_once __DIR__ . '/mynak_canonical_slug_redirects.php';
+require_once __DIR__ . '/mynak_broken_link_recovery.php';
 
 /**
  * Slug çözümleyici (eski slug-router.php mantığı). Çağıran mutlaka exit eder.
@@ -197,6 +198,23 @@ function mynak_fc_dispatch_slug(string $slug, mysqli $conn): void
         exit;
     }
 
+    // Ekibimiz sayfası: pages tablosunda kayıt olmasa bile sayfa.php'nin
+    // team_members özel bloğunu tetikle (GSC/sitemap'te mevcut).
+    if ($slug === 'ekibimiz') {
+        $page = [
+            'id'    => 0,
+            'title' => 'Ekibimiz',
+            'slug'  => 'ekibimiz',
+            'type'  => 'team',
+            'content' => '',
+            'meta_description' => 'MY Nakliyat yönetim ve operasyon ekibi ile tanışın.',
+        ];
+        $page_title = 'Ekibimiz';
+        $allow_indexing = true;
+        require $root . '/sayfa.php';
+        exit;
+    }
+
     // Video izleme sayfalari (GSC / Google Kisa Videolar)
     if ($slug === 'shorts') {
         require $root . '/shorts.php';
@@ -316,10 +334,14 @@ function mynak_fc_dispatch_slug(string $slug, mysqli $conn): void
     }
 
     $stmt = $conn->prepare('SELECT * FROM services WHERE slug = ? AND status = 1');
-    $stmt->bind_param('s', $slug);
-    $stmt->execute();
-    $service_rows = mysqli_stmt_fetch_all_assoc($stmt);
-    $stmt->close();
+    if (!$stmt) {
+        $service_rows = [];
+    } else {
+        $stmt->bind_param('s', $slug);
+        $stmt->execute();
+        $service_rows = mysqli_stmt_fetch_all_assoc($stmt);
+        $stmt->close();
+    }
 
     if (!empty($service_rows)) {
         $service = $service_rows[0];
@@ -355,10 +377,14 @@ function mynak_fc_dispatch_slug(string $slug, mysqli $conn): void
     if (preg_match('#^blog-detay/(.+)$#', $slug, $blogDetayMatch)) {
         $blogSlug = $blogDetayMatch[1];
         $stmt = $conn->prepare('SELECT slug FROM blog_posts WHERE slug = ? AND durum = 3 LIMIT 1');
-        $stmt->bind_param('s', $blogSlug);
-        $stmt->execute();
-        $bd_rows = mysqli_stmt_fetch_all_assoc($stmt);
-        $stmt->close();
+        if ($stmt) {
+            $stmt->bind_param('s', $blogSlug);
+            $stmt->execute();
+            $bd_rows = mysqli_stmt_fetch_all_assoc($stmt);
+            $stmt->close();
+        } else {
+            $bd_rows = [];
+        }
         if (!empty($bd_rows)) {
             header('Location: ' . mynak_abs_url_from_public_path(mynak_public_path($blogSlug)), true, 301);
             exit;
@@ -366,10 +392,14 @@ function mynak_fc_dispatch_slug(string $slug, mysqli $conn): void
     }
 
     $stmt = $conn->prepare('SELECT * FROM blog_posts WHERE slug = ? AND durum = 3');
-    $stmt->bind_param('s', $slug);
-    $stmt->execute();
-    $blog_rows = mysqli_stmt_fetch_all_assoc($stmt);
-    $stmt->close();
+    if (!$stmt) {
+        $blog_rows = [];
+    } else {
+        $stmt->bind_param('s', $slug);
+        $stmt->execute();
+        $blog_rows = mysqli_stmt_fetch_all_assoc($stmt);
+        $stmt->close();
+    }
 
     if (!empty($blog_rows)) {
         $blog = $blog_rows[0];
@@ -422,6 +452,13 @@ function mynak_fc_dispatch_slug(string $slug, mysqli $conn): void
 
     if (!empty($page_rows)) {
         $page = $page_rows[0];
+        // LLM bot'lar için markdown content negotiation (pages)
+        if (!function_exists('mynak_cn_wants_markdown')) {
+            require_once __DIR__ . '/handlers/content_negotiation.php';
+        }
+        if (mynak_cn_wants_markdown() && mynak_cn_try_emit_page_markdown($conn, (string) $page['slug'])) {
+            exit;
+        }
         if (!isset($page['type']) || (string) $page['type'] === '') {
             require_once $root . '/includes/mynak_faz2_ilce_seo.php';
             if (mynak_faz2_is_ilce_slug((string) ($page['slug'] ?? ''))) {
@@ -480,17 +517,52 @@ function mynak_fc_dispatch_slug(string $slug, mysqli $conn): void
     mynak_fc_try_wp_appendage_redirect($conn, $slug);
     mynak_fc_try_fuzzy_blog_slug_redirect($conn, $slug, false);
 
-    // Blog-stili slug (3+ tire, 16+ karakter, sadece tek segment) → 410 Gone
-    // Bu tür slug'lar genellikle silinmiş WP yazıları. 410 Google'ın indeksten daha hızlı düşürmesini sağlar.
-    $isBlogStyleDead = $slug !== ''
-        && !str_contains($slug, '/')
-        && strlen($slug) >= 16
-        && substr_count($slug, '-') >= 3
-        && preg_match('#^[a-z0-9][a-z0-9-]*[a-z0-9]$#', $slug) === 1;
+    // Son seans: normalize + partial match ile kirik link kurtarma
+    mynak_fc_try_broken_link_recovery($conn, $slug);
 
-    $statusCode = $isBlogStyleDead ? 410 : 404;
-    $statusLabel = $isBlogStyleDead ? '410 — Kalıcı olarak kaldırıldı' : '404 — İçerik bulunamadı';
-    $statusBody = $isBlogStyleDead
+    // 410 Gone yalnızca DB'de gerçekten var olup silinmiş/pasif içerik için.
+    // Hiç var olmamış URL'ler 404 döner — 410 yalnızca kanıtlanmış silme durumunda.
+    $isConfirmedDeleted = false;
+    if ($slug !== '' && !str_contains($slug, '/')) {
+        $stmtDead = $conn->prepare(
+            'SELECT 1 FROM blog_posts WHERE slug = ? AND durum != 3 LIMIT 1'
+        );
+        if ($stmtDead instanceof mysqli_stmt) {
+            $stmtDead->bind_param('s', $slug);
+            $stmtDead->execute();
+            $stmtDead->store_result();
+            $isConfirmedDeleted = $stmtDead->num_rows > 0;
+            $stmtDead->close();
+        }
+        if (!$isConfirmedDeleted) {
+            $stmtDead2 = $conn->prepare(
+                'SELECT 1 FROM services WHERE slug = ? AND status != 1 LIMIT 1'
+            );
+            if ($stmtDead2 instanceof mysqli_stmt) {
+                $stmtDead2->bind_param('s', $slug);
+                $stmtDead2->execute();
+                $stmtDead2->store_result();
+                $isConfirmedDeleted = $stmtDead2->num_rows > 0;
+                $stmtDead2->close();
+            }
+        }
+        if (!$isConfirmedDeleted) {
+            $stmtDead3 = $conn->prepare(
+                'SELECT 1 FROM pages WHERE slug = ? AND status != 1 LIMIT 1'
+            );
+            if ($stmtDead3 instanceof mysqli_stmt) {
+                $stmtDead3->bind_param('s', $slug);
+                $stmtDead3->execute();
+                $stmtDead3->store_result();
+                $isConfirmedDeleted = $stmtDead3->num_rows > 0;
+                $stmtDead3->close();
+            }
+        }
+    }
+
+    $statusCode = $isConfirmedDeleted ? 410 : 404;
+    $statusLabel = $isConfirmedDeleted ? '410 — Kalıcı olarak kaldırıldı' : '404 — İçerik bulunamadı';
+    $statusBody = $isConfirmedDeleted
         ? 'Aradığınız içerik kalıcı olarak kaldırılmıştır.'
         : 'Aradığınız adres taşınmış veya kaldırılmış olabilir.';
 

@@ -33,10 +33,13 @@ if ($is_local) {
 
     if ($dbUser === '' || $dbName === '') {
         error_log('mynak: Canlı ortamda .env eksik veya DB_USER/DB_NAME boş. .env.example dosyasına bakın.');
-        if (PHP_SAPI !== 'cli') {
+        if (PHP_SAPI !== 'cli' && !headers_sent()) {
             http_response_code(503);
+            header('Content-Type: text/html; charset=UTF-8');
+            header('Retry-After: 300');
+            header('X-Robots-Tag: noindex, nofollow', true);
         }
-        die('Sistem yapılandırması eksik. Lütfen daha sonra tekrar deneyin.');
+        die('<!doctype html><html lang="tr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>503 — Bakım</title></head><body><h1>Geçici bakım</h1><p>Sistem yapılandırması eksik. Lütfen daha sonra tekrar deneyin.</p></body></html>');
     }
 
     define('DB_HOST', $dbHost);
@@ -58,7 +61,13 @@ try {
         if ($is_local) {
             die('Veritabanı bağlantı hatası: ' . $conn->connect_error);
         }
-        die('Sistem bakımda. Lütfen daha sonra tekrar deneyin.');
+        if (PHP_SAPI !== 'cli' && !headers_sent()) {
+            http_response_code(503);
+            header('Content-Type: text/html; charset=UTF-8');
+            header('Retry-After: 300');
+            header('X-Robots-Tag: noindex, nofollow', true);
+        }
+        die('<!doctype html><html lang="tr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>503 — Bakım</title></head><body><h1>Geçici bakım</h1><p>Sistem şu anda bakımda. Lütfen daha sonra tekrar deneyin.</p></body></html>');
     }
 
     $conn->set_charset('utf8mb4');
@@ -77,5 +86,11 @@ try {
     if ($is_local) {
         die('Veritabanı bağlantı hatası: ' . $e->getMessage());
     }
-    die('Sistem bakımda. Lütfen daha sonra tekrar deneyin.');
+    if (PHP_SAPI !== 'cli' && !headers_sent()) {
+        http_response_code(503);
+        header('Content-Type: text/html; charset=UTF-8');
+        header('Retry-After: 300');
+        header('X-Robots-Tag: noindex, nofollow', true);
+    }
+    die('<!doctype html><html lang="tr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>503 — Bakım</title></head><body><h1>Geçici bakım</h1><p>Sistem şu anda bakımda. Lütfen daha sonra tekrar deneyin.</p></body></html>');
 }

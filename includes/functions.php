@@ -9,6 +9,29 @@ require_once __DIR__ . '/mynak_gbp_sync.php';
 require_once __DIR__ . '/mynak_seo_length_helpers.php';
 
 /**
+ * Ad-soyaddan baş harfleri döndürür.
+ *
+ * "Ahmet Yılmaz" → "AY", "Ali" → "A", "" → "?"
+ */
+function mynak_initials_from_name(string $name): string
+{
+    $name = trim($name);
+    if ($name === '') {
+        return '?';
+    }
+    $parts = preg_split('/\s+/u', $name);
+    if ($parts === false || $parts === []) {
+        return '?';
+    }
+    $initials = '';
+    foreach ($parts as $part) {
+        $ch = function_exists('mb_substr') ? mb_substr($part, 0, 1, 'UTF-8') : substr($part, 0, 1);
+        $initials .= function_exists('mb_strtoupper') ? mb_strtoupper($ch, 'UTF-8') : strtoupper($ch);
+    }
+    return $initials;
+}
+
+/**
  * header.php öncesi $site_settings kullanımı için (mysqli bağlı olmalı).
  *
  * @return array<string, string>

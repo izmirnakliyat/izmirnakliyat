@@ -1101,6 +1101,14 @@ function schema_factory_page_type_ld_fragment(
                 require_once __DIR__ . '/author_resolver.php';
             }
             $authorNode = seo_runtime_resolve_blog_author($blog, $site_settings, $orgId, $orgName, $origin);
+            $datePub = (string) ($bp['date_published'] ?? '');
+            $dateMod = (string) ($bp['date_modified'] ?? '');
+            if ($datePub === '') {
+                $datePub = date('Y-m-d');
+            }
+            if ($dateMod === '') {
+                $dateMod = $datePub;
+            }
             $schema = [
                 '@context' => 'https://schema.org',
                 '@type' => 'BlogPosting',
@@ -1111,8 +1119,8 @@ function schema_factory_page_type_ld_fragment(
                     '@id' => $postUrl !== '' ? $postUrl : $origin,
                 ],
                 'author' => $authorNode,
-                'datePublished' => (string) ($bp['date_published'] ?? ''),
-                'dateModified' => (string) ($bp['date_modified'] ?? ''),
+                'datePublished' => $datePub,
+                'dateModified' => $dateMod,
                 'publisher' => $orgId !== ''
                     ? ['@id' => $orgId]
                     : [
@@ -1138,6 +1146,13 @@ function schema_factory_page_type_ld_fragment(
                     'url' => $img,
                     'width' => $imgW,
                     'height' => $imgH,
+                ];
+            } else {
+                $schema['image'] = [
+                    '@type' => 'ImageObject',
+                    'url' => $origin . 'uploads/logo/my-nakliyat-logo.webp',
+                    'width' => 1200,
+                    'height' => 675,
                 ];
             }
             if ($postUrl !== '') {

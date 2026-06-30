@@ -14,15 +14,20 @@
         "php": ">=8.0"
     },
     "require-dev": {
-        "phpstan/phpstan": "^1.12"
+        "phpstan/phpstan": "^1.12",
+        "phpunit/phpunit": "^9"
     },
     "scripts": {
         "phpstan": "php -d memory_limit=1024M tools/phpstan.phar analyse --no-progress",
         "phpstan-baseline": "php -d memory_limit=1024M tools/phpstan.phar analyse --generate-baseline phpstan-baseline.neon --no-progress",
-        "lint": "@phpstan"
+        "lint": "@phpstan",
+        "test": "php vendor/bin/phpunit",
+        "test:verbose": "php vendor/bin/phpunit --testdox"
     },
     "scripts-descriptions": {
         "phpstan": "Statik analiz çalıştırır (baseline aktif; yalnız YENİ hatalarda 1 ile çıkar).",
-        "phpstan-baseline": "Tüm mevcut hataları baseline'a alır. Refaktör sonrası elle çalıştırın."
+        "phpstan-baseline": "Tüm mevcut hataları baseline'a alır. Refaktör sonrası elle çalıştırın.",
+        "test": "PHPUnit birim testlerini çalıştırır.",
+        "test:verbose": "PHPUnit birim testlerini ayrıntılı çalıştırır."
     }
 }
