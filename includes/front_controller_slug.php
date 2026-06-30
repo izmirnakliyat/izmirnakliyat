@@ -198,6 +198,23 @@ function mynak_fc_dispatch_slug(string $slug, mysqli $conn): void
         exit;
     }
 
+    // Ekibimiz sayfası: pages tablosunda kayıt olmasa bile sayfa.php'nin
+    // team_members özel bloğunu tetikle (GSC/sitemap'te mevcut).
+    if ($slug === 'ekibimiz') {
+        $page = [
+            'id'    => 0,
+            'title' => 'Ekibimiz',
+            'slug'  => 'ekibimiz',
+            'type'  => 'team',
+            'content' => '',
+            'meta_description' => 'MY Nakliyat yönetim ve operasyon ekibi ile tanışın.',
+        ];
+        $page_title = 'Ekibimiz';
+        $allow_indexing = true;
+        require $root . '/sayfa.php';
+        exit;
+    }
+
     // Video izleme sayfalari (GSC / Google Kisa Videolar)
     if ($slug === 'shorts') {
         require $root . '/shorts.php';
