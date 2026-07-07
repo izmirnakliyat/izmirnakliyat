@@ -117,6 +117,16 @@ function mynak_build_page_title(string $stem): string
         }
     }
 
+    // Güvenlik ağı: DB'de kalmış kesik "…"/"..." son eki ve yarım kalan marka
+    // parçası (ör. "… Ödüllü MY…") <title>'da çift marka ("MY… | MY Nakliyat")
+    // ve kesik son üretiyordu. Marka kontrolünden ÖNCE temizle.
+    $stem = preg_replace('/\s*(\x{2026}|\.{2,})\s*$/u', '', $stem) ?? $stem; // kesik "…"/"..."
+    $stem = preg_replace('/\s*[|\-–—:]\s*MY$/u', '', $stem) ?? $stem;        // dangling "| MY"
+    $stem = rtrim($stem, " \t\n\r\0\x0B|-–—:,");
+    if ($stem === '') {
+        return $brand;
+    }
+
     if (preg_match('/\b' . preg_quote($brand, '/') . '\b/u', $stem)) {
         return $stem;
     }

@@ -127,11 +127,18 @@ function sitemap_build_main_urlset(mysqli $conn, string $site_url, array $opts =
     // 4 — Hizmetler
     if ($opts['include_services'] && $tableExists($conn, 'services')) {
         $hasU = $hasCol($conn, 'services', 'updated_at');
+        // Kanonikleştirme: .htaccess ile 301 yönlenen çift/eski hizmet slug'larını
+        // sitemap'e KOYMA (sitemap yalnızca 200 dönen kanonik URL içermeli).
+        // 'sehirlerarasi-nakliyat' (services id=3) → 'sehirler-arasi-nakliyat' (pages id=16).
+        $redirectingServiceSlugs = ['sehirlerarasi-nakliyat'];
         $sql = 'SELECT ana_baslik, slug, created_at, foto' . ($hasU ? ', updated_at' : '') . ' FROM services WHERE status = 1 ORDER BY id ASC';
         $res = $conn->query($sql);
         if ($res) {
             while ($row = $res->fetch_assoc()) {
                 $slug = !empty($row['slug']) ? (string) $row['slug'] : $mkSlug((string) $row['ana_baslik']);
+                if (in_array(strtolower($slug), $redirectingServiceSlugs, true)) {
+                    continue;
+                }
                 $lm = $today;
                 if ($hasU && !empty($row['updated_at'])) {
                     $lm = date('Y-m-d', strtotime((string) $row['updated_at']));
