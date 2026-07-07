@@ -86,7 +86,8 @@ function seo_rt_public_url_slug_for_graph_slug(string $graphSlug): string
 {
     $graphSlug = trim($graphSlug, '/');
     static $map = [
-        'sehirler-arasi-nakliyat' => 'sehirlerarasi-nakliyat',
+        // Şehirlerarası kanonik URL = pages id=16 (tireli); iç linkler doğrudan ona gitsin.
+        'sehirler-arasi-nakliyat' => 'sehirler-arasi-nakliyat',
         'izmir-ofis-tasimaciligi' => 'kurumsal-nakliye-ofis-tasima',
         'izmir-esya-depolama' => 'esya-depolama',
         'antika-ve-piyano-tasima' => 'antika-piyano-tasimaciligi',
