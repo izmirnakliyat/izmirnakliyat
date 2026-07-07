@@ -20,9 +20,14 @@ function mynak_seo_cannibalization_redirect_map(): array
         'en-iyi-izmir-evden-eve-nakliyat-firmalari' => 'izmir-evden-eve-nakliyat-yorumlari',
         'my-nakliyat-evden-eve-nakliyat' => 'izmir-evden-eve-nakliyat',
         'izmir-nakliyat-firmalari' => 'izmir-evden-eve-nakliyat',
-        // Blog/thin içerik → kanonik hizmet sayfası (iç rekabet / cannibalization)
-        'sehir-ici-nakliyat' => 'sehirici-nakliyat',
-        'profesyonel-ve-ozenli-sehir-ici-nakliyat' => 'sehirici-nakliyat',
+        // Şehir içi: canlı slug 'sehir-ici-nakliyat' (services id=12 / pages id=45).
+        // 'sehirici-nakliyat' DB'de yok → eski/hatalı iç linkler kanonik sayfaya 301.
+        'sehirici-nakliyat' => 'sehir-ici-nakliyat',
+        'profesyonel-ve-ozenli-sehir-ici-nakliyat' => 'sehir-ici-nakliyat',
+        // Kırık iç link kurtarma → kanonik canlı hedef (final 200, sıçramasız)
+        'evden-eve-nakliyat' => 'izmir-evden-eve-nakliyat',
+        'izmir-ofis-tasimaciligi' => 'kurumsal-nakliye-hizmetleri',
+        'kurumsal-nakliyat-ofis-tasima' => 'kurumsal-nakliye-hizmetleri',
     ];
 }
 
