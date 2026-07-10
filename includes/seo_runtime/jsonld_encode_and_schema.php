@@ -256,7 +256,7 @@ function seo_runtime_schema_opening_hours_default_specs(): array
 function seo_runtime_schema_area_served_node(array $site_settings, string $canonicalOrigin = ''): array
 {
     return [
-        '@type' => 'City',
+        '@type' => ['Place', 'City'],
         '@id' => seo_runtime_schema_place_id($canonicalOrigin, 'İzmir'),
         'name' => 'İzmir',
         'containedInPlace' => [
@@ -292,7 +292,7 @@ function seo_runtime_schema_area_served_metro_list(array $site_settings, string 
     $out = [$city];
     foreach ($districts as $d) {
         $out[] = [
-            '@type' => 'AdministrativeArea',
+            '@type' => ['Place', 'AdministrativeArea'],
             '@id' => seo_runtime_schema_place_id($canonicalOrigin, $d, 'İzmir'),
             'name' => $d,
             'containedInPlace' => [
@@ -338,7 +338,7 @@ function seo_runtime_schema_area_served_district_single(array $site_settings, st
     return [
         seo_runtime_schema_area_served_node($site_settings, $canonicalOrigin),
         [
-            '@type' => 'AdministrativeArea',
+            '@type' => ['Place', 'AdministrativeArea'],
             '@id' => seo_runtime_schema_place_id($canonicalOrigin, $districtName, 'İzmir'),
             'name' => $districtName,
             'containedInPlace' => [
@@ -491,7 +491,7 @@ function seo_runtime_schema_turkiye_province_nodes(string $canonicalOrigin): arr
     $nodes = [];
     foreach (seo_runtime_schema_turkiye_province_names() as $name) {
         $nodes[] = [
-            '@type' => 'City',
+            '@type' => ['Place', 'City'],
             '@id' => seo_runtime_schema_place_id($canonicalOrigin, $name),
             'name' => $name,
             'containedInPlace' => ['@id' => $countryId],
@@ -510,7 +510,7 @@ function seo_runtime_schema_place_nodes_for_page(
 ): array {
     $origin = seo_runtime_schema_origin($canonicalOrigin);
     $nodes = [[
-        '@type' => 'Country',
+        '@type' => ['Place', 'Country'],
         '@id' => seo_runtime_schema_place_id($origin, 'Türkiye'),
         'name' => 'Türkiye',
     ]];
@@ -529,7 +529,7 @@ function seo_runtime_schema_place_nodes_for_page(
             continue;
         }
         $nodes[] = [
-            '@type' => 'City',
+            '@type' => ['Place', 'City'],
             '@id' => seo_runtime_schema_place_id($origin, $province),
             'name' => $province,
             'containedInPlace' => ['@id' => seo_runtime_schema_place_id($origin, 'Türkiye')],

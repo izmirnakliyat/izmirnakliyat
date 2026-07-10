@@ -144,6 +144,19 @@ final class EntityGraphSchemaTest extends TestCase
         $this->assertCount(81, $service['areaServed']);
     }
 
+    public function testGeographicEntitiesRetainSpecificTypesAndDeclarePlace(): void
+    {
+        $decoded = $this->serviceGraph('izmir-evden-eve-nakliyat', 'izmir-evden-eve-nakliyat');
+        $nodes = $decoded['@graph'];
+        $city = $this->nodeById($nodes, self::ORIGIN . '/#place-izmir');
+        $district = $this->nodeById($nodes, self::ORIGIN . '/#place-izmir-karsiyaka');
+        $country = $this->nodeById($nodes, self::ORIGIN . '/#place-turkiye');
+
+        $this->assertSame(['Place', 'City'], $city['@type']);
+        $this->assertSame(['Place', 'AdministrativeArea'], $district['@type']);
+        $this->assertSame(['Place', 'Country'], $country['@type']);
+    }
+
     public function testHomeGraphPublishesPrimaryServiceEntities(): void
     {
         $pipeline = [
