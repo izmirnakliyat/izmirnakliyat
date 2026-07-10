@@ -382,6 +382,24 @@ function seo_runtime_service_content_key(string $slug): string
     return $aliases[$slug] ?? $slug;
 }
 
+/** @return list<array{slug:string,graph_slug:string}> */
+function seo_runtime_canonical_service_definitions(): array
+{
+    return [
+        ['slug' => 'izmir-evden-eve-nakliyat', 'graph_slug' => 'izmir-evden-eve-nakliyat'],
+        ['slug' => 'sehirler-arasi-nakliyat', 'graph_slug' => 'sehirler-arasi-nakliyat'],
+        ['slug' => 'kurumsal-nakliye-hizmetleri', 'graph_slug' => 'izmir-ofis-tasimaciligi'],
+        ['slug' => 'parca-esya-tasima', 'graph_slug' => 'parca-esya-tasima'],
+        ['slug' => 'asansorlu-nakliyat', 'graph_slug' => 'asansorlu-nakliyat'],
+        ['slug' => 'sepetli-vinc-kiralama', 'graph_slug' => 'sepetli-vinc-kiralama'],
+        ['slug' => 'mobil-asansor-kiralama', 'graph_slug' => 'mobil-asansor-kiralama'],
+        ['slug' => 'esya-depolama', 'graph_slug' => 'izmir-esya-depolama'],
+        ['slug' => 'antika-piyano-tasimaciligi', 'graph_slug' => 'antika-ve-piyano-tasima'],
+        ['slug' => 'mobilya-montaj-kurulum', 'graph_slug' => 'mobilya-montaj-kurulum'],
+        ['slug' => 'sehir-ici-nakliyat', 'graph_slug' => 'sehir-ici-nakliyat'],
+    ];
+}
+
 function seo_runtime_service_display_name(string $slug): string
 {
     $names = [

@@ -127,6 +127,18 @@ final class ServiceGeoContentTest extends TestCase
         }
     }
 
+    public function testCanonicalServiceDefinitionsContainNoAliasUrls(): void
+    {
+        $definitions = seo_runtime_canonical_service_definitions();
+        $slugs = array_column($definitions, 'slug');
+
+        $this->assertCount(11, $slugs);
+        $this->assertSame($slugs, array_values(array_unique($slugs)));
+        $this->assertNotContains('sehirlerarasi-nakliyat', $slugs);
+        $this->assertNotContains('izmir-evden-eve-nakliyat-hizmeti', $slugs);
+        $this->assertNotContains('kurumsal-nakliye-ofis-tasima', $slugs);
+    }
+
     public function testCanonicalServiceAliasesResolveToFinalPublicUrls(): void
     {
         $this->assertSame('kurumsal-nakliye-hizmetleri', seo_rt_public_url_slug_for_graph_slug('izmir-ofis-tasimaciligi'));
