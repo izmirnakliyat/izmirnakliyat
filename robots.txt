@@ -139,7 +139,10 @@ User-agent: Google-Extended
 User-agent: anthropic-ai
 User-agent: ClaudeBot
 User-agent: Claude-Web
+User-agent: Claude-SearchBot
+User-agent: Claude-User
 User-agent: PerplexityBot
+User-agent: Perplexity-User
 User-agent: Applebot-Extended
 User-agent: cohere-ai
 User-agent: meta-externalagent
@@ -151,6 +154,12 @@ Disallow: /config/
 Disallow: /includes/
 Disallow: /logs/
 Disallow: /cache/
+Disallow: /scripts/
+Disallow: /cron/
+Disallow: /ajax/
+Disallow: /uploads/temp/
+Disallow: /audit_env
+Disallow: /audit_env.php
 Allow: /llms.txt
 Allow: /llms-corpus.txt
 Allow: /llms-full-tr.txt
@@ -158,6 +167,7 @@ Allow: /api/
 Allow: /api/v1/
 Allow: /api/v1/manifest.json
 Allow: /api/v1/services.json
+Allow: /api/v1/entities.json
 Allow: /api/v1/blog.json
 Allow: /api/v1/authors.json
 Allow: /api/v1/organization.json

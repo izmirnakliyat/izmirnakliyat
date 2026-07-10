@@ -70,7 +70,7 @@ function mynak_fc_dispatch_special_endpoints(string $slug, mysqli $conn): bool
             return true;
         case 'llms.txt':
             if (!headers_sent()) {
-                header('X-Robots-Tag: noindex, nofollow', true);
+                header('X-Robots-Tag: noindex, follow', true);
             }
             if (!defined('SITE_URL')) {
                 require_once dirname(__DIR__) . '/config/site_url_define.php';
@@ -79,7 +79,7 @@ function mynak_fc_dispatch_special_endpoints(string $slug, mysqli $conn): bool
             return true;
         case 'llms-corpus.txt':
             if (!headers_sent()) {
-                header('X-Robots-Tag: noindex, nofollow', true);
+                header('X-Robots-Tag: noindex, follow', true);
             }
             $_GET['full'] = '1';
             if (!defined('SITE_URL')) {
@@ -89,7 +89,7 @@ function mynak_fc_dispatch_special_endpoints(string $slug, mysqli $conn): bool
             return true;
         case 'llms-full-tr.txt':
             if (!headers_sent()) {
-                header('X-Robots-Tag: noindex, nofollow', true);
+                header('X-Robots-Tag: noindex, follow', true);
             }
             require_once $handlers;
             mynak_handler_llms_full_tr();

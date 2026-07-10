@@ -195,8 +195,6 @@ function mynak_authors_public_render_detail(mysqli $conn, string $slug): void
 
     require_once __DIR__ . '/includes/header.php';
     ?>
-    <script type="application/ld+json"><?php echo json_encode($personJsonLd, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?></script>
-
     <main id="content">
         <section class="page-banner">
             <div class="container">

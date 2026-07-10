@@ -145,38 +145,6 @@ if ($mynakCaseSlug !== '') {
         </section>
     </main>
 
-    <?php /* JSON-LD: Review (BreadcrumbList header.php tarafindan otomatik basiliyor) */ ?>
-    <?php
-    $homeUrl = mynak_abs_url_from_public_path(mynak_public_path(''));
-    $brandName = defined('MYNAK_BRAND_NAME') ? (string) MYNAK_BRAND_NAME : 'MY Nakliyat';
-
-    $review = [
-        '@context' => 'https://schema.org',
-        '@type' => 'Review',
-        'itemReviewed' => [
-            '@type' => 'MovingCompany',
-            'name' => $brandName,
-            'url' => $homeUrl,
-        ],
-        'reviewRating' => [
-            '@type' => 'Rating',
-            'ratingValue' => (string) (float) ($cs['puan'] ?? 5),
-            'bestRating' => '5',
-            'worstRating' => '1',
-        ],
-        'name' => (string) $cs['baslik'],
-        'reviewBody' => (string) ($cs['musteri_yorumu'] ?? $cs['ozet'] ?? ''),
-        'author' => [
-            '@type' => 'Person',
-            'name' => (string) ($cs['musteri_ad'] ?? 'Mynakliyat Müşterisi'),
-        ],
-    ];
-    if (!empty($cs['created_at'])) {
-        $review['datePublished'] = date('c', (int) strtotime((string) $cs['created_at']));
-    }
-    ?>
-    <script type="application/ld+json"><?php echo json_encode($review, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); ?></script>
-
     <style>
     .mynak-cs-meta { margin-top: -20px; }
     .mynak-cs-chip { background: #f8f9fa; border-radius: 10px; padding: 14px; text-align: center; height: 100%; }
@@ -279,27 +247,6 @@ require_once __DIR__ . '/includes/header.php';
         </div>
     </section>
 </main>
-
-<?php /* JSON-LD: ItemList (BreadcrumbList header.php tarafindan otomatik basiliyor) */ ?>
-<?php
-$itemList = [
-    '@context' => 'https://schema.org',
-    '@type' => 'ItemList',
-    'name' => 'Mynakliyat Müşteri Hikayeleri',
-    'itemListElement' => [],
-];
-foreach ($listRows as $i => $r) {
-    $itemList['itemListElement'][] = [
-        '@type' => 'ListItem',
-        'position' => $i + 1,
-        'url' => mynak_abs_url_from_public_path(mynak_public_path('musteri-hikayeleri/' . $r['slug'])),
-        'name' => (string) $r['baslik'],
-    ];
-}
-?>
-<?php if (!empty($itemList['itemListElement'])): ?>
-<script type="application/ld+json"><?php echo json_encode($itemList, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); ?></script>
-<?php endif; ?>
 
 <style>
 .mynak-cs-card { transition: transform .2s ease, box-shadow .2s ease; }

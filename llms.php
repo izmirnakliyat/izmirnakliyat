@@ -43,8 +43,69 @@ $llms_pipeline = canonical_seo_pipeline_core([
 $llms_ctx = isset($llms_pipeline['llms_export_context']) && is_array($llms_pipeline['llms_export_context'])
     ? $llms_pipeline['llms_export_context'] : [];
 $layout = isset($llms_ctx['section_layout']) && is_array($llms_ctx['section_layout']) ? $llms_ctx['section_layout'] : [];
+$isCorpus = !empty($_GET['full']) || str_contains((string) ($_SERVER['REQUEST_URI'] ?? ''), 'llms-corpus.txt');
 
-echo "# LLMS — CANONICAL (canlı); /llms-full-tr.* = NON-CANONICAL politika özeti.\n\n";
+if (!headers_sent()) {
+    header('X-Robots-Tag: noindex, follow', true);
+    header('Cache-Control: public, max-age=1800');
+}
+
+if (!$isCorpus) {
+    require_once __DIR__ . '/includes/seo_runtime/default_service_faqs.php';
+    require_once __DIR__ . '/includes/seo_runtime/service_guide_hubs.php';
+    if (!function_exists('seo_runtime_primary_services_api_rows')) {
+        require_once __DIR__ . '/includes/seo_runtime/jsonld_encode_and_schema.php';
+    }
+    $organizationId = $site_url . '/#organization';
+    echo "# MY Nakliyat\n\n";
+    echo "> İzmir merkezli evden eve, şehirler arası, ofis, asansörlü taşıma ve eşya depolama hizmetleri. Bu dosya kanonik kaynakları ve doğrulanabilir marka/hizmet varlıklarını gösterir.\n\n";
+    echo "## Canonical Entity\n\n";
+    echo '- Organization ID: ' . $organizationId . "\n";
+    echo '- Brand ID: ' . $site_url . "/#brand\n";
+    echo '- WebSite ID: ' . $site_url . "/#website\n";
+    echo "- Verified Wikidata: https://www.wikidata.org/wiki/Q140273727\n";
+    echo '- Organization data: ' . $site_url . "/api/v1/organization.json\n";
+    echo '- Connected entity graph: ' . $site_url . "/api/v1/entities.json\n\n";
+
+    echo "## Primary Services\n\n";
+    foreach (seo_runtime_primary_services_api_rows($site_url) as $service) {
+        $graphSlug = (string) $service['graph_slug'];
+        $answer = seo_runtime_service_quick_answer($graphSlug);
+        echo '- [' . (string) $service['name'] . '](' . (string) $service['url'] . ")\n";
+        echo '  - Entity ID: ' . rtrim((string) $service['url'], '/') . "#service\n";
+        echo '  - Service type: ' . (string) $service['service_type'] . "\n";
+        if ($answer !== '') {
+            echo '  - Quick answer: ' . $answer . "\n";
+        }
+        $hub = mynak_service_guide_hub_definitions()[$graphSlug] ?? null;
+        if (is_array($hub)) {
+            echo "  - Guides:\n";
+            foreach ($hub['guides'] as $guide) {
+                echo '    - [' . (string) $guide['title'] . '](' . $site_url . '/' . (string) $guide['slug'] . ")\n";
+            }
+        }
+    }
+
+    echo "\n## Locations and Trust\n\n";
+    echo '- Primary city: İzmir — ' . $site_url . "/#place-izmir\n";
+    echo '- Location dataset: ' . $site_url . "/api/v1/locations.json\n";
+    echo '- Customer experiences: ' . $site_url . "/musteri-hikayeleri\n";
+    echo '- Corporate information: ' . $site_url . "/hakkimizda\n";
+    echo '- Documents and certificates: ' . $site_url . "/belgelerimiz\n";
+    echo '- Contact: ' . $site_url . "/iletisim\n\n";
+
+    echo "## Machine-Readable Content\n\n";
+    echo '- API manifest: ' . $site_url . "/api/v1/manifest.json\n";
+    echo '- Services: ' . $site_url . "/api/v1/services.json\n";
+    echo '- Blog corpus index: ' . $site_url . "/api/v1/blog.json\n";
+    echo '- Authors: ' . $site_url . "/api/v1/authors.json\n";
+    echo '- Full entity/intent corpus: ' . $site_url . "/llms-corpus.txt\n";
+    echo "- Markdown: request a canonical page with `Accept: text/markdown` or append `?format=markdown`.\n";
+    echo "- Citation: cite the canonical `Source:` URL returned by Markdown/API output, not the format parameter URL.\n";
+    return;
+}
+
+echo "# LLMS CORPUS — CANONICAL DATASET (canlı); /llms.txt = kısa kaynak dizini.\n\n";
 echo '# canonical_seo_pipeline.page_type=' . (string) ($llms_pipeline['page_type'] ?? '') . "\n";
 echo '# canonical_seo_pipeline.llms_export_context.grouping=' . (string) ($llms_ctx['grouping'] ?? '') . "\n\n";
 echo "# LLMS — İzmir nakliyat site grafiği + niyet haritası\n\n";
@@ -57,6 +118,7 @@ echo "Yerel bağlam: İzmir metropol + ilçe düğümleri (EI locations + Moving
 echo "## Public JSON API (LLM/AI için programatik erişim — read-only, attribution requested)\n\n";
 echo '- Manifest: ' . $site_url . "/api/v1/manifest.json\n";
 echo '- Hizmetler: ' . $site_url . "/api/v1/services.json\n";
+echo '- Bağlı Entity Graph: ' . $site_url . "/api/v1/entities.json\n";
 echo '- Blog (özet, sayfalı): ' . $site_url . "/api/v1/blog.json\n";
 echo '- Tek blog yazısı: ' . $site_url . "/api/v1/blog/{slug}.json  (örn: /api/v1/blog/izmir-evden-eve-nakliyat-rehberi.json)\n";
 echo '- Yazarlar (Person): ' . $site_url . "/api/v1/authors.json\n";
@@ -66,7 +128,7 @@ echo "\n";
 echo "## Markdown Content Negotiation\n\n";
 echo "Aynı URL'lere 'Accept: text/markdown' başlığı veya '?format=markdown' parametresiyle erişilirse içerik\n";
 echo "LLM-friendly markdown olarak servis edilir. Örnek:\n";
-echo '  curl -H "Accept: text/markdown" ' . $site_url . "/izmir-evden-eve-nakliyat-hizmeti\n";
+echo '  curl -H "Accept: text/markdown" ' . $site_url . "/izmir-evden-eve-nakliyat\n";
 echo '  ' . $site_url . "/{slug}?format=markdown\n";
 echo "X-Robots-Tag: noindex,follow — Google indexlemez, LLM/AI okuyabilir.\n\n";
 

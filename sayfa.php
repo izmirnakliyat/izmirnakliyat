@@ -278,6 +278,13 @@ require_once __DIR__ . '/includes/header.php';
                     <div class="card-body p-md-5">
                         <div class="page-text">
                             <?php
+                            $__mynakServiceFaqRaw = '';
+                            if (($page_type ?? '') === 'service') {
+                                require_once __DIR__ . '/includes/seo_runtime/faq_extractor.php';
+                                require_once __DIR__ . '/includes/seo_runtime/default_service_faqs.php';
+                                $__mynakServiceFaqRaw = (string) ($page['content'] ?? '');
+                                echo seo_runtime_service_quick_answer_html($__pageSlug);
+                            }
                             $__ilceOpenFile = __DIR__ . '/includes/pipeline/ilce_unique_opening.php';
                             if (is_file($__ilceOpenFile)) {
                                 require_once $__ilceOpenFile;
@@ -290,6 +297,9 @@ require_once __DIR__ . '/includes/header.php';
                             $GLOBALS['mynak_img_alt_context'] = trim((string) ($page['title'] ?? '')) . ' — MY Nakliyat';
                             echo mynak_blok_isle($conn, $content);
                             unset($GLOBALS['mynak_img_alt_context']);
+                            if (($page_type ?? '') === 'service') {
+                                echo seo_runtime_service_generated_faq_html($__pageSlug, $__mynakServiceFaqRaw);
+                            }
                             if (function_exists('mynak_ilce_pricing_boost_html')) {
                                 echo mynak_ilce_pricing_boost_html($__pageSlug);
                             }
@@ -311,6 +321,12 @@ require_once __DIR__ . '/includes/header.php';
                         <?php
                         if (function_exists('seo_runtime_cluster_context_links_html') && isset($mynak_seo_pipeline) && is_array($mynak_seo_pipeline)) {
                             echo seo_runtime_cluster_context_links_html($page, $mynak_seo_pipeline);
+                        }
+                        require_once __DIR__ . '/includes/seo_runtime/location_internal_linking.php';
+                        echo mynak_location_internal_links_html($__pageSlug);
+                        if (($page_type ?? '') === 'service') {
+                            require_once __DIR__ . '/includes/seo_runtime/service_guide_hubs.php';
+                            echo mynak_service_guide_hub_html($__pageSlug);
                         }
                         if (function_exists('seo_runtime_primary_services_links_html')) {
                             echo seo_runtime_primary_services_links_html($__pageSlug);

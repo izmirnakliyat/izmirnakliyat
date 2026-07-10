@@ -28,7 +28,11 @@ if (!isset($mynak_layout) || !is_array($mynak_layout)) {
     if (isset($hide_title_suffix)) {
         $layoutInject['hide_title_suffix'] = $hide_title_suffix;
     }
+    if (isset($personJsonLd) && is_array($personJsonLd)) {
+        $GLOBALS['mynak_person_jsonld'] = $personJsonLd;
+    }
     $mynak_layout = mynak_public_layout_context($conn, $layoutInject);
+    unset($GLOBALS['mynak_person_jsonld']);
 }
 
 extract($mynak_layout, EXTR_OVERWRITE);
