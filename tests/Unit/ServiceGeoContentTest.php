@@ -179,6 +179,23 @@ final class ServiceGeoContentTest extends TestCase
         $this->assertSame('izmir-evden-eve-nakliyat', mynak_api_canonical_public_slug('izmir-evden-eve-nakliyat-hizmeti'));
     }
 
+    public function testSpecializedGuidesLinkToTheirCanonicalServices(): void
+    {
+        $mobile = mynak_blog_service_context([
+            'slug' => 'izmir-mobil-asansor-kiralama-fiyatlari',
+            'baslik' => 'İzmir Mobil Asansör Kiralama Fiyatları',
+        ]);
+        $ceyiz = mynak_blog_service_context([
+            'slug' => 'izmir-ceyiz-tasima-rehberi',
+            'baslik' => 'İzmir Çeyiz Taşıma Rehberi',
+        ]);
+
+        $this->assertSame('mobil-asansor-kiralama', $mobile['graph_slug']);
+        $this->assertSame('mobil-asansor-kiralama', $mobile['service_slug']);
+        $this->assertSame('parca-esya-tasima', $ceyiz['graph_slug']);
+        $this->assertSame('parca-esya-tasima', $ceyiz['service_slug']);
+    }
+
     public function testBlogGuideLinksBackToItsPrimaryService(): void
     {
         $blog = [

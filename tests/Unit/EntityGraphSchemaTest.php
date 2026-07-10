@@ -53,6 +53,41 @@ final class EntityGraphSchemaTest extends TestCase
         return $decoded;
     }
 
+    /** @return array<string,mixed> */
+    private function blogGraph(string $slug, string $title): array
+    {
+        $canonical = self::ORIGIN . '/' . $slug;
+        $pipeline = [
+            'page_type' => 'blog_post',
+            'jsonld_type_set' => ['emit_moving_company_inline' => true, 'breadcrumb' => true],
+            'internal_link_context' => ['graph_key' => 'blog', 'anchor_slug' => 'blog'],
+            'location_vector' => ['area_served_mode' => 'metro_districts'],
+        ];
+        $blog = [
+            'slug' => $slug,
+            'baslik' => $title,
+            'icerik' => '<p>Yayınlanmış rehber içeriği.</p>',
+        ];
+        $html = schema_factory(
+            'blog_post',
+            $pipeline,
+            ['blog_post' => ['headline' => $title]],
+            $canonical,
+            self::ORIGIN,
+            [],
+            self::ORIGIN . '/#organization',
+            null,
+            $blog,
+            ['relPath' => $slug]
+        );
+        preg_match('#<script[^>]*>(.*)</script>#s', $html, $matches);
+        $decoded = json_decode(trim((string) ($matches[1] ?? '')), true);
+        $this->assertIsArray($decoded);
+        $this->assertIsArray($decoded['@graph'] ?? null);
+
+        return $decoded;
+    }
+
     /** @param list<array<string,mixed>> $nodes @return array<string,mixed> */
     private function nodeById(array $nodes, string $id): array
     {
@@ -157,6 +192,34 @@ final class EntityGraphSchemaTest extends TestCase
         $this->assertSame(['Place', 'Country'], $country['@type']);
     }
 
+    public function testBlogGraphResolvesItsCanonicalServiceAndCityEntities(): void
+    {
+        $slug = 'izmir-mobil-asansor-kiralama-fiyatlari';
+        $decoded = $this->blogGraph($slug, 'İzmir Mobil Asansör Kiralama Fiyatları');
+        $nodes = $decoded['@graph'];
+        $articleId = self::ORIGIN . '/' . $slug . '#article';
+        $serviceId = self::ORIGIN . '/mobil-asansor-kiralama#service';
+        $article = $this->nodeById($nodes, $articleId);
+        $service = $this->nodeById($nodes, $serviceId);
+
+        $this->nodeById($nodes, self::ORIGIN . '/#organization');
+        $this->nodeById($nodes, self::ORIGIN . '/#place-izmir');
+        $this->assertSame(['@id' => $serviceId], $article['about']);
+        $this->assertContains(['@id' => self::ORIGIN . '/#place-izmir'], $article['mentions']);
+        $this->assertContains(['@id' => $articleId], $service['subjectOf']);
+    }
+
+    public function testBlogServiceInferenceNeverCreatesCeyizAliasEntity(): void
+    {
+        $this->assertSame(
+            'parca-esya-tasima',
+            seo_runtime_schema_infer_blog_service_graph_slug(
+                ['slug' => 'izmir-ceyiz-tasima-rehberi', 'baslik' => 'İzmir Çeyiz Taşıma Rehberi'],
+                ['internal_link_context' => ['graph_key' => 'blog']]
+            )
+        );
+    }
+
     public function testHomeGraphPublishesPrimaryServiceEntities(): void
     {
         $pipeline = [
@@ -182,11 +245,25 @@ final class EntityGraphSchemaTest extends TestCase
         $nodes = $decoded['@graph'];
 
         $ids = array_column($nodes, '@id');
+        $serviceNodes = array_values(array_filter($nodes, static function (array $node): bool {
+            $types = is_array($node['@type'] ?? null) ? $node['@type'] : [($node['@type'] ?? '')];
+
+            return in_array('Service', $types, true);
+        }));
+        $organization = $this->nodeById($nodes, self::ORIGIN . '/#organization');
         $this->assertContains(self::ORIGIN . '/#webpage', $ids);
+        $this->assertCount(11, $serviceNodes);
+        $this->assertCount(11, $organization['makesOffer']);
         $this->assertContains(self::ORIGIN . '/izmir-evden-eve-nakliyat#service', $ids);
         $this->assertContains(self::ORIGIN . '/sehirler-arasi-nakliyat#service', $ids);
         $this->assertContains(self::ORIGIN . '/kurumsal-nakliye-hizmetleri#service', $ids);
         $this->assertContains(self::ORIGIN . '/esya-depolama#service', $ids);
         $this->assertContains(self::ORIGIN . '/asansorlu-nakliyat#service', $ids);
+        $this->assertContains(self::ORIGIN . '/parca-esya-tasima#service', $ids);
+        $this->assertContains(self::ORIGIN . '/antika-piyano-tasimaciligi#service', $ids);
+        $this->assertContains(self::ORIGIN . '/sepetli-vinc-kiralama#service', $ids);
+        $this->assertContains(self::ORIGIN . '/mobil-asansor-kiralama#service', $ids);
+        $this->assertContains(self::ORIGIN . '/mobilya-montaj-kurulum#service', $ids);
+        $this->assertContains(self::ORIGIN . '/sehir-ici-nakliyat#service', $ids);
     }
 }

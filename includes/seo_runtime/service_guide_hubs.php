@@ -232,18 +232,28 @@ function mynak_blog_service_context(array $blog): ?array
         'UTF-8'
     );
     $rules = [
+        'sepetli vinç' => 'sepetli-vinc-kiralama',
+        'sepetli-vinc' => 'sepetli-vinc-kiralama',
+        'mobil asansör' => 'mobil-asansor-kiralama',
+        'mobil-asansor' => 'mobil-asansor-kiralama',
         'asansör' => 'asansorlu-nakliyat',
         'asansor' => 'asansorlu-nakliyat',
         'şehirler arası' => 'sehirler-arasi-nakliyat',
         'sehirler-arasi' => 'sehirler-arasi-nakliyat',
         'sehirlerarasi' => 'sehirler-arasi-nakliyat',
+        'şehir içi' => 'sehir-ici-nakliyat',
+        'sehir-ici' => 'sehir-ici-nakliyat',
         'ofis' => 'izmir-ofis-tasimaciligi',
         'kurumsal' => 'izmir-ofis-tasimaciligi',
         'depolama' => 'izmir-esya-depolama',
         'parça eşya' => 'parca-esya-tasima',
         'parca-esya' => 'parca-esya-tasima',
+        'çeyiz' => 'parca-esya-tasima',
+        'ceyiz' => 'parca-esya-tasima',
         'piyano' => 'antika-ve-piyano-tasima',
         'antika' => 'antika-ve-piyano-tasima',
+        'mobilya' => 'mobilya-montaj-kurulum',
+        'montaj' => 'mobilya-montaj-kurulum',
     ];
     $definitions = mynak_service_guide_hub_definitions();
     foreach ($rules as $term => $graphSlug) {

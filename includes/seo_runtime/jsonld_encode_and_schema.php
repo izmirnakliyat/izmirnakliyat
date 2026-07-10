@@ -412,16 +412,21 @@ function seo_runtime_schema_infer_blog_service_graph_slug(array $blog, array $pi
         (string) ($blog['slug'] ?? '') . ' ' . (string) ($blog['baslik'] ?? '')
     );
     $terms = [
+        'sepetli-vinc' => 'sepetli-vinc-kiralama',
+        'mobil-asansor' => 'mobil-asansor-kiralama',
         'asansor' => 'asansorlu-nakliyat',
         'sehirler-arasi' => 'sehirler-arasi-nakliyat',
         'sehirlerarasi' => 'sehirler-arasi-nakliyat',
+        'sehir-ici' => 'sehir-ici-nakliyat',
         'ofis' => 'izmir-ofis-tasimaciligi',
         'kurumsal' => 'izmir-ofis-tasimaciligi',
         'depolama' => 'izmir-esya-depolama',
         'parca-esya' => 'parca-esya-tasima',
-        'ceyiz' => 'izmir-ceyiz-tasima-nakliyat',
+        'ceyiz' => 'parca-esya-tasima',
         'piyano' => 'antika-ve-piyano-tasima',
         'antika' => 'antika-ve-piyano-tasima',
+        'mobilya' => 'mobilya-montaj-kurulum',
+        'montaj' => 'mobilya-montaj-kurulum',
     ];
     foreach ($terms as $term => $graphSlug) {
         if (str_contains($haystack, $term)) {
@@ -454,6 +459,57 @@ function seo_runtime_schema_primary_service_nodes(string $canonicalOrigin, strin
             '@id' => seo_runtime_schema_service_id_for_url($url),
             'name' => (string) $line['name'],
             'serviceType' => (string) $line['service_type'],
+            'description' => seo_runtime_service_quick_answer($graphSlug),
+            'url' => $url,
+            'provider' => ['@id' => $organizationId],
+            'brand' => ['@id' => seo_runtime_schema_brand_id($canonicalOrigin)],
+            'areaServed' => [['@id' => seo_runtime_schema_place_id($canonicalOrigin, 'İzmir')]],
+        ];
+        $aliases = seo_runtime_schema_service_aliases($graphSlug);
+        if ($aliases !== []) {
+            $node['alternateName'] = $aliases;
+        }
+        $nodes[] = $node;
+    }
+
+    return $nodes;
+}
+
+/** @return list<array<string,mixed>> */
+function seo_runtime_schema_canonical_service_nodes(string $canonicalOrigin, string $organizationId): array
+{
+    if (!function_exists('seo_runtime_canonical_service_definitions')) {
+        require_once __DIR__ . '/default_service_faqs.php';
+    }
+    if (!function_exists('seo_rt_primary_service_public_url')) {
+        require_once __DIR__ . '/paths.php';
+    }
+    $typeLabels = [
+        'izmir-evden-eve-nakliyat' => 'Evden eve nakliyat',
+        'sehirler-arasi-nakliyat' => 'Şehirler arası nakliyat',
+        'izmir-ofis-tasimaciligi' => 'Ofis ve kurumsal taşıma',
+        'parca-esya-tasima' => 'Parça eşya taşıma',
+        'asansorlu-nakliyat' => 'Asansörlü nakliyat',
+        'sepetli-vinc-kiralama' => 'Sepetli vinç kiralama',
+        'mobil-asansor-kiralama' => 'Mobil asansör kiralama',
+        'izmir-esya-depolama' => 'Eşya depolama',
+        'antika-ve-piyano-tasima' => 'Antika ve piyano taşıma',
+        'mobilya-montaj-kurulum' => 'Mobilya montaj ve kurulum',
+        'sehir-ici-nakliyat' => 'Şehir içi nakliyat',
+    ];
+    $nodes = [];
+    foreach (seo_runtime_canonical_service_definitions() as $definition) {
+        $publicSlug = (string) $definition['slug'];
+        $graphSlug = (string) $definition['graph_slug'];
+        $url = seo_rt_primary_service_public_url($canonicalOrigin, $graphSlug);
+        $name = seo_runtime_service_display_name($publicSlug);
+        $name = mb_strtoupper(mb_substr($name, 0, 1, 'UTF-8'), 'UTF-8')
+            . mb_substr($name, 1, null, 'UTF-8');
+        $node = [
+            '@type' => 'Service',
+            '@id' => seo_runtime_schema_service_id_for_url($url),
+            'name' => $name,
+            'serviceType' => $typeLabels[$graphSlug] ?? $name,
             'description' => seo_runtime_service_quick_answer($graphSlug),
             'url' => $url,
             'provider' => ['@id' => $organizationId],
@@ -938,11 +994,14 @@ function seo_runtime_schema_brand_trust_layer(string $brand, string $canonical_o
     ];
 
     $out['makesOffer'] = [];
-    foreach (seo_rt_primary_service_graph_slugs() as $graphSlug) {
+    foreach (seo_runtime_canonical_service_definitions() as $definition) {
         $out['makesOffer'][] = [
             '@type' => 'Offer',
             'itemOffered' => [
-                '@id' => seo_runtime_schema_service_id_for_graph_slug($canonical_origin, $graphSlug),
+                '@id' => seo_runtime_schema_service_id_for_graph_slug(
+                    $canonical_origin,
+                    (string) $definition['graph_slug']
+                ),
             ],
         ];
     }
@@ -962,16 +1021,19 @@ function seo_runtime_schema_has_offer_catalog(string $canonical_origin): ?array
         require_once __DIR__ . '/paths.php';
     }
 
+    if (!function_exists('seo_runtime_canonical_service_definitions')) {
+        require_once __DIR__ . '/default_service_faqs.php';
+    }
     $offers = [];
     $pos = 1;
-    foreach (seo_rt_primary_service_lines() as $line) {
+    foreach (seo_runtime_canonical_service_definitions() as $definition) {
         $offers[] = [
             '@type' => 'Offer',
             'position' => $pos,
             'itemOffered' => [
                 '@id' => seo_runtime_schema_service_id_for_graph_slug(
                     $canonical_origin,
-                    (string) $line['graph_slug']
+                    (string) $definition['graph_slug']
                 ),
             ],
         ];
@@ -1911,8 +1973,18 @@ function seo_runtime_schema_connected_graph_nodes(
         seo_runtime_schema_nodes_from_markup($pageFragment),
         $templateNodes
     );
+    $relatedBlogGraphSlug = '';
     if ($pageType === 'home') {
-        $nodes = array_merge($nodes, seo_runtime_schema_primary_service_nodes($canonicalOrigin, $organizationId));
+        $nodes = array_merge($nodes, seo_runtime_schema_canonical_service_nodes($canonicalOrigin, $organizationId));
+    } elseif ($pageType === 'blog_post' && is_array($blog)) {
+        $relatedBlogGraphSlug = seo_runtime_schema_infer_blog_service_graph_slug($blog, $pipelineCore);
+        $relatedServiceId = seo_runtime_schema_service_id_for_graph_slug($canonicalOrigin, $relatedBlogGraphSlug);
+        foreach (seo_runtime_schema_canonical_service_nodes($canonicalOrigin, $organizationId) as $serviceNode) {
+            if (($serviceNode['@id'] ?? '') === $relatedServiceId) {
+                $nodes[] = $serviceNode;
+                break;
+            }
+        }
     }
 
     $breadcrumb = null;
@@ -1934,7 +2006,7 @@ function seo_runtime_schema_connected_graph_nodes(
 
     $graphSlug = $pageType === 'service'
         ? seo_runtime_schema_graph_slug_from_pipeline($pipelineCore, $contentSlug)
-        : '';
+        : $relatedBlogGraphSlug;
     $mainEntityId = $organizationId;
     if ($pageType === 'service') {
         $mainEntityId = seo_runtime_schema_service_id_for_url($canonical);
@@ -2003,6 +2075,12 @@ function seo_runtime_schema_connected_graph_nodes(
                 $node['areaServed'] = $isCurrentService && $placeRefs !== []
                     ? $placeRefs
                     : seo_runtime_schema_area_refs($node['areaServed']);
+            }
+            $isRelatedBlogService = $pageType === 'blog_post'
+                && $graphSlug !== ''
+                && $nodeId === seo_runtime_schema_service_id_for_graph_slug($canonicalOrigin, $graphSlug);
+            if ($isRelatedBlogService) {
+                $node['subjectOf'] = [['@id' => rtrim($canonical, '/') . '#article']];
             }
             if ($isCurrentService) {
                 $node['mainEntityOfPage'] = ['@id' => seo_runtime_schema_webpage_id($canonical)];
