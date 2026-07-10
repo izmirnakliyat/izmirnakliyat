@@ -113,18 +113,50 @@ final class ServiceGeoContentTest extends TestCase
         }
     }
 
-    public function testServiceGuideHubsPublishThreeCuratedArticles(): void
+    public function testEachCanonicalServicePublishesThreeToFiveCuratedGuides(): void
     {
-        foreach (mynak_service_guide_hub_definitions() as $graphSlug => $definition) {
-            $html = mynak_service_guide_hub_html($graphSlug);
-            $refs = mynak_service_guide_article_refs('https://www.mynakliyat.com.tr', $graphSlug);
-            $this->assertStringContainsString((string) $definition['service_name'], $html);
-            $this->assertSame(3, substr_count($html, '<a href='));
-            $this->assertCount(3, $refs);
+        $definitions = mynak_service_guide_hub_definitions();
+        foreach (seo_runtime_canonical_service_definitions() as $service) {
+            $graphSlug = mynak_service_guide_graph_slug($service['slug']);
+            $this->assertArrayHasKey($graphSlug, $definitions, $service['slug']);
+            $guides = $definitions[$graphSlug]['guides'];
+            $html = mynak_service_guide_hub_html($service['slug']);
+            $refs = mynak_service_guide_article_refs('https://www.mynakliyat.com.tr', $service['slug']);
+            $this->assertGreaterThanOrEqual(3, count($guides), $service['slug']);
+            $this->assertLessThanOrEqual(5, count($guides), $service['slug']);
+            $this->assertSame(count($guides), substr_count($html, '<a href='));
+            $this->assertCount(count($guides), $refs);
+            $guideSlugs = array_column($guides, 'slug');
+            $this->assertSame($guideSlugs, array_values(array_unique($guideSlugs)), $service['slug']);
             foreach ($refs as $ref) {
                 $this->assertStringEndsWith('#article', $ref['@id']);
             }
         }
+    }
+
+    public function testFourTopicHubsUseThreeToFiveUniqueGuides(): void
+    {
+        $hubs = mynak_topic_hub_definitions();
+        $this->assertSame(
+            ['tasinma-rehberi', 'nakliyat-rehberi', 'paketleme-rehberi', 'nakliyat-fiyat-rehberi'],
+            array_keys($hubs)
+        );
+        foreach ($hubs as $key => $hub) {
+            $guideSlugs = array_column($hub['guides'], 'slug');
+            $this->assertGreaterThanOrEqual(3, count($guideSlugs), $key);
+            $this->assertLessThanOrEqual(5, count($guideSlugs), $key);
+            $this->assertSame($guideSlugs, array_values(array_unique($guideSlugs)), $key);
+        }
+    }
+
+    public function testTopicHubLinksRelatedGuidesWithoutSelfLink(): void
+    {
+        $blog = ['slug' => 'evden-eve-nakliyat-adim-adim-tasinma-rehberi'];
+        $html = mynak_blog_topic_hub_html($blog);
+
+        $this->assertStringContainsString('Taşınma Rehberi', $html);
+        $this->assertStringNotContainsString('/evden-eve-nakliyat-adim-adim-tasinma-rehberi', $html);
+        $this->assertSame(3, substr_count($html, '<li'));
     }
 
     public function testCanonicalServiceDefinitionsContainNoAliasUrls(): void
