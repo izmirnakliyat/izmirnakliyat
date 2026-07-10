@@ -188,7 +188,7 @@ function mynak_cn_try_emit_service_markdown(mysqli $conn, string $slug): bool
     if ($quickAnswer !== '') {
         $contentMd = "## Kısa Cevap\n\n" . $quickAnswer . "\n\n" . $contentMd;
     }
-    $faqs = seo_runtime_service_faq_pairs($slug);
+    $faqs = seo_runtime_service_published_faq_pairs($slug);
     if ($faqs !== []) {
         $contentMd .= "\n\n## Sık Sorulan Sorular\n";
         foreach ($faqs as $faq) {
@@ -259,7 +259,7 @@ function mynak_cn_try_emit_page_markdown(mysqli $conn, string $slug): bool
         if ($quickAnswer !== '') {
             $contentMd = "## Kısa Cevap\n\n" . $quickAnswer . "\n\n" . $contentMd;
         }
-        $faqs = seo_runtime_service_faq_pairs($slug);
+        $faqs = seo_runtime_service_published_faq_pairs($slug);
         if ($faqs !== []) {
             $contentMd .= "\n\n## Sık Sorulan Sorular\n";
             foreach ($faqs as $faq) {

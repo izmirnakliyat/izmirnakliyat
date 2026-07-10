@@ -253,6 +253,14 @@ function seo_runtime_default_service_faq_map(): array
                 'q' => 'Antika ve değerli mobilya taşımacılığı yapıyor musunuz?',
                 'a' => 'Evet. Antika konsol, ayna, tablo, biblo gibi değerli eşyalar için özel ahşap sandık imalatı, çift kat ambalaj ve değer sigortası seçeneği sunulur.',
             ],
+            [
+                'q' => 'Antika veya piyano taşıması öncesinde keşif gerekir mi?',
+                'a' => 'Evet. Eşyanın ölçüsü ve ağırlığıyla birlikte kapı, merdiven, asansör ve araç yaklaşım alanı incelenir. Keşif sonucunda ekip sayısı, koruyucu malzeme, taşıma güzergâhı ve gerekiyorsa dış cephe asansörü ihtiyacı belirlenir.',
+            ],
+            [
+                'q' => 'Antika ve piyano taşımasında sigorta kapsamı nasıl belirlenir?',
+                'a' => 'Eşyanın beyan edilen değeri, taşıma koşulları ve seçilen güvence kapsamı yazılı teklif aşamasında değerlendirilir. Poliçe limiti, istisnalar ve hasar bildirimi koşulları taşıma başlamadan önce müşteriyle açıkça paylaşılır.',
+            ],
         ],
         'mobilya-montaj-kurulum' => [
             [
@@ -434,6 +442,25 @@ function seo_runtime_complete_service_faqs(array $pairs, string $slug): array
 }
 
 /** @return list<array{question:string,answer:string}> */
+function seo_runtime_service_published_faq_pairs(string $slug): array
+{
+    $pairs = [];
+    foreach (seo_runtime_default_faq_pairs_for_service_slug($slug) as $faq) {
+        $question = trim((string) ($faq['question'] ?? ''));
+        $answer = trim((string) ($faq['answer'] ?? ''));
+        if ($question === '' || $answer === '') {
+            continue;
+        }
+        $pairs[] = [
+            'question' => $question,
+            'answer' => $answer,
+        ];
+    }
+
+    return $pairs;
+}
+
+/** @return list<array{question:string,answer:string}> */
 function seo_runtime_service_faq_pairs(string $slug, string $visibleHtml = ''): array
 {
     $pairs = [];
@@ -466,19 +493,19 @@ function seo_runtime_service_faq_pairs(string $slug, string $visibleHtml = ''): 
 function seo_runtime_service_quick_answer(string $slug): string
 {
     $answers = [
-        'fiyat' => 'İzmir evden eve nakliyat fiyatı; eşya hacmi, kat ve asansör durumu, iki adres arasındaki mesafe, paketleme kapsamı ve sigorta tercihine göre hesaplanır. MY Nakliyat ücretsiz keşif sonrasında taşınma planını ve hizmet kapsamını içeren yazılı teklif sunar.',
-        'izmir-evden-eve-nakliyat-hizmeti' => 'İzmir evden eve nakliyat; eşyaların keşif, paketleme, demontaj, taşıma, montaj ve yerleştirme adımlarıyla bir adresten diğerine planlı biçimde taşınmasıdır. MY Nakliyat, İzmir ilçelerinde ihtiyaca göre asansörlü ve sigorta seçenekli, sözleşmeli taşıma hizmeti sunar.',
-        'sehirlerarasi-nakliyat' => 'Şehirler arası nakliyat, eşyaların şehirler arasında paketlenerek uygun araçla kapıdan kapıya taşınmasıdır. MY Nakliyat İzmir çıkışlı veya İzmir varışlı taşımaları eşya hacmi, güzergâh, bina erişimi ve teslimat planına göre organize eder; kapsam keşif ve yazılı teklifle netleşir.',
-        'kurumsal-nakliye-ofis-tasima' => 'Ofis taşıma; mobilya, arşiv ve elektronik ekipmanın iş sürekliliğini koruyacak takvimle sökülmesi, paketlenmesi, taşınması ve yeni adreste kurulmasıdır. MY Nakliyat operasyonu keşif sonrasında departman, ekipman ve erişim koşullarına göre planlayarak mesai dışı taşıma seçeneği de sunar.',
-        'kurumsal-nakliye-hizmetleri' => 'Kurumsal nakliye, işletmelerin ofis, mağaza, depo veya operasyon ekipmanlarının proje planıyla taşınmasıdır. MY Nakliyat araç, ekip, özel ekipman, paketleme, demontaj-montaj ve teslim adımlarını keşif verilerine göre kapsamlandırır; sözleşme ve faturalandırma süreci yazılı yürütülür.',
-        'parca-esya-tasima' => 'Parça eşya taşıma, tam ev taşımaya göre daha az hacimli mobilya, beyaz eşya veya kolilerin planlı şekilde taşınmasıdır. MY Nakliyat şehir içi ve şehirler arası taleplerde hacim, mesafe, kat ve paketleme ihtiyacına göre uygun araç ve hizmet planı oluşturur.',
-        'asansorlu-nakliyat' => 'Asansörlü nakliyat, eşyaların mobil dış cephe asansörüyle balkon veya uygun açıklıktan doğrudan araca indirilmesi ya da kata çıkarılmasıdır. Dar merdiven ve yüksek kat koşullarında taşıma süresini ve temas riskini azaltır; uygunluk bina cephesi ve kurulum alanı incelenerek belirlenir.',
-        'sepetli-vinc-kiralama' => 'Sepetli vinç kiralama, yüksek noktalarda güvenli erişim gerektiren montaj, bakım, tabela, dış cephe veya taşıma işleri için operatörlü platform hizmetidir. Uygun araç; erişim yüksekliği, yatay uzanım, zemin, çalışma alanı ve iş süresine göre belirlenir.',
-        'mobil-asansor-kiralama' => 'Mobil asansör kiralama, eşya veya malzemenin bina dış cephesinden kat seviyesine taşınması için operatörlü dış cephe asansörü sağlanmasıdır. Kat yüksekliği, cephe erişimi, zemin ve kurulum alanı değerlendirilerek uygun kapasite ve çalışma süresi planlanır.',
-        'esya-depolama' => 'İzmir eşya depolama; ev veya ofis eşyalarının belirlenen süre boyunca kapalı alanda korunması, gerektiğinde paketlenip taşınması hizmetidir. MY Nakliyat depolama planını eşya hacmi, saklama süresi, erişim ihtiyacı ve özel koruma taleplerine göre oluşturur.',
-        'antika-piyano-tasimaciligi' => 'Antika ve piyano taşıma; ağırlık merkezi, yüzey hassasiyeti ve iç mekanizması nedeniyle özel ekipman ve paketleme gerektiren uzmanlık hizmetidir. Taşıma güzergâhı, merdiven ve kapı ölçüleri, kat durumu ile eşyanın değeri keşifte değerlendirilerek koruma planı hazırlanır.',
-        'mobilya-montaj-kurulum' => 'Mobilya montaj ve kurulum; modüler veya demonte ürünlerin parça kontrolü, birleştirme, seviyeleme ve gerektiğinde güvenli sabitleme adımlarıyla kullanıma hazır hale getirilmesidir. Kapsam ürün sayısı, model, duvar yapısı ve ek demontaj ihtiyacına göre belirlenir.',
-        'sehir-ici-nakliyat' => 'İzmir şehir içi nakliyat, eşyaların İzmir sınırları içindeki iki adres arasında paketleme, yükleme, taşıma ve yerleştirme planıyla taşınmasıdır. Fiyat ve süre; hacim, ilçeler arası mesafe, kat, asansör durumu ve ek hizmetlere göre ücretsiz keşif sonrasında netleşir.',
+        'fiyat' => 'İzmir evden eve nakliyat fiyatı; eşya hacmi, kat ve asansör durumu, iki adres arasındaki mesafe, paketleme kapsamı ve sigorta tercihine göre hesaplanır. MY Nakliyat ücretsiz keşif sonrasında taşınma planını ve hizmet kapsamını içeren yazılı teklif sunar. Araç, ekip ve tahmini operasyon süresi de aynı değerlendirmede açıkça belirtilir.',
+        'izmir-evden-eve-nakliyat-hizmeti' => 'İzmir evden eve nakliyat; eşyaların keşif, paketleme, demontaj, taşıma, montaj ve yerleştirme adımlarıyla bir adresten diğerine planlı biçimde taşınmasıdır. MY Nakliyat, İzmir ilçelerinde ihtiyaca göre asansörlü ve sigorta seçenekli, sözleşmeli taşıma hizmeti sunar. Bina erişimi ve hassas eşya bilgileri keşifte kayda alınarak uygun araç, ekip ve taşıma takvimi netleştirilir.',
+        'sehirlerarasi-nakliyat' => 'Şehirler arası nakliyat, eşyaların şehirler arasında paketlenerek uygun araçla kapıdan kapıya taşınmasıdır. MY Nakliyat İzmir çıkışlı veya İzmir varışlı taşımaları eşya hacmi, güzergâh, bina erişimi ve teslimat planına göre organize eder; kapsam keşif ve yazılı teklifle netleşir. Planlanan yükleme, varış ve teslim bilgileri taşıma öncesinde müşteriyle paylaşılır.',
+        'kurumsal-nakliye-ofis-tasima' => 'Ofis taşıma; mobilya, arşiv ve elektronik ekipmanın iş sürekliliğini koruyacak takvimle sökülmesi, paketlenmesi, taşınması ve yeni adreste kurulmasıdır. MY Nakliyat operasyonu keşif sonrasında departman, ekipman ve erişim koşullarına göre planlayarak mesai dışı taşıma seçeneği de sunar. Etiketleme, oda yerleşimi ve sorumlu kişiler proje planında yazılı olarak eşleştirilir.',
+        'kurumsal-nakliye-hizmetleri' => 'Kurumsal nakliye, işletmelerin ofis, mağaza, depo veya operasyon ekipmanlarının proje planıyla taşınmasıdır. MY Nakliyat araç, ekip, özel ekipman, paketleme, demontaj-montaj ve teslim adımlarını keşif verilerine göre kapsamlandırır; sözleşme ve faturalandırma süreci yazılı yürütülür. İş güvenliği, saha erişimi ve operasyon sorumluları taşıma takviminden önce belirlenir.',
+        'parca-esya-tasima' => 'Parça eşya taşıma, tam ev taşımaya göre daha az hacimli mobilya, beyaz eşya veya kolilerin planlı şekilde taşınmasıdır. MY Nakliyat şehir içi ve şehirler arası taleplerde hacim, mesafe, kat ve paketleme ihtiyacına göre uygun araç ve hizmet planı oluşturur. Teslim alma ve bırakma koşulları önceden doğrulanarak gereksiz araç veya ekip maliyeti önlenir.',
+        'asansorlu-nakliyat' => 'Asansörlü nakliyat, eşyaların mobil dış cephe asansörüyle balkon veya uygun açıklıktan doğrudan araca indirilmesi ya da kata çıkarılmasıdır. Dar merdiven ve yüksek kat koşullarında taşıma süresini ve temas riskini azaltır; uygunluk bina cephesi ve kurulum alanı incelenerek belirlenir. Zemin güvenliği, araç yaklaşımı ve hava koşulları operasyon başlamadan önce kontrol edilir.',
+        'sepetli-vinc-kiralama' => 'Sepetli vinç kiralama, yüksek noktalarda güvenli erişim gerektiren montaj, bakım, tabela, dış cephe veya taşıma işleri için operatörlü platform hizmetidir. Uygun araç; erişim yüksekliği, yatay uzanım, zemin, çalışma alanı ve iş süresine göre belirlenir. Saha çevresi, trafik ve çalışma güvenliği koşulları işe başlamadan önce değerlendirilir.',
+        'mobil-asansor-kiralama' => 'Mobil asansör kiralama, eşya veya malzemenin bina dış cephesinden kat seviyesine taşınması için operatörlü dış cephe asansörü sağlanmasıdır. Kat yüksekliği, cephe erişimi, zemin ve kurulum alanı değerlendirilerek uygun kapasite ve çalışma süresi planlanır. Balkon veya pencere açıklığı ile araç yerleşimi keşif sırasında ölçülerek operasyon güvenliği doğrulanır.',
+        'esya-depolama' => 'İzmir eşya depolama; ev veya ofis eşyalarının belirlenen süre boyunca kapalı alanda korunması, gerektiğinde paketlenip taşınması hizmetidir. MY Nakliyat depolama planını eşya hacmi, saklama süresi, erişim ihtiyacı ve özel koruma taleplerine göre oluşturur. Envanter, teslim koşulları ve erişim talepleri sözleşmede kayıt altına alınır.',
+        'antika-piyano-tasimaciligi' => 'Antika ve piyano taşıma; ağırlık merkezi, yüzey hassasiyeti ve iç mekanizması nedeniyle özel ekipman ve paketleme gerektiren uzmanlık hizmetidir. Taşıma güzergâhı, merdiven ve kapı ölçüleri, kat durumu ile eşyanın değeri keşifte değerlendirilerek koruma planı hazırlanır. Kullanılacak sabitleme, taşıma aparatı ve sigorta seçeneği yazılı kapsamda belirtilir.',
+        'mobilya-montaj-kurulum' => 'Mobilya montaj ve kurulum; modüler veya demonte ürünlerin parça kontrolü, birleştirme, seviyeleme ve gerektiğinde güvenli sabitleme adımlarıyla kullanıma hazır hale getirilmesidir. Kapsam ürün sayısı, model, duvar yapısı ve ek demontaj ihtiyacına göre belirlenir. Eksik veya hasarlı parçalar montaj öncesinde tespit edilerek kullanıcıya bildirilir.',
+        'sehir-ici-nakliyat' => 'İzmir şehir içi nakliyat, eşyaların İzmir sınırları içindeki iki adres arasında paketleme, yükleme, taşıma ve yerleştirme planıyla taşınmasıdır. Fiyat ve süre; hacim, ilçeler arası mesafe, kat, asansör durumu ve ek hizmetlere göre ücretsiz keşif sonrasında netleşir. Trafik, bina çalışma saatleri ve park koşulları operasyon takvimine dahil edilir.',
     ];
 
     return $answers[seo_runtime_service_content_key($slug)] ?? '';
@@ -499,21 +526,7 @@ function seo_runtime_service_quick_answer_html(string $slug): string
 
 function seo_runtime_service_generated_faq_html(string $slug, string $visibleHtml = ''): string
 {
-    $existing = function_exists('seo_runtime_extract_faq_pairs_from_html')
-        ? seo_runtime_extract_faq_pairs_from_html($visibleHtml, 10)
-        : [];
-    $seen = [];
-    foreach ($existing as $pair) {
-        $seen[mb_strtolower(trim((string) ($pair['question'] ?? '')), 'UTF-8')] = true;
-    }
-    $generated = [];
-    foreach (seo_runtime_service_faq_pairs($slug, $visibleHtml) as $pair) {
-        $key = mb_strtolower(trim((string) ($pair['question'] ?? '')), 'UTF-8');
-        if ($key === '' || isset($seen[$key])) {
-            continue;
-        }
-        $generated[] = $pair;
-    }
+    $generated = seo_runtime_service_published_faq_pairs($slug);
     if ($generated === []) {
         return '';
     }

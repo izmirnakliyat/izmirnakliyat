@@ -441,6 +441,9 @@ function seo_runtime_schema_primary_service_nodes(string $canonicalOrigin, strin
     if (!function_exists('seo_rt_primary_service_lines')) {
         require_once __DIR__ . '/internal_linking.php';
     }
+    if (!function_exists('seo_runtime_service_quick_answer')) {
+        require_once __DIR__ . '/default_service_faqs.php';
+    }
 
     $nodes = [];
     foreach (seo_rt_primary_service_lines() as $line) {
@@ -451,6 +454,7 @@ function seo_runtime_schema_primary_service_nodes(string $canonicalOrigin, strin
             '@id' => seo_runtime_schema_service_id_for_url($url),
             'name' => (string) $line['name'],
             'serviceType' => (string) $line['service_type'],
+            'description' => seo_runtime_service_quick_answer($graphSlug),
             'url' => $url,
             'provider' => ['@id' => $organizationId],
             'brand' => ['@id' => seo_runtime_schema_brand_id($canonicalOrigin)],
@@ -1052,15 +1056,21 @@ function seo_runtime_primary_services_api_rows(string $canonical_origin): array
     if (!function_exists('seo_rt_primary_service_public_url')) {
         require_once __DIR__ . '/paths.php';
     }
+    if (!function_exists('seo_runtime_service_quick_answer')) {
+        require_once __DIR__ . '/default_service_faqs.php';
+    }
 
     $rows = [];
     foreach (seo_rt_primary_service_lines() as $line) {
+        $url = seo_rt_primary_service_public_url($canonical_origin, (string) $line['graph_slug']);
         $rows[] = [
             'name' => (string) $line['name'],
             'service_type' => (string) $line['service_type'],
             'graph_slug' => (string) $line['graph_slug'],
             'public_slug' => (string) $line['public_slug'],
-            'url' => seo_rt_primary_service_public_url($canonical_origin, (string) $line['graph_slug']),
+            'url' => $url,
+            'entity_id' => rtrim($url, '/') . '#service',
+            'quick_answer' => seo_runtime_service_quick_answer((string) $line['graph_slug']),
         ];
     }
 
@@ -1186,6 +1196,9 @@ function schema_factory_page_type_ld_fragment(
             }
             $slug = (string) ($flex['service_slug'] ?? '');
             $graphSlug = seo_runtime_schema_graph_slug_from_pipeline($canonical_pipeline_core, $slug);
+            if (!function_exists('seo_runtime_service_quick_answer')) {
+                require_once __DIR__ . '/default_service_faqs.php';
+            }
             $defsForCat = seo_rt_pillar_cluster_definitions();
             $intentLabel = $slug !== '' ? seo_ei_primary_intent_label_for_slug($slug) : '';
             $svc = [
@@ -1193,6 +1206,7 @@ function schema_factory_page_type_ld_fragment(
                 '@type' => 'Service',
                 '@id' => seo_runtime_schema_service_id_for_url($canonical),
                 'name' => $name,
+                'description' => seo_runtime_service_quick_answer($graphSlug),
                 'serviceType' => $intentLabel !== '' ? $intentLabel : seo_runtime_infer_service_type_label($slug),
                 'provider' => ['@id' => $moving_company_at_id],
                 'areaServed' => seo_runtime_schema_area_served_for_pipeline($site_settings, $locVec, $canonical_origin),
@@ -1306,11 +1320,10 @@ function schema_factory_page_type_ld_fragment(
             }
 
             $out = seo_runtime_ld_script_from_array($svc);
-            if (!function_exists('seo_runtime_service_faq_pairs')) {
+            if (!function_exists('seo_runtime_service_published_faq_pairs')) {
                 require_once __DIR__ . '/default_service_faqs.php';
             }
-            $faqHtml = is_array($page) ? (string) ($page['content'] ?? '') : '';
-            $faqPairs = seo_runtime_service_faq_pairs($slug, $faqHtml);
+            $faqPairs = seo_runtime_service_published_faq_pairs($slug);
             if ($faqPairs !== []) {
                 $faqLd = function_exists('seo_runtime_faq_page_ld')
                     ? seo_runtime_faq_page_ld($faqPairs)

@@ -35,7 +35,10 @@ final class ServiceGeoContentTest extends TestCase
         foreach ($slugs as $slug) {
             $answer = seo_runtime_service_quick_answer($slug);
             $faqs = seo_runtime_default_faq_pairs_for_service_slug($slug);
+            $wordCount = count(preg_split('/\s+/u', trim($answer)) ?: []);
             $this->assertNotSame('', $answer, $slug);
+            $this->assertGreaterThanOrEqual(40, $wordCount, $slug);
+            $this->assertLessThanOrEqual(70, $wordCount, $slug);
             $this->assertGreaterThanOrEqual(5, count($faqs), $slug);
             $this->assertLessThanOrEqual(10, count($faqs), $slug);
         }
@@ -57,12 +60,30 @@ final class ServiceGeoContentTest extends TestCase
     public function testGeneratedHtmlUsesSemanticQuickAnswerAndFaqSections(): void
     {
         $quickAnswer = seo_runtime_service_quick_answer_html('izmir-evden-eve-nakliyat');
-        $faq = seo_runtime_service_generated_faq_html('izmir-evden-eve-nakliyat');
+        $faq = seo_runtime_service_generated_faq_html(
+            'izmir-evden-eve-nakliyat',
+            '<h2>İzmir evden eve nakliyat fiyatı nasıl belirlenir?</h2><p>Eski içerik cevabı.</p>'
+        );
 
         $this->assertStringContainsString('class="mynak-answer-box', $quickAnswer);
         $this->assertStringContainsString('Kısa Cevap', $quickAnswer);
         $this->assertStringContainsString('<section class="mynak-service-faq', $faq);
         $this->assertSame(6, substr_count($faq, '<details'));
+    }
+
+    public function testPublishedFaqSetIsSharedByVisibleAndMachineReadableOutputs(): void
+    {
+        $pairs = seo_runtime_service_published_faq_pairs('antika-piyano-tasimaciligi');
+        $html = seo_runtime_service_generated_faq_html('antika-piyano-tasimaciligi');
+
+        $this->assertCount(6, $pairs);
+        $this->assertSame(6, substr_count($html, '<details'));
+        foreach ($pairs as $pair) {
+            $this->assertStringContainsString(
+                htmlspecialchars($pair['question'], ENT_QUOTES, 'UTF-8'),
+                $html
+            );
+        }
     }
 
     public function testDistrictPagesBuildAConnectedContextualLinkGraph(): void

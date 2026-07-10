@@ -87,6 +87,10 @@ final class EntityGraphSchemaTest extends TestCase
         $this->nodeById($nodes, self::ORIGIN . '/izmir-evden-eve-nakliyat#breadcrumb');
 
         $this->assertContains('https://www.wikidata.org/wiki/Q140273727', $organization['sameAs']);
+        $this->assertSame(
+            seo_runtime_service_quick_answer('izmir-evden-eve-nakliyat'),
+            $service['description']
+        );
         $this->assertSame(['@id' => self::ORIGIN . '/#organization'], $service['provider']);
         $this->assertSame(['@id' => self::ORIGIN . '/#brand'], $service['brand']);
         $this->assertContains('İzmir Nakliyat', $service['alternateName']);
@@ -99,6 +103,28 @@ final class EntityGraphSchemaTest extends TestCase
             $service['subjectOf']
         );
         $this->assertStringNotContainsString('#mynak-moving-company', json_encode($decoded));
+    }
+
+    public function testPrimaryServiceApiRowsUseTheSameQuickAnswerAndEntityId(): void
+    {
+        $rows = seo_runtime_primary_services_api_rows(self::ORIGIN);
+        $row = null;
+        foreach ($rows as $candidate) {
+            if (($candidate['public_slug'] ?? '') === 'izmir-evden-eve-nakliyat') {
+                $row = $candidate;
+                break;
+            }
+        }
+
+        $this->assertIsArray($row);
+        $this->assertSame(
+            seo_runtime_service_quick_answer('izmir-evden-eve-nakliyat'),
+            $row['quick_answer']
+        );
+        $this->assertSame(
+            self::ORIGIN . '/izmir-evden-eve-nakliyat#service',
+            $row['entity_id']
+        );
     }
 
     public function testIntercityServiceGraphCreatesAllProvinceEntities(): void

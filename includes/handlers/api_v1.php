@@ -261,7 +261,7 @@ function mynak_api_emit_entities(mysqli $conn): bool
 {
     $cached = mynak_api_cache_read('entities', 3600);
     if ($cached !== null) {
-        mynak_api_send_json($cached);
+        mynak_api_send_json($cached, 200, 3600);
         return true;
     }
 
@@ -315,7 +315,7 @@ function mynak_api_emit_entities(mysqli $conn): bool
         $services[$index]['mainEntityOfPage'] = ['@id' => rtrim($serviceUrl, '/') . '#webpage'];
 
         $faqEntities = [];
-        foreach (seo_runtime_service_faq_pairs($graphSlug) as $faq) {
+        foreach (seo_runtime_service_published_faq_pairs($graphSlug) as $faq) {
             $faqEntities[] = [
                 '@type' => 'Question',
                 'name' => (string) $faq['question'],
@@ -415,6 +415,9 @@ function mynak_api_emit_services(mysqli $conn): bool
     if (!function_exists('seo_runtime_primary_services_api_rows')) {
         require_once dirname(__DIR__) . '/seo_runtime/jsonld_encode_and_schema.php';
     }
+    if (!function_exists('seo_runtime_service_quick_answer')) {
+        require_once dirname(__DIR__) . '/seo_runtime/default_service_faqs.php';
+    }
     $primaryByPublicSlug = [];
     foreach (seo_runtime_primary_services_api_rows($base) as $primaryRow) {
         $primaryByPublicSlug[(string) $primaryRow['public_slug']] = $primaryRow;
@@ -429,7 +432,6 @@ function mynak_api_emit_services(mysqli $conn): bool
             $primaryMeta = $primaryByPublicSlug[$slug] ?? null;
             $item = [
                 'slug' => $slug,
-                'source_slug' => $sourceSlug !== $slug ? $sourceSlug : null,
                 'graph_slug' => is_array($primaryMeta) ? (string) ($primaryMeta['graph_slug'] ?? '') : null,
                 'primary' => is_array($primaryMeta),
                 'service_type' => is_array($primaryMeta) ? (string) ($primaryMeta['service_type'] ?? '') : null,
@@ -439,6 +441,10 @@ function mynak_api_emit_services(mysqli $conn): bool
                 'excerpt' => mynak_api_strip_html_excerpt((string) ($row['icerik'] ?? $row['aciklama'] ?? ''), 320),
                 'word_count' => mynak_api_word_count((string) ($row['icerik'] ?? '')),
                 'focus_keyword' => (string) ($row['focus_keyword'] ?? ''),
+                'quick_answer' => is_array($primaryMeta)
+                    ? (string) ($primaryMeta['quick_answer'] ?? '')
+                    : seo_runtime_service_quick_answer($slug),
+                'entity_id' => $base . '/' . $slug . '#service',
                 'image_url' => !empty($row['foto'])
                     ? $base . '/uploads/services/' . ltrim((string) $row['foto'], '/')
                     : null,
