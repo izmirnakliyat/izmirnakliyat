@@ -118,7 +118,7 @@ require_once 'includes/header.php';
 <section class="page-banner">
     <div class="container">
         <div class="banner-content text-center">
-            <h2 class="banner-title">Blog</h2>
+            <p class="banner-title">Blog</p>
             <div class="breadcrumb">
                 <a href="<?php echo htmlspecialchars(mynak_public_path(''), ENT_QUOTES, 'UTF-8'); ?>">Ana Sayfa</a> <span class="separator">/</span>
                 <a href="<?php echo htmlspecialchars(mynak_public_path('blog'), ENT_QUOTES, 'UTF-8'); ?>">Blog</a> <span class="separator">/</span>
@@ -182,7 +182,7 @@ require_once 'includes/header.php';
 
                     <?php if (!empty($blog['etiketler'])): ?>
                         <div class="blog-tags">
-                            <h5>Etiketler:</h5>
+                            <h2>Etiketler:</h2>
                             <div class="tags-list">
                                 <?php
                                 $tags = explode(',', $blog['etiketler']);
@@ -211,7 +211,7 @@ require_once 'includes/header.php';
                                 <div class="col-6">
                                     <a href="<?php echo htmlspecialchars(mynak_public_path($prev['slug']), ENT_QUOTES, 'UTF-8'); ?>" class="nav-link prev">
                                         <span class="nav-title"><i class="fas fa-arrow-left"></i> Önceki Yazı</span>
-                                        <h6><?php echo mynak_esc_html((string) $prev['baslik']); ?></h6>
+                                        <h3><?php echo mynak_esc_html((string) $prev['baslik']); ?></h3>
                                     </a>
                                 </div>
                             <?php endif; ?>
@@ -224,7 +224,7 @@ require_once 'includes/header.php';
                                 <div class="col-6">
                                     <a href="<?php echo htmlspecialchars(mynak_public_path($next['slug']), ENT_QUOTES, 'UTF-8'); ?>" class="nav-link next">
                                         <span class="nav-title">Sonraki Yazı <i class="fas fa-arrow-right"></i></span>
-                                        <h6><?php echo mynak_esc_html((string) $next['baslik']); ?></h6>
+                                        <h3><?php echo mynak_esc_html((string) $next['baslik']); ?></h3>
                                     </a>
                                 </div>
                             <?php endif; ?>
@@ -237,7 +237,7 @@ require_once 'includes/header.php';
                 <div class="blog-sidebar">
                     <!-- Benzer Yazılar -->
                     <div class="sidebar-widget related-posts-widget">
-                        <h4 class="widget-title">Benzer Yazılar</h4>
+                        <h2 class="widget-title">Benzer Yazılar</h2>
                         <div class="related-posts">
                             <?php while ($similar = $similar_posts->fetch_assoc()): ?>
                                 <div class="related-post">
@@ -249,11 +249,11 @@ require_once 'includes/header.php';
 
                                     </div>
                                     <div class="post-info">
-                                        <h6 class="post-title">
+                                        <h3 class="post-title">
                                             <a href="<?php echo htmlspecialchars(mynak_public_path($similar['slug']), ENT_QUOTES, 'UTF-8'); ?>">
                                                 <?php echo mynak_esc_html((string) $similar['baslik']); ?>
                                             </a>
-                                        </h6>
+                                        </h3>
                                     </div>
                                 </div>
                             <?php endwhile; ?>
@@ -262,7 +262,7 @@ require_once 'includes/header.php';
 
                     <!-- Paylaş -->
                     <div class="sidebar-widget share-widget">
-                        <h4 class="widget-title">Paylaş</h4>
+                        <h2 class="widget-title">Paylaş</h2>
                         <div class="share-buttons">
                             <a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo urlencode('https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']); ?>"
                                 target="_blank" class="facebook">
@@ -285,7 +285,7 @@ require_once 'includes/header.php';
 
                     <!-- Yazıya Dön -->
                     <div class="sidebar-widget cta-widget">
-                        <h4>Blog Yazılarımızı Keşfedin</h4>
+                        <h2>Blog Yazılarımızı Keşfedin</h2>
                         <p>Okuma deneyiminizi diğer blog yazılarımızla sürdürebilirsiniz.</p>
                         <a href="<?php echo htmlspecialchars(normalize_internal_link_url('/blog')); ?>" class="btn btn-primary">Tüm Yazılar</a>
                     </div>
@@ -307,6 +307,10 @@ require_once 'includes/header.php';
         font-size: 36px;
         font-weight: 700;
         margin-bottom: 15px;
+        /* Eski <h2> görünümü korunur (etiket <p> oldu): renk/line-height/letter-spacing sabit */
+        color: var(--heading-color);
+        line-height: 42px;
+        letter-spacing: -1px;
     }
 
     /* H1 etiketinin SEO için optimize edilmesi */
@@ -487,10 +491,13 @@ require_once 'includes/header.php';
         border-top: 1px solid #eee;
     }
 
-    .blog-tags h5 {
+    .blog-tags h2 {
         font-size: 18px;
         font-weight: 700;
         margin-bottom: 15px;
+        /* Eski <h5> görünümü korunur (etiket <h2> oldu) */
+        line-height: 28px;
+        letter-spacing: -0.2px;
     }
 
     .tags-list {
@@ -552,9 +559,13 @@ require_once 'includes/header.php';
         text-transform: uppercase;
     }
 
-    .nav-link h6 {
+    .nav-link h3 {
         margin: 0;
         font-size: 16px;
+        /* Eski <h6> görünümü korunur (etiket <h3> oldu) */
+        font-weight: 400;
+        line-height: 28px;
+        letter-spacing: -0.2px;
     }
 
     /* Sidebar Styles */
@@ -577,6 +588,9 @@ require_once 'includes/header.php';
         margin-bottom: 20px;
         padding-bottom: 15px;
         border-bottom: 1px solid #eee;
+        /* Eski <h4> görünümü korunur (etiket <h2> oldu) */
+        line-height: 1.7;
+        letter-spacing: -0.5px;
     }
 
     .related-posts {
@@ -616,6 +630,8 @@ require_once 'includes/header.php';
         font-weight: 600;
         margin-bottom: 5px;
         line-height: 1.4;
+        /* Eski <h6> görünümü korunur (etiket <h3> oldu) */
+        letter-spacing: -0.2px;
     }
 
     .post-title a {
@@ -671,10 +687,13 @@ require_once 'includes/header.php';
         background: #f8f9fa;
     }
 
-    .cta-widget h4 {
+    .cta-widget h2 {
         font-size: 20px;
         font-weight: 700;
         margin-bottom: 15px;
+        /* Eski <h4> görünümü korunur (etiket <h2> oldu) */
+        line-height: 1.7;
+        letter-spacing: -0.5px;
     }
 
     .cta-widget p {
