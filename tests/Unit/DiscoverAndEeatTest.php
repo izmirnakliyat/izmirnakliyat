@@ -58,6 +58,16 @@ final class DiscoverAndEeatTest extends TestCase
         $this->assertSame(self::ORIGIN . '/uploads/services/example.webp', $url);
     }
 
+    public function testUnverifiedAwardClaimIsRemovedFromPublicTitle(): void
+    {
+        $this->assertSame(
+            'İzmir Evden Eve Nakliyat | MY Nakliyat',
+            mynak_normalize_public_page_title(
+                'İzmir Evden Eve Nakliyat | Güvenilir Marka Ödüllü | MY Nakliyat'
+            )
+        );
+    }
+
     public function testGenericEditorialIdentitiesResolveToOrganization(): void
     {
         $this->assertTrue(seo_runtime_author_is_organization_identity('MY Nakliyat İçerik Ekibi', 'MY Nakliyat'));

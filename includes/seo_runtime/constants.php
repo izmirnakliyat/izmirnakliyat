@@ -117,6 +117,13 @@ function mynak_build_page_title(string $stem): string
         }
     }
 
+    $stem = preg_replace(
+        '/\s*[|\-–—:]\s*Güvenilir Marka Ödüllü(?=\s*[|\-–—:]|$)/iu',
+        '',
+        $stem
+    ) ?? $stem;
+    $stem = preg_replace('/^Güvenilir Marka Ödüllü\s*[|\-–—:]?\s*/iu', '', $stem) ?? $stem;
+
     // Güvenlik ağı: DB'de kalmış kesik "…"/"..." son eki ve yarım kalan marka
     // parçası (ör. "… Ödüllü MY…") <title>'da çift marka ("MY… | MY Nakliyat")
     // ve kesik son üretiyordu. Marka kontrolünden ÖNCE temizle.

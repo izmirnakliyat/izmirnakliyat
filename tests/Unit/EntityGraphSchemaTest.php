@@ -99,6 +99,17 @@ final class EntityGraphSchemaTest extends TestCase
         $this->fail('Entity graph node not found: ' . $id);
     }
 
+    public function testBrandTrustLayerLoadsServiceDefinitionsInIsolation(): void
+    {
+        $schemaPath = PROJECT_ROOT . '/includes/seo_runtime/jsonld_encode_and_schema.php';
+        $code = 'require ' . var_export($schemaPath, true)
+            . '; $layer = seo_runtime_schema_brand_trust_layer("MY Nakliyat", "https://www.mynakliyat.com.tr");'
+            . ' exit(count($layer["makesOffer"] ?? []) === 11 ? 0 : 1);';
+        exec(escapeshellarg(PHP_BINARY) . ' -r ' . escapeshellarg($code), $output, $status);
+
+        $this->assertSame(0, $status, implode("\n", $output));
+    }
+
     public function testTurkishEntityIdsAreStableAsciiSlugs(): void
     {
         $this->assertSame('izmir', seo_runtime_schema_entity_slug('İzmir'));

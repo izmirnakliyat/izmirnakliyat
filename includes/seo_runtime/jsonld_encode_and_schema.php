@@ -960,6 +960,9 @@ function seo_runtime_schema_brand_trust_layer(string $brand, string $canonical_o
     if (!function_exists('seo_rt_primary_service_graph_slugs')) {
         require_once __DIR__ . '/internal_linking.php';
     }
+    if (!function_exists('seo_runtime_canonical_service_definitions')) {
+        require_once __DIR__ . '/default_service_faqs.php';
+    }
     $out = [];
 
     $out['brand'] = [
