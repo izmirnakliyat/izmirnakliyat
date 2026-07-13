@@ -125,7 +125,7 @@ function mynak_location_internal_links_html(string $currentSlug): string
             . '</a></li>';
     }
     $html .= '<li class="col"><a href="' . mynak_location_link_href('sehirler-arasi-nakliyat')
-        . '">81 ile şehirler arası nakliyat</a></li>';
+        . '">Şehirler arası nakliyat bölgeleri</a></li>';
 
     return $html . '</ul></nav>';
 }

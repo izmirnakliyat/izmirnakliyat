@@ -87,7 +87,7 @@ function seo_runtime_default_service_faq_map(): array
             ],
             [
                 'q' => 'Hangi şehirlere taşıma hizmeti veriyorsunuz?',
-                'a' => 'Türkiye\'nin 81 iline şehirler arası nakliyat hizmeti veriyoruz. Sık güzergahlarımız: İzmir-İstanbul, İzmir-Ankara, İzmir-Bursa, İzmir-Antalya, İzmir-Muğla, İzmir-Aydın ve İzmir-Manisa.',
+                'a' => 'Şehirler arası hizmet kapsamı çıkış ve varış adresi, eşya hacmi, araç erişimi ve takvime göre teyit edilir. İzmir çıkışlı talebiniz için güzergâh bilgilerini paylaşarak yazılı teklif alabilirsiniz.',
             ],
             [
                 'q' => 'Şehirler arası taşımada sigorta nasıl çalışır?',
@@ -523,7 +523,7 @@ function seo_runtime_service_quick_answer(string $slug): string
         'esya-depolama' => 'İzmir eşya depolama; ev veya ofis eşyalarının belirlenen süre boyunca kapalı alanda korunması, gerektiğinde paketlenip taşınması hizmetidir. MY Nakliyat depolama planını eşya hacmi, saklama süresi, erişim ihtiyacı ve özel koruma taleplerine göre oluşturur. Envanter, teslim koşulları ve erişim talepleri sözleşmede kayıt altına alınır.',
         'antika-piyano-tasimaciligi' => 'Antika ve piyano taşıma; ağırlık merkezi, yüzey hassasiyeti ve iç mekanizması nedeniyle özel ekipman ve paketleme gerektiren uzmanlık hizmetidir. Taşıma güzergâhı, merdiven ve kapı ölçüleri, kat durumu ile eşyanın değeri keşifte değerlendirilerek koruma planı hazırlanır. Kullanılacak sabitleme, taşıma aparatı ve sigorta seçeneği yazılı kapsamda belirtilir.',
         'mobilya-montaj-kurulum' => 'Mobilya montaj ve kurulum; modüler veya demonte ürünlerin parça kontrolü, birleştirme, seviyeleme ve gerektiğinde güvenli sabitleme adımlarıyla kullanıma hazır hale getirilmesidir. Kapsam ürün sayısı, model, duvar yapısı ve ek demontaj ihtiyacına göre belirlenir. Eksik veya hasarlı parçalar montaj öncesinde tespit edilerek kullanıcıya bildirilir.',
-        'sehir-ici-nakliyat' => 'İzmir şehir içi nakliyat, eşyaların İzmir sınırları içindeki iki adres arasında paketleme, yükleme, taşıma ve yerleştirme planıyla taşınmasıdır. Fiyat ve süre; hacim, ilçeler arası mesafe, kat, asansör durumu ve ek hizmetlere göre ücretsiz keşif sonrasında netleşir. Trafik, bina çalışma saatleri ve park koşulları operasyon takvimine dahil edilir.',
+        'sehir-ici-nakliyat' => 'İzmir şehir içi nakliyat, eşyaların İzmir sınırları içindeki iki adres arasında paketleme, yükleme, taşıma ve yerleştirme planıyla taşınmasıdır. Fiyat ve süre; hacim, ilçeler arası mesafe, kat, asansör durumu ve ek hizmetlere göre ön değerlendirme sonrasında netleşir. Trafik, bina çalışma saatleri ve park koşulları operasyon takvimine dahil edilir.',
     ];
 
     return $answers[seo_runtime_service_content_key($slug)] ?? '';

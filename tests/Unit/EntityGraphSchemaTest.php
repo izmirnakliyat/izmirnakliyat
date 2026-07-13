@@ -207,6 +207,9 @@ final class EntityGraphSchemaTest extends TestCase
         $this->assertSame(['@id' => $serviceId], $article['about']);
         $this->assertContains(['@id' => self::ORIGIN . '/#place-izmir'], $article['mentions']);
         $this->assertContains(['@id' => $articleId], $service['subjectOf']);
+        $this->assertArrayNotHasKey('datePublished', $article);
+        $this->assertArrayNotHasKey('dateModified', $article);
+        $this->assertArrayNotHasKey('image', $article);
     }
 
     public function testBlogServiceInferenceNeverCreatesCeyizAliasEntity(): void

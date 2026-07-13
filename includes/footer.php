@@ -77,7 +77,7 @@ if (!empty($footer_map) && is_string($footer_map)) {
                                     <?php echo mynak_img_alt_attr('', function_exists('mynak_logo_alt_text') ? mynak_logo_alt_text() : ((string) ($site_settings['site_title'] ?? 'MY Nakliyat') . ' Logo'), UPLOAD_PATH . 'settings/' . ($site_settings['logo'] ?? 'logo.png')); ?> loading="lazy" decoding="async">
                             <?php endif; ?>
                         </a>
-                        <p><?php echo !empty($site_settings['short_description']) ? htmlspecialchars($site_settings['short_description']) : 'MY Nakliyat ® Evden eve nakliyat, Ofis taşıma, Eşya Depolama, Parça eşya taşıma & Şehirler arası nakliyatı sağlayan Güvenilir Marka ödüllü İzmir nakliyat firmasıdır.'; ?>
+                        <p><?php echo !empty($site_settings['short_description']) ? htmlspecialchars($site_settings['short_description']) : 'MY Nakliyat; evden eve nakliyat, ofis taşıma, eşya depolama, parça eşya taşıma ve şehirler arası nakliyat hizmetleri sunan İzmir merkezli taşıma firmasıdır.'; ?>
                         </p>
                         <ul class="social-share">
                             <?php if (!empty($site_settings['facebook'])): ?>

@@ -19,8 +19,8 @@ mynak_public_front_controller_maybe_dispatch($conn);
 $allow_indexing = true;
 extract(mynak_home_index_view_model($conn), EXTR_SKIP);
 
-$page_title = 'İzmir Evden Eve Nakliyat | Sigortalı Taşıma | MY Nakliyat';
-$page_meta_description = 'İzmir\'de evden eve ve şehirlerarası nakliyat hizmeti sunuyoruz. Sigortalı, asansörlü profesyonel taşıma ve ücretsiz ekspertiz. Hemen teklif alın.';
+$page_title = 'İzmir Evden Eve Nakliyat | Yazılı Teklif | MY Nakliyat';
+$page_meta_description = 'İzmir evden eve ve şehirler arası nakliyat hizmetlerinde kapsam, fiyat, takvim ve güvence seçenekleri talebe göre yazılı teklifte belirtilir.';
 
 require_once __DIR__ . '/includes/header.php';
 ?>
@@ -304,30 +304,38 @@ require_once __DIR__ . '/includes/header.php';
 </div>
 <!--/.slider-section-->
 
-<!-- Mynak Trust Strip — tasarim bozmadan ince guven bandi (E-E-A-T + AI sinyali) -->
-<section class="mynak-trust-strip" aria-label="Müşteri güven göstergeleri">
+<!-- Mynak Trust Strip — görünür kaynaklara bağlanan güven bandı -->
+<?php
+$__homeBase = rtrim((string) SITE_URL, '/');
+$__homeGoogleProfile = trim((string) ($home_settings['google_maps_url'] ?? ''));
+$__homeGooglePlaceId = trim((string) ($home_settings['google_place_id'] ?? ''));
+if ($__homeGoogleProfile === '' && $__homeGooglePlaceId !== '') {
+    $__homeGoogleProfile = 'https://search.google.com/local/reviews?placeid=' . rawurlencode($__homeGooglePlaceId);
+}
+?>
+<section class="mynak-trust-strip" aria-label="Kurumsal güven kaynakları">
     <div class="container">
         <div class="mynak-trust-strip-inner">
-            <a href="<?php echo htmlspecialchars(rtrim((string) SITE_URL, '/') . '/hakkimizda', ENT_QUOTES, 'UTF-8'); ?>" class="mynak-trust-strip-item" title="Güvenilir Marka Ödüllü">
-                <i class="bi bi-award-fill" aria-hidden="true"></i>
-                <span><strong>Güvenilir Marka Ödüllü</strong> Nakliye Firması</span>
+            <a href="<?php echo htmlspecialchars($__homeBase . '/belgelerimiz', ENT_QUOTES, 'UTF-8'); ?>" class="mynak-trust-strip-item" title="Kurumsal belgeler">
+                <i class="bi bi-patch-check-fill" aria-hidden="true"></i>
+                <span><strong>Belgeler ve Yetki Bilgileri</strong></span>
             </a>
+            <?php if (filter_var($__homeGoogleProfile, FILTER_VALIDATE_URL)): ?>
             <span class="mynak-trust-strip-sep" aria-hidden="true">•</span>
-            <a href="<?php echo htmlspecialchars($home_settings['google_maps_url'] ?? ('https://search.google.com/local/reviews?placeid=' . urlencode((string) ($home_settings['google_place_id'] ?? ''))), ENT_QUOTES, 'UTF-8'); ?>" class="mynak-trust-strip-item" target="_blank" rel="noopener" title="Google'da yorumlar">
-                <span class="mynak-trust-strip-stars" aria-label="5 yıldız">
-                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                </span>
-                <span><strong>5,0</strong> Google • <strong>270+</strong> Yorum</span>
+            <a href="<?php echo htmlspecialchars($__homeGoogleProfile, ENT_QUOTES, 'UTF-8'); ?>" class="mynak-trust-strip-item" target="_blank" rel="noopener" title="Google yorumları">
+                <i class="bi bi-google" aria-hidden="true"></i>
+                <span><strong>Google İşletme Profili</strong> Yorumları</span>
             </a>
+            <?php endif; ?>
             <span class="mynak-trust-strip-sep" aria-hidden="true">•</span>
-            <a href="<?php echo htmlspecialchars(rtrim((string) SITE_URL, '/') . '/belgelerimiz', ENT_QUOTES, 'UTF-8'); ?>" class="mynak-trust-strip-item" title="Belgeler ve sigorta">
+            <a href="<?php echo htmlspecialchars($__homeBase . '/teklif-alin', ENT_QUOTES, 'UTF-8'); ?>" class="mynak-trust-strip-item" title="Yazılı teklif ve güvence seçenekleri">
                 <i class="bi bi-shield-check" aria-hidden="true"></i>
-                <span><strong>Sigortalı</strong> Taşıma + Yazılı Sözleşme</span>
+                <span><strong>Yazılı Teklif</strong> + Güvence Seçenekleri</span>
             </a>
             <span class="mynak-trust-strip-sep" aria-hidden="true">•</span>
-            <a href="<?php echo htmlspecialchars(rtrim((string) SITE_URL, '/') . '/sehirler-arasi-nakliyat', ENT_QUOTES, 'UTF-8'); ?>" class="mynak-trust-strip-item" title="Türkiye geneli hizmet">
+            <a href="<?php echo htmlspecialchars($__homeBase . '/sehirler-arasi-nakliyat', ENT_QUOTES, 'UTF-8'); ?>" class="mynak-trust-strip-item" title="Şehirler arası hizmet">
                 <i class="bi bi-geo-alt-fill" aria-hidden="true"></i>
-                <span><strong>İzmir + 81 İl</strong> Hizmet Ağı</span>
+                <span><strong>İzmir ve Şehirler Arası</strong> Hizmet</span>
             </a>
         </div>
     </div>

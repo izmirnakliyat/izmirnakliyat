@@ -86,7 +86,7 @@ function mynak_city_pair_landing_map(): array
     return [
         'izmir-istanbul' => [
             'title' => 'İzmir — İstanbul Evden Eve ve Şehirler Arası Nakliyat',
-            'meta_description' => 'İzmir’den İstanbul’a ev eşyası, ofis ve parça yük: keşif, ambalaj, sigortalı sevk, yazılı sözleşme. MY Nakliyat Buca ofis, 81 il hattı, net teklif.',
+            'meta_description' => 'İzmir’den İstanbul’a ev, ofis ve parça eşya taşımasında rota, ambalaj, erişim ve güvence seçeneklerini yazılı teklifle planlayın.',
             'meta_keywords' => 'izmir istanbul nakliyat, izmir istanbul evden eve, izmirden istanbula tasima, sehirler arasi nakliyat izmir',
             'html' => <<<'HTML'
 <p>İzmir’den <strong>İstanbul</strong> hattı; uzun mesafe, yoğun trafik ve farklı daire/ site erişim senaryoları nedeniyle keşif + yazılı sözleşme olmadan fiyat söylemek yerine, envanter ve güzergâh planına dayanır. MY Nakliyat; ev eşyası, ofis, eşya depolama entegrasyonu ve parça yükte aynı marka sorumluluğuyla ilerler.</p>
@@ -106,7 +106,7 @@ HTML
         ],
         'izmir-ankara' => [
             'title' => 'İzmir — Ankara Şehirler Arası ve Evden Eve Nakliyat',
-            'meta_description' => 'İzmir’den Ankara’ya büro ve ev eşyası: envanter, ambalaj, sigorta, termin. MY Nakliyat ile yazılı sözleşme, 81 il deneyimi, net iletişim.',
+            'meta_description' => 'İzmir’den Ankara’ya ev ve ofis eşyası taşımasında envanter, ambalaj, rota, takvim ve güvence seçeneklerini yazılı teklifle planlayın.',
             'meta_keywords' => 'izmir ankara nakliyat, izmirden ankara evden eve, ankara tasima, sehirler arasi ankara izmir',
             'html' => <<<'HTML'
 <p>İzmir’den <strong>Ankara</strong> gidişi; büro arşivleri, kurumsal mobilya ve konut eşyasında farklı ambalaj ve yükleme disiplinleri gerektirebilir. Başkente planlı gidiş, teslimat günü ve bina/ OSB erişim koşulları sözleşmeye bağlanınca sürprizler azalır. MY Nakliyat, bu hatta hem konut hem kurumsal referansla çalışır.</p>

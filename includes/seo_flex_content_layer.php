@@ -19,6 +19,28 @@ function flex_seo_datetime_to_iso8601(mixed $value): string
 }
 
 /**
+ * @return array{width:int,height:int}
+ */
+function flex_seo_blog_image_dimensions(string $filename): array
+{
+    $basename = basename(trim($filename));
+    if ($basename === '') {
+        return ['width' => 0, 'height' => 0];
+    }
+    $root = defined('PROJECT_ROOT') ? (string) PROJECT_ROOT : dirname(__DIR__);
+    $path = rtrim($root, DIRECTORY_SEPARATOR) . '/uploads/blog/' . $basename;
+    if (!is_file($path)) {
+        return ['width' => 0, 'height' => 0];
+    }
+    $size = @getimagesize($path);
+    if (!is_array($size)) {
+        return ['width' => 0, 'height' => 0];
+    }
+
+    return ['width' => (int) $size[0], 'height' => (int) $size[1]];
+}
+
+/**
  * Şema / head pipeline için esnek içerik alanları (DB satırından türetilir).
  *
  * @param array{
@@ -97,11 +119,14 @@ function flex_content_resolver(array $ctx): array
                     'article_body_plain' => $plain,
                     'word_count' => $wc,
                     'image_url' => '',
-                    'image_width' => 1200,
-                    'image_height' => 675,
+                    'image_width' => 0,
+                    'image_height' => 0,
                 ];
                 if (!empty($blog['kapak_foto']) && function_exists('blog_kapak_full_url')) {
                     $out['blog_post']['image_url'] = blog_kapak_full_url((string) $blog['kapak_foto']);
+                    $dimensions = flex_seo_blog_image_dimensions((string) $blog['kapak_foto']);
+                    $out['blog_post']['image_width'] = $dimensions['width'];
+                    $out['blog_post']['image_height'] = $dimensions['height'];
                 }
             }
             break;
@@ -138,7 +163,7 @@ function flex_content_resolver(array $ctx): array
             }
             if ($desc === '' && function_exists('mynak_schema_brand')) {
                 $b = mynak_schema_brand();
-                $desc = $b . ' — İzmir merkezli evden eve nakliyat, ofis taşıma ve eşya depolama; ISO 9001 belgeli, güvenilir marka ödüllü hizmet.';
+                $desc = $b . ' — MY Nakliyat tarafından yayımlanan İzmir merkezli taşıma ve hizmet bilgisi.';
                 $desc = mb_substr($desc, 0, 500);
             }
             $out['about_description'] = $desc;

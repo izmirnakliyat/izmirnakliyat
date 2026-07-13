@@ -13,6 +13,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/config/config.php';
 require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/includes/functions.php';
+require_once __DIR__ . '/includes/seo_runtime/author_resolver.php';
 
 /**
  * Yazar sayfası dispatcher.
@@ -45,12 +46,15 @@ function mynak_authors_public_render_list(mysqli $conn): void
     $authors = [];
     if ($rows) {
         while ($r = $rows->fetch_assoc()) {
-            $authors[] = $r;
+            $orgName = defined('MYNAK_BRAND_NAME') ? (string) MYNAK_BRAND_NAME : 'MY Nakliyat';
+            if (!seo_runtime_author_is_organization_identity((string) ($r['name'] ?? ''), $orgName)) {
+                $authors[] = $r;
+            }
         }
     }
 
-    $page_title              = 'Yazarlar — Nakliyat Uzmanlarımız';
-    $page_meta_description   = 'My Nakliyat içerik ekibi: editörlerimiz, nakliye uzmanlarımız ve ekspertizlerimiz. Sektörde 18+ yıllık saha deneyimine sahip ekip.';
+    $page_title              = 'Yazarlar ve İçerik Kaynağı';
+    $page_meta_description   = 'MY Nakliyat rehberlerinin yayımlanmasından sorumlu kurumsal içerik kaynağı ve doğrulanabilir yazar profilleri.';
     $allow_indexing          = true;
     $canonical_override      = mynak_abs_url_from_public_path('yazarlar');
 
@@ -62,7 +66,7 @@ function mynak_authors_public_render_list(mysqli $conn): void
                 <div class="banner-content text-center">
                     <h1 class="banner-title">Yazarlarımız</h1>
                     <p class="banner-description">
-                        My Nakliyat içerik ekibi — editörler, saha uzmanları ve nakliye eksperleri.
+                        Rehberler MY Nakliyat kurumsal yayın sorumluluğunda hazırlanır; doğrulanabilir kişi profilleri ayrıca listelenir.
                     </p>
                 </div>
             </div>
@@ -71,6 +75,17 @@ function mynak_authors_public_render_list(mysqli $conn): void
         <section class="py-5">
             <div class="container">
                 <div class="row g-4">
+                    <?php if ($authors === []): ?>
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body p-4">
+                                <h2 class="h5">MY Nakliyat İçerik Kaynağı</h2>
+                                <p class="text-muted mb-3">Yayımlanan rehberler MY Nakliyat kurumsal yayın sorumluluğunda hazırlanır. Gerçek kişi profili doğrulanmadığı sürece içeriklerde kişi yazarlığı kullanılmaz.</p>
+                                <a href="<?php echo htmlspecialchars(mynak_abs_url_from_public_path('hakkimizda')); ?>" class="btn btn-sm btn-outline-primary">Kurumsal bilgileri görüntüle</a>
+                            </div>
+                        </div>
+                    </div>
+                    <?php endif; ?>
                     <?php foreach ($authors as $a):
                         if ((int) $a['is_default'] === 1 && empty($a['photo_url'])) {
                             // Default rozet
@@ -145,6 +160,12 @@ function mynak_authors_public_render_detail(mysqli $conn, string $slug): void
         require_once __DIR__ . '/includes/header.php';
         echo '<main id="content"><section class="py-5"><div class="container text-center"><h1>Yazar bulunamadı</h1><p><a href="/yazarlar">Tüm yazarlar</a></p></div></section></main>';
         require_once __DIR__ . '/includes/footer.php';
+        return;
+    }
+
+    $orgName = defined('MYNAK_BRAND_NAME') ? (string) MYNAK_BRAND_NAME : 'MY Nakliyat';
+    if (seo_runtime_author_is_organization_identity((string) ($author['name'] ?? ''), $orgName)) {
+        header('Location: ' . mynak_abs_url_from_public_path('hakkimizda'), true, 301);
         return;
     }
 

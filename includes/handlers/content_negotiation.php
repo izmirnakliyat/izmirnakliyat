@@ -124,6 +124,12 @@ function mynak_cn_try_emit_blog_markdown(mysqli $conn, string $slug): bool
 
     $siteUrl = defined('SITE_URL') ? rtrim((string) SITE_URL, '/') : '';
     $url = $siteUrl !== '' ? $siteUrl . '/' . ltrim((string) $row['slug'], '/') : '';
+    require_once dirname(__DIR__) . '/seo_runtime/author_resolver.php';
+    $organizationName = function_exists('mynak_schema_brand') ? mynak_schema_brand() : 'MY Nakliyat';
+    $authorName = trim((string) ($row['author_name'] ?? ''));
+    if (seo_runtime_author_is_organization_identity($authorName, $organizationName)) {
+        $authorName = $organizationName;
+    }
     require_once dirname(__DIR__) . '/seo_runtime/service_guide_hubs.php';
     $serviceContext = mynak_blog_service_context($row);
     if ($serviceContext !== null && $siteUrl !== '') {
@@ -139,7 +145,7 @@ function mynak_cn_try_emit_blog_markdown(mysqli $conn, string $slug): bool
             'url' => $url,
             'entity_id' => $url !== '' ? $url . '#article' : '',
             'entity_type' => 'BlogPosting',
-            'author' => (string) ($row['author_name'] ?? ''),
+            'author' => $authorName,
             'category' => (string) ($row['kategori_ad'] ?? ''),
             'tags' => (string) ($row['etiketler'] ?? ''),
             'date_published' => (string) ($row['created_at'] ?? ''),

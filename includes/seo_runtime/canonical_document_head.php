@@ -94,10 +94,8 @@ function seo_runtime_document_head(array $ctx): array
         'seo_fallback_content' => $seoFallbackContent,
     ]);
 
-    $meta_robots_tag_html = '';
-    if ($mr !== null && $mr !== '') {
-        $meta_robots_tag_html = '<meta name="robots" content="' . htmlspecialchars($mr, ENT_QUOTES, 'UTF-8') . '">';
-    }
+    $mr = seo_runtime_apply_discover_robots_directive($mr);
+    $meta_robots_tag_html = '<meta name="robots" content="' . htmlspecialchars($mr, ENT_QUOTES, 'UTF-8') . '">';
 
     $pipelineCtx = [
         'relPath' => $relPath,

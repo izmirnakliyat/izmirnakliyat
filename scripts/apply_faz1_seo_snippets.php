@@ -31,49 +31,49 @@ function faz1_meta_map(): array
 {
     return [
         '' => [
-            'seo_title' => 'İzmir Evden Eve Nakliyat | Sigortalı Taşıma | MY Nakliyat',
-            'meta_description' => 'İzmir\'de evden eve ve şehirlerarası nakliyat hizmeti sunuyoruz. Sigortalı, asansörlü profesyonel taşıma ve ücretsiz ekspertiz. Hemen teklif alın.',
+            'seo_title' => 'İzmir Evden Eve Nakliyat | Yazılı Teklif | MY Nakliyat',
+            'meta_description' => 'İzmir evden eve nakliyat için hizmet kapsamı, bina erişimi, ambalaj, takvim ve güvence seçenekleri yazılı teklif aşamasında açıklanır.',
         ],
         'izmir-evden-eve-nakliyat' => [
-            'seo_title' => 'İzmir Evden Eve Nakliyat | Ücretsiz Ekspertiz | MY Nakliyat',
-            'meta_description' => 'İzmir evden eve nakliyat hizmeti sunuyoruz. Sigortalı ve asansörlü taşıma, net fiyat ve planlı süreç. Ücretsiz keşif için teklif alın.',
+            'seo_title' => 'İzmir Evden Eve Nakliyat | Yazılı Teklif | MY Nakliyat',
+            'meta_description' => 'İzmir evden eve nakliyat için eşya envanteri, araç, asansör gereksinimi ve fiyatı etkileyen koşullar talebe göre değerlendirilir.',
             'h1' => 'İzmir Evden Eve Nakliyat',
         ],
         'sehirlerarasi-nakliyat' => [
             'seo_title' => 'Şehirlerarası Nakliyat | İzmir Çıkışlı | MY Nakliyat',
-            'meta_description' => 'İzmir çıkışlı şehirlerarası nakliyat hizmeti sunuyoruz. Sigortalı eşya taşıma, sabitleme ve zamanında teslimat. Hemen teklif alın.',
+            'meta_description' => 'Şehirlerarası Nakliyat | İzmir Çıkışlı için hizmet kapsamı, fiyatı etkileyen koşullar ve yazılı teklif süreci açıklanır. Talebinize göre teklif alın.',
             'h1' => 'Şehirlerarası Nakliyat Hizmeti',
         ],
         'asansorlu-nakliyat' => [
             'seo_title' => 'Asansörlü Nakliyat İzmir | Yüksek Kat | MY Nakliyat',
-            'meta_description' => 'İzmir\'de asansörlü nakliyat hizmeti sunuyoruz. Yüksek katlı binalarda sigortalı ve hızlı eşya taşıma. Ücretsiz ekspertiz alın.',
+            'meta_description' => 'Asansörlü Nakliyat İzmir | Yüksek Kat için hizmet kapsamı, fiyatı etkileyen koşullar ve yazılı teklif süreci açıklanır. Talebinize göre teklif alın.',
             'h1' => 'İzmir Asansörlü Nakliyat',
         ],
         'esya-depolama' => [
             'seo_title' => 'Eşya Depolama İzmir | Güvenli Depo | MY Nakliyat',
-            'meta_description' => 'İzmir\'de eşya depolama hizmeti sunuyoruz. Sigortalı, iklim kontrollü depolama ve esnek süreler. Fiyat için teklif alın.',
+            'meta_description' => 'Eşya Depolama İzmir | Güvenli Depo için hizmet kapsamı, fiyatı etkileyen koşullar ve yazılı teklif süreci açıklanır. Talebinize göre teklif alın.',
             'h1' => 'İzmir Eşya Depolama',
         ],
         'kurumsal-nakliye-ofis-tasima' => [
             'seo_title' => 'İzmir Ofis Taşımacılığı | Kurumsal | MY Nakliyat',
-            'meta_description' => 'İzmir\'de ofis taşımacılığı hizmeti sunuyoruz. Sigortalı kurumsal nakliyat ve planlı taşıma süreci. Hemen teklif alın.',
+            'meta_description' => 'İzmir Ofis Taşımacılığı | Kurumsal için hizmet kapsamı, fiyatı etkileyen koşullar ve yazılı teklif süreci açıklanır. Talebinize göre teklif alın.',
             'h1' => 'İzmir Ofis Taşımacılığı',
         ],
         'izmir-evden-eve-nakliyat-yorumlari' => [
-            'seo_title' => 'İzmir Nakliyat Yorumları | 5,0 Google Puan | MY Nakliyat',
-            'meta_description' => 'İzmir evden eve nakliyat müşteri yorumlarını inceleyin. Gerçek Google değerlendirmeleri ve sigortalı taşıma deneyimleri. Güvenle teklif alın.',
+            'seo_title' => 'İzmir Nakliyat Yorumları | Google Profili | MY Nakliyat',
+            'meta_description' => 'MY Nakliyat için yayımlanan müşteri deneyimlerini ve bağlantılı Google İşletme Profili değerlendirmelerini inceleyin.',
         ],
         'izmir-evden-eve-nakliyat-fiyatlari-2026' => [
             'seo_title' => 'İzmir Nakliyat Fiyatları 2026 | Net Ücret | MY Nakliyat',
-            'meta_description' => '2026 İzmir evden eve nakliyat fiyatlarını şeffaf tabloyla sunuyoruz. Daire tipi, kat ve mesafe kriterleri. Ücretsiz fiyat alın.',
+            'meta_description' => 'İzmir Nakliyat Fiyatları 2026 | Net Ücret için hizmet kapsamı, fiyatı etkileyen koşullar ve yazılı teklif süreci açıklanır. Talebinize göre teklif alın.',
         ],
         'izmir-evden-eve-nakliyat-fiyatlari-2025' => [
             'seo_title' => 'İzmir Nakliyat Fiyatları 2025 | Rehber | MY Nakliyat',
-            'meta_description' => '2025 İzmir evden eve nakliyat fiyat rehberi sunuyoruz. Ücret kriterleri ve sigortalı taşıma bilgisi. Güncel teklif alın.',
+            'meta_description' => 'İzmir Nakliyat Fiyatları 2025 | Rehber için hizmet kapsamı, fiyatı etkileyen koşullar ve yazılı teklif süreci açıklanır. Talebinize göre teklif alın.',
         ],
         'izmir-ev-tasima-fiyatlari' => [
             'seo_title' => 'İzmir Ev Taşıma Fiyatları 2026 | Rehber | MY Nakliyat',
-            'meta_description' => 'İzmir ev taşıma fiyatlarını etkileyen kriterleri açıklıyoruz. Sigortalı taşıma ve ücretsiz ekspertiz. Hemen hesaplayın.',
+            'meta_description' => 'İzmir Ev Taşıma Fiyatları 2026 | Rehber için hizmet kapsamı, fiyatı etkileyen koşullar ve yazılı teklif süreci açıklanır. Talebinize göre teklif alın.',
         ],
         '2026-sehirler-arasi-nakliyat-fiyatlari-guncel-rehber' => [
             'seo_title' => 'Şehirlerarası Fiyatlar 2026 | İzmir | MY Nakliyat',
@@ -85,27 +85,27 @@ function faz1_meta_map(): array
         ],
         'izmir-esya-depolama-fiyatlari-2026' => [
             'seo_title' => 'Eşya Depolama Fiyatları 2026 | İzmir | MY Nakliyat',
-            'meta_description' => '2026 İzmir eşya depolama fiyatlarını m² ve süreye göre açıklıyoruz. Sigortalı depo ve esnek planlar. Teklif isteyin.',
+            'meta_description' => 'Eşya Depolama Fiyatları 2026 | İzmir için hizmet kapsamı, fiyatı etkileyen koşullar ve yazılı teklif süreci açıklanır. Talebinize göre teklif alın.',
         ],
         'sehirler-arasi-nakliyat-fiyatlari-2026' => [
             'seo_title' => 'Şehirlerarası Ücretler 2026 | İzmir | MY Nakliyat',
-            'meta_description' => 'İzmir çıkışlı 2026 şehirlerarası nakliyat fiyat rehberi sunuyoruz. Sigortalı taşıma ve şeffaf ücret. Teklif alın.',
+            'meta_description' => 'Şehirlerarası Ücretler 2026 | İzmir için hizmet kapsamı, fiyatı etkileyen koşullar ve yazılı teklif süreci açıklanır. Talebinize göre teklif alın.',
         ],
         'izmir-evden-eve-tasimacilik-fiyatlari' => [
             'seo_title' => 'Evden Eve Fiyatları İzmir | Güncel | MY Nakliyat',
-            'meta_description' => 'İzmir evden eve taşımacılık fiyatlarını daire ve hizmet kapsamına göre açıklıyoruz. Profesyonel sigortalı taşıma.',
+            'meta_description' => 'Evden Eve Fiyatları İzmir | Güncel için hizmet kapsamı, fiyatı etkileyen koşullar ve yazılı teklif süreci açıklanır. Talebinize göre teklif alın.',
         ],
         'izmir-evden-eve-nakliye-fiyatlari-2025' => [
             'seo_title' => 'Evden Eve Fiyatları 2025 | İzmir | MY Nakliyat',
-            'meta_description' => '2025 İzmir evden eve nakliye fiyat bilgilerini şeffaf şekilde sunuyoruz. Ücretsiz ekspertiz ve sigortalı taşıma.',
+            'meta_description' => 'Evden Eve Fiyatları 2025 | İzmir için hizmet kapsamı, fiyatı etkileyen koşullar ve yazılı teklif süreci açıklanır. Talebinize göre teklif alın.',
         ],
         'izmir-evden-eve-nakliyat-fiyatlari' => [
             'seo_title' => 'İzmir Nakliyat Fiyat Listesi | Güncel | MY Nakliyat',
-            'meta_description' => 'İzmir nakliyat fiyat listesini güncel kriterlerle sunuyoruz. Ücretsiz ekspertiz ve sigortalı evden eve taşıma.',
+            'meta_description' => 'İzmir Nakliyat Fiyat Listesi | Güncel için hizmet kapsamı, fiyatı etkileyen koşullar ve yazılı teklif süreci açıklanır. Talebinize göre teklif alın.',
         ],
         'izmir-evden-eve-nakliyat-fiyatlar' => [
             'seo_title' => 'İzmir Nakliyat Ücretleri | 2026 | MY Nakliyat',
-            'meta_description' => 'İzmir nakliyat ücretlerini şeffaf şekilde paylaşıyoruz. Evden eve sigortalı taşıma için ücretsiz fiyat alın.',
+            'meta_description' => 'İzmir Nakliyat Ücretleri | 2026 için hizmet kapsamı, fiyatı etkileyen koşullar ve yazılı teklif süreci açıklanır. Talebinize göre teklif alın.',
         ],
         'asansorlu-nakliyat-fiyatlari' => [
             'seo_title' => 'Asansörlü Nakliyat Fiyatları | İzmir | MY Nakliyat',
@@ -113,39 +113,39 @@ function faz1_meta_map(): array
         ],
         'asansorlu-ev-tasima-fiyatlari' => [
             'seo_title' => 'Asansörlü Ev Taşıma Fiyatları | İzmir | MY Nakliyat',
-            'meta_description' => 'İzmir asansörlü ev taşıma ücretlerini net kriterlerle sunuyoruz. Profesyonel ve sigortalı taşıma. Fiyat alın.',
+            'meta_description' => 'Asansörlü Ev Taşıma Fiyatları | İzmir için hizmet kapsamı, fiyatı etkileyen koşullar ve yazılı teklif süreci açıklanır. Talebinize göre teklif alın.',
         ],
         'sehirler-arasi-nakliyat-fiyatlari' => [
             'seo_title' => 'Şehirlerarası Nakliyat Ücretleri | MY Nakliyat',
-            'meta_description' => 'Şehirlerarası nakliyat fiyatlarını mesafe ve hacme göre açıklıyoruz. İzmir çıkışlı sigortalı taşıma. Teklif alın.',
+            'meta_description' => 'Şehirlerarası Nakliyat Ücretleri için hizmet kapsamı, fiyatı etkileyen koşullar ve yazılı teklif süreci açıklanır. Talebinize göre teklif alın.',
         ],
         'parca-esya-tasima-fiyatlari-2026-ucretler-nasil-belirlenir' => [
             'seo_title' => 'Parça Eşya Fiyatları 2026 | İzmir | MY Nakliyat',
-            'meta_description' => '2026 parça eşya taşıma ücretlerini mesafe ve parça sayısına göre sunuyoruz. İzmir genelinde sigortalı taşıma.',
+            'meta_description' => 'Parça Eşya Fiyatları 2026 | İzmir için hizmet kapsamı, fiyatı etkileyen koşullar ve yazılı teklif süreci açıklanır. Talebinize göre teklif alın.',
         ],
         'piyano-tasima-fiyatlari' => [
             'seo_title' => 'Piyano Taşıma Fiyatları İzmir | 2026 | MY Nakliyat',
-            'meta_description' => 'İzmir piyano taşıma fiyatlarını enstrüman tipine göre açıklıyoruz. Sigortalı profesyonel taşıma. Teklif alın.',
+            'meta_description' => 'Piyano Taşıma Fiyatları İzmir | 2026 için hizmet kapsamı, fiyatı etkileyen koşullar ve yazılı teklif süreci açıklanır. Talebinize göre teklif alın.',
         ],
         'izmir-istanbul-nakliyat-fiyatlari' => [
             'seo_title' => 'İzmir İstanbul Nakliyat Fiyatları | MY Nakliyat',
-            'meta_description' => 'İzmir–İstanbul nakliyat fiyatlarını şeffaf kriterlerle sunuyoruz. Sigortalı şehirlerarası taşıma. Hemen teklif alın.',
+            'meta_description' => 'İzmir İstanbul Nakliyat Fiyatları için hizmet kapsamı, fiyatı etkileyen koşullar ve yazılı teklif süreci açıklanır. Talebinize göre teklif alın.',
         ],
         'izmir-nakliye-fiyatlari' => [
             'seo_title' => 'İzmir Nakliye Fiyatları | Şeffaf | MY Nakliyat',
-            'meta_description' => 'İzmir nakliye fiyatlarını hizmet türüne göre açıklıyoruz. Evden eve ve şehirlerarası sigortalı taşıma. Teklif alın.',
+            'meta_description' => 'İzmir Nakliye Fiyatları | Şeffaf için hizmet kapsamı, fiyatı etkileyen koşullar ve yazılı teklif süreci açıklanır. Talebinize göre teklif alın.',
         ],
         'izmir-de-nakliye-ucretleri-uygun-fiyatli-tasimacilik-icin-bilmeniz-gerekenler' => [
             'seo_title' => 'İzmir Nakliye Ücretleri Rehberi | MY Nakliyat',
-            'meta_description' => 'İzmir nakliye ücretlerini belirleyen faktörleri açıklıyoruz. Uygun fiyatlı sigortalı taşıma için ücretsiz ekspertiz alın.',
+            'meta_description' => 'İzmir Nakliye Ücretleri Rehberi için hizmet kapsamı, fiyatı etkileyen koşullar ve yazılı teklif süreci açıklanır. Talebinize göre teklif alın.',
         ],
         'karsiyaka-evden-eve-nakliyat-fiyatlari-uygun-fiyatlarla-tasinmanin-yollari' => [
             'seo_title' => 'Karşıyaka Nakliyat Fiyatları | İzmir | MY Nakliyat',
-            'meta_description' => 'Karşıyaka evden eve nakliyat fiyatlarını şeffaf şekilde sunuyoruz. Sigortalı taşıma ve ücretsiz keşif. Teklif alın.',
+            'meta_description' => 'Karşıyaka Nakliyat Fiyatları | İzmir için hizmet kapsamı, fiyatı etkileyen koşullar ve yazılı teklif süreci açıklanır. Talebinize göre teklif alın.',
         ],
         'izmir-evden-eve-nakliyat-fiyatlari-ve-firma-secimi' => [
             'seo_title' => 'Nakliyat Fiyatları ve Firma Seçimi | MY Nakliyat',
-            'meta_description' => 'İzmir evden eve nakliyat fiyatları ve güvenilir firma seçimi rehberi sunuyoruz. Sigortalı taşıma kriterleri. Teklif alın.',
+            'meta_description' => 'Nakliyat Fiyatları ve Firma Seçimi için hizmet kapsamı, fiyatı etkileyen koşullar ve yazılı teklif süreci açıklanır. Talebinize göre teklif alın.',
         ],
         'nakliyat-fiyatlarini-etkileyen-faktorler' => [
             'seo_title' => 'Nakliyat Fiyatını Etkileyen Faktörler | MY Nakliyat',
@@ -153,11 +153,11 @@ function faz1_meta_map(): array
         ],
         'evden-eve-nakliyat-fiyatlarini-etkileyen-faktorler' => [
             'seo_title' => 'Evden Eve Fiyat Faktörleri | İzmir | MY Nakliyat',
-            'meta_description' => 'Evden eve nakliyat fiyatlarını belirleyen unsurları açıklıyoruz. İzmir\'de sigortalı taşıma için ücretsiz fiyat alın.',
+            'meta_description' => 'Evden Eve Fiyat Faktörleri | İzmir için hizmet kapsamı, fiyatı etkileyen koşullar ve yazılı teklif süreci açıklanır. Talebinize göre teklif alın.',
         ],
         'evden-eve-nakliyat-fiyatlari-nasil-belirlenir' => [
             'seo_title' => 'Evden Eve Fiyat Nasıl Belirlenir? | MY Nakliyat',
-            'meta_description' => 'Evden eve nakliyat fiyatlarının nasıl hesaplandığını adım adım açıklıyoruz. İzmir\'de ücretsiz ekspertiz alın.',
+            'meta_description' => 'Evden Eve Fiyat Nasıl Belirlenir? için hizmet kapsamı, fiyatı etkileyen koşullar ve yazılı teklif süreci açıklanır. Talebinize göre teklif alın.',
         ],
         'evden-eve-nakliyat-fiyatlari-neye-gore-degisir' => [
             'seo_title' => 'Evden Eve Fiyatları Neye Göre Değişir? | MY Nakliyat',
@@ -165,27 +165,27 @@ function faz1_meta_map(): array
         ],
         'evden-eve-nakliyat-maliyetleri-fiyat-rehberi' => [
             'seo_title' => 'Evden Eve Maliyet Rehberi 2026 | MY Nakliyat',
-            'meta_description' => '2026 evden eve nakliyat maliyet rehberi sunuyoruz. Bütçe planı, sigorta ve taşıma kalemleri. Ücretsiz teklif alın.',
+            'meta_description' => 'Evden Eve Maliyet Rehberi 2026 için hizmet kapsamı, fiyatı etkileyen koşullar ve yazılı teklif süreci açıklanır. Talebinize göre teklif alın.',
         ],
         'izmir-ev-tasima-fiyatlari-nedir' => [
             'seo_title' => 'İzmir Ev Taşıma Ücreti Nedir? | MY Nakliyat',
-            'meta_description' => 'İzmir ev taşıma ücretlerinin nasıl oluştuğunu açıklıyoruz. Sigortalı profesyonel taşıma için fiyat alın.',
+            'meta_description' => 'İzmir Ev Taşıma Ücreti Nedir? için hizmet kapsamı, fiyatı etkileyen koşullar ve yazılı teklif süreci açıklanır. Talebinize göre teklif alın.',
         ],
         'izmir-evden-eve-nakliyat-fiyatlari-sabit-mi-degisken-mi' => [
             'seo_title' => 'Nakliyat Fiyatları Sabit mi? | İzmir | MY Nakliyat',
-            'meta_description' => 'İzmir evden eve nakliyat fiyatlarının sabit ve değişken kalemlerini açıklıyoruz. Net teklif için ücretsiz keşif alın.',
+            'meta_description' => 'Nakliyat Fiyatları Sabit mi? | İzmir için hizmet kapsamı, fiyatı etkileyen koşullar ve yazılı teklif süreci açıklanır. Talebinize göre teklif alın.',
         ],
         'izmir-uygun-fiyatli-nakliyat' => [
             'seo_title' => 'Uygun Fiyatlı Nakliyat İzmir | MY Nakliyat',
-            'meta_description' => 'İzmir\'de uygun fiyatlı nakliyat seçeneklerini sigorta ve hizmet kapsamıyla açıklıyoruz. Ücretsiz teklif alın.',
+            'meta_description' => 'Uygun Fiyatlı Nakliyat İzmir için hizmet kapsamı, fiyatı etkileyen koşullar ve yazılı teklif süreci açıklanır. Talebinize göre teklif alın.',
         ],
         'izmir-icin-uygun-fiyatli-evden-eve-tasinma-secenekleri' => [
             'seo_title' => 'Uygun Evden Eve Taşıma İzmir | MY Nakliyat',
-            'meta_description' => 'İzmir\'de uygun fiyatlı evden eve taşıma seçeneklerini karşılaştırmalı anlatıyoruz. Sigortalı taşıma için teklif alın.',
+            'meta_description' => 'Uygun Evden Eve Taşıma İzmir için hizmet kapsamı, fiyatı etkileyen koşullar ve yazılı teklif süreci açıklanır. Talebinize göre teklif alın.',
         ],
         'musteri-yorumlari-ile-en-iyi-nakliyat-firmasi-secimi' => [
             'seo_title' => 'Yorumlarla Nakliyat Firması Seçimi | MY Nakliyat',
-            'meta_description' => 'Müşteri yorumlarıyla güvenilir nakliyat firması seçimi rehberi sunuyoruz. İzmir\'de sigortalı taşıma için teklif alın.',
+            'meta_description' => 'Yorumlarla Nakliyat Firması Seçimi için hizmet kapsamı, fiyatı etkileyen koşullar ve yazılı teklif süreci açıklanır. Talebinize göre teklif alın.',
         ],
         'izmir-asansor-kiralama-hizmetleri-ve-fiyatlari' => [
             'seo_title' => 'İzmir Asansör Kiralama Fiyatları | MY Nakliyat',
@@ -286,9 +286,9 @@ while ($row = $r->fetch_assoc()) {
     $settingsBackup[$row['name']] = $row['value'];
 }
 $newSettings = [
-    'site_title' => faz1_ensure_suffix('İzmir Evden Eve Nakliyat | Sigortalı Taşıma'),
+    'site_title' => faz1_ensure_suffix('İzmir Evden Eve Nakliyat | Yazılı Teklif'),
     'global_title_suffix' => 'MY Nakliyat',
-    'global_meta_description' => faz1_clamp_meta('İzmir\'de evden eve ve şehirlerarası nakliyat hizmeti sunuyoruz. Sigortalı profesyonel taşıma. Ücretsiz ekspertiz için teklif alın.'),
+    'global_meta_description' => faz1_clamp_meta('İzmir evden eve ve şehirler arası nakliyat hizmetlerinde kapsam, fiyat ve güvence seçenekleri talebe göre yazılı teklifte belirtilir.'),
 ];
 if ($apply) {
     file_put_contents($backupDir . '/settings.json', json_encode($settingsBackup, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));

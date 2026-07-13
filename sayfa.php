@@ -339,23 +339,31 @@ require_once __DIR__ . '/includes/header.php';
                 // E-E-A-T trust badges — yalnizca Hakkimizda sayfasinda gorunur.
                 // AI Overview / ChatGPT / Perplexity icin gorunur "kanit" katmani.
                 if (in_array($__pageSlug, ['hakkimizda', 'hakkimda', 'about', 'about-us'], true)):
+                    $__siteBase = rtrim((string) SITE_URL, '/');
+                    $__googleProfile = trim((string) ($site_settings['google_maps_url'] ?? ''));
+                    $__googlePlaceId = trim((string) ($site_settings['google_place_id'] ?? ''));
+                    if ($__googleProfile === '' && $__googlePlaceId !== '') {
+                        $__googleProfile = 'https://search.google.com/local/reviews?placeid=' . rawurlencode($__googlePlaceId);
+                    }
+                    if ($__googleProfile !== '' && !filter_var($__googleProfile, FILTER_VALIDATE_URL)) {
+                        $__googleProfile = '';
+                    }
                     $__trustBadges = [
-                        ['icon' => 'bi-patch-check-fill',   'title' => 'ISO 9001 Belgeli (2024)',     'sub' => 'ISO 9001 Belgeli ilk nakliye firması'],
-                        ['icon' => 'bi-award-fill',         'title' => 'Güvenilir Marka Ödüllü',     'sub' => '2018, 2020, 2022 — Güvenilir Marka Ödülleri'],
-                        ['icon' => 'bi-trophy-fill',        'title' => 'Şehirler Arası Nakliye Ödülü','sub' => '2023 — En İyi Şehirler Arası Nakliyat Firması'],
-                        ['icon' => 'bi-star-fill',          'title' => '5,0 / 5 — 270+ Yorum',        'sub' => 'Google Business Profile (doğrulanmış)'],
-                        ['icon' => 'bi-shield-check',       'title' => 'Sigortalı Taşıma',            'sub' => 'Nakliye sigortası + yazılı sözleşme'],
-                        ['icon' => 'bi-file-earmark-text',  'title' => 'Yazılı Teklif Garantisi',     'sub' => 'Keşif sonrası net fiyat, gizli ücret yok'],
-                        ['icon' => 'bi-people-fill',        'title' => 'Kadrolu Profesyonel Ekip',    'sub' => 'MY Nakliyat logolu araç + uzman ekip'],
-                        ['icon' => 'bi-geo-alt-fill',       'title' => 'İzmir + 81 İl Hizmet',        'sub' => 'İzmir 30 ilçe + Türkiye geneli'],
-                        ['icon' => 'bi-medal-fill',         'title' => 'Türkiye Altın Marka (2016)',  'sub' => '2016 Türkiye Altın Marka Ödülü'],
+                        ['icon' => 'bi-patch-check-fill', 'title' => 'Belgeler ve Yetki Bilgileri', 'sub' => 'Yayımlanan kurumsal belgeler tek sayfada incelenebilir.', 'href' => $__siteBase . '/belgelerimiz'],
+                        ['icon' => 'bi-file-earmark-text', 'title' => 'Yazılı Teklif', 'sub' => 'Hizmet kapsamı ve fiyat, talep bilgilerine göre yazılı sunulur.', 'href' => $__siteBase . '/teklif-alin'],
+                        ['icon' => 'bi-shield-check', 'title' => 'Sözleşme ve Güvence Seçenekleri', 'sub' => 'Uygulanacak kapsam ve limitler yazılı teklif aşamasında belirtilir.', 'href' => $__siteBase . '/teklif-alin'],
+                        ['icon' => 'bi-star-fill', 'title' => 'Müşteri Deneyimleri', 'sub' => 'Yayımlanan müşteri hikâyeleri ve dış platform yorumları incelenebilir.', 'href' => $__googleProfile !== '' ? $__googleProfile : $__siteBase . '/musteri-hikayeleri'],
+                        ['icon' => 'bi-people-fill', 'title' => 'Ekip Bilgileri', 'sub' => 'Yayımlanan ekip üyeleri ve görevleri ekip sayfasında yer alır.', 'href' => $__siteBase . '/ekibimiz'],
+                        ['icon' => 'bi-geo-alt-fill', 'title' => 'Hizmet Bölgeleri', 'sub' => 'İzmir ilçeleri ve şehirler arası taşıma kapsamı ilgili sayfalarda açıklanır.', 'href' => $__siteBase . '/sehirler-arasi-nakliyat'],
                     ];
                 ?>
                 <div class="card border-0 shadow-sm mt-4 mynak-trust-card">
                     <div class="card-body p-4 p-md-5">
                         <div class="d-flex flex-wrap align-items-center justify-content-between mb-4">
                             <h2 class="h4 mb-0 mynak-trust-title">Neden MY Nakliyat?</h2>
-                            <span class="badge rounded-pill mynak-trust-badge-pill"><i class="bi bi-google me-1"></i>Google'da 5,0 ★ — 270+ yorum</span>
+                            <?php if ($__googleProfile !== ''): ?>
+                            <a class="badge rounded-pill mynak-trust-badge-pill" href="<?php echo htmlspecialchars($__googleProfile, ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener"><i class="bi bi-google me-1"></i>Google yorumlarını görüntüle</a>
+                            <?php endif; ?>
                         </div>
                         <div class="row g-3">
                             <?php foreach ($__trustBadges as $b): ?>
@@ -367,15 +375,16 @@ require_once __DIR__ . '/includes/header.php';
                                         <div class="ms-3">
                                             <div class="fw-semibold mynak-trust-item-title"><?php echo htmlspecialchars($b['title'], ENT_QUOTES, 'UTF-8'); ?></div>
                                             <div class="small text-muted"><?php echo htmlspecialchars($b['sub'], ENT_QUOTES, 'UTF-8'); ?></div>
+                                            <a class="small" href="<?php echo htmlspecialchars($b['href'], ENT_QUOTES, 'UTF-8'); ?>"<?php echo str_starts_with($b['href'], $__siteBase) ? '' : ' target="_blank" rel="noopener"'; ?>>Kaynağı görüntüle</a>
                                         </div>
                                     </div>
                                 </div>
                             <?php endforeach; ?>
                         </div>
                         <div class="mt-4 pt-3 border-top small text-muted">
-                            Tüm taşımalar yazılı sözleşme + nakliye sigortası kapsamındadır. Detay için
-                            <a href="<?php echo htmlspecialchars(rtrim((string) SITE_URL, '/') . '/belgelerimiz', ENT_QUOTES, 'UTF-8'); ?>">Belgelerimiz</a>
-                            ve <a href="<?php echo htmlspecialchars(rtrim((string) SITE_URL, '/') . '/iletisim', ENT_QUOTES, 'UTF-8'); ?>">İletişim</a> sayfalarını ziyaret edebilirsiniz.
+                            Hizmet kapsamı, sözleşme koşulları ve varsa sigorta seçenekleri talebe göre yazılı teklifte belirtilir. Detay için
+                            <a href="<?php echo htmlspecialchars($__siteBase . '/belgelerimiz', ENT_QUOTES, 'UTF-8'); ?>">Belgelerimiz</a>
+                            ve <a href="<?php echo htmlspecialchars($__siteBase . '/iletisim', ENT_QUOTES, 'UTF-8'); ?>">İletişim</a> sayfalarını ziyaret edebilirsiniz.
                         </div>
                     </div>
                 </div>

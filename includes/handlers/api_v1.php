@@ -596,6 +596,27 @@ function mynak_api_emit_blog_single(mysqli $conn, string $slug): bool
     }
 
     $base = mynak_api_site_url();
+    if (!function_exists('seo_runtime_author_is_organization_identity')) {
+        require_once dirname(__DIR__) . '/seo_runtime/author_resolver.php';
+    }
+    $organizationName = function_exists('mynak_schema_brand') ? mynak_schema_brand() : 'MY Nakliyat';
+    $author = [
+        '@type' => 'Organization',
+        '@id' => $base . '/#organization',
+        'name' => $organizationName,
+        'url' => $base . '/',
+    ];
+    $authorName = trim((string) ($row['author_name'] ?? ''));
+    if ($authorName !== '' && !seo_runtime_author_is_organization_identity($authorName, $organizationName)) {
+        $author = [
+            '@type' => 'Person',
+            'name' => $authorName,
+            'slug' => (string) ($row['author_slug'] ?? ''),
+            'jobTitle' => (string) ($row['author_title'] ?? ''),
+            'description' => (string) ($row['author_bio'] ?? ''),
+            'url' => $row['author_url'] ? (string) $row['author_url'] : null,
+        ];
+    }
     $payload = [
         'version' => '1.0',
         'generated_at' => gmdate('c'),
@@ -615,17 +636,7 @@ function mynak_api_emit_blog_single(mysqli $conn, string $slug): bool
             'name' => (string) $row['kategori_ad'],
             'slug' => (string) $row['kategori_slug'],
         ] : null,
-        'author' => $row['author_name'] ? [
-            'name' => (string) $row['author_name'],
-            'slug' => (string) $row['author_slug'],
-            'title' => (string) $row['author_title'],
-            'bio' => (string) $row['author_bio'],
-            'url' => $row['author_url'] ? (string) $row['author_url'] : null,
-            'email' => $row['author_email'] ? (string) $row['author_email'] : null,
-            'knows_about' => $row['author_knows_about']
-                ? array_values(array_filter(array_map('trim', explode(',', (string) $row['author_knows_about']))))
-                : [],
-        ] : null,
+        'author' => $author,
         'tags' => array_values(array_filter(array_map('trim', explode(',', (string) ($row['etiketler'] ?? ''))))),
         'url' => $base . '/' . $slug,
         'markdown_url' => $base . '/' . $slug . '?format=markdown',
@@ -653,10 +664,17 @@ function mynak_api_emit_authors(mysqli $conn): bool
     }
 
     $base = mynak_api_site_url();
+    if (!function_exists('seo_runtime_author_is_organization_identity')) {
+        require_once dirname(__DIR__) . '/seo_runtime/author_resolver.php';
+    }
+    $organizationName = function_exists('mynak_schema_brand') ? mynak_schema_brand() : 'MY Nakliyat';
     $items = [];
     $r = $conn->query("SELECT a.*, (SELECT COUNT(*) FROM blog_posts WHERE author_id = a.id AND durum = 3) AS post_count FROM authors a WHERE a.status = 1 ORDER BY a.is_default DESC, a.name ASC");
     if ($r) {
         while ($row = $r->fetch_assoc()) {
+            if (seo_runtime_author_is_organization_identity((string) ($row['name'] ?? ''), $organizationName)) {
+                continue;
+            }
             $url = trim((string) ($row['url'] ?? ''));
             if ($url !== '' && $url[0] === '/') {
                 $url = $base . $url;
@@ -733,7 +751,7 @@ function mynak_api_emit_locations(): bool
             'İstanbul', 'Ankara', 'Bursa', 'Antalya', 'Muğla', 'Aydın', 'Manisa', 'Denizli',
             'Eskişehir', 'Konya', 'Kocaeli', 'Sakarya', 'Tekirdağ', 'Balıkesir',
         ],
-        'note' => 'Tüm 81 il için şehirler arası nakliyat hizmeti verilir. Listede sık tercih edilen iller var.',
+        'note' => 'Yayımlanan şehir sayfaları ve şehirler arası hizmet kapsamı kanonik bağlantılar üzerinden sunulur.',
     ];
     mynak_api_cache_write('locations', $payload);
     mynak_api_send_json($payload);

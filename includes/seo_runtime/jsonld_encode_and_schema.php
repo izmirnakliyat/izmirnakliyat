@@ -22,9 +22,14 @@ function seo_runtime_ld_script_from_array(array $schema): string
 
 function seo_runtime_schema_origin(string $canonicalOrigin = ''): string
 {
-    $origin = rtrim(trim($canonicalOrigin), '/');
-    if ($origin !== '' && filter_var($origin, FILTER_VALIDATE_URL)) {
-        return $origin;
+    $url = rtrim(trim($canonicalOrigin), '/');
+    if ($url !== '' && filter_var($url, FILTER_VALIDATE_URL)) {
+        $scheme = (string) (parse_url($url, PHP_URL_SCHEME) ?? '');
+        $host = (string) (parse_url($url, PHP_URL_HOST) ?? '');
+        $port = parse_url($url, PHP_URL_PORT);
+        if ($scheme !== '' && $host !== '') {
+            return $scheme . '://' . $host . (is_int($port) ? ':' . $port : '');
+        }
     }
 
     return defined('SITE_URL')
@@ -851,7 +856,7 @@ function schema_factory_build_moving_company_graph(array $site_settings, string 
             ? $site_settings['site_description']
             : (!empty($site_settings['short_description'])
                 ? $site_settings['short_description']
-                : 'MY Nakliyat ® Evden eve nakliyat, Ofis taşıma, Eşya Depolama, Parça eşya taşıma & Şehirler arası nakliyatı sağlayan Güvenilir Marka ödüllü İzmir nakliyat firmasıdır.'),
+                : 'MY Nakliyat; evden eve nakliyat, ofis taşıma, eşya depolama, parça eşya taşıma ve şehirler arası nakliyat hizmetleri sunan İzmir merkezli taşıma firmasıdır.'),
         'address' => [
             '@type' => 'PostalAddress',
             'streetAddress' => !empty($site_settings['address'])
@@ -917,8 +922,7 @@ function schema_factory_build_moving_company_graph(array $site_settings, string 
         $moving_company_schema['aggregateRating'] = $gbpAgg;
     }
 
-    // ---- E-E-A-T zenginlestirme: Brand + Award + foundingDate + slogan + knowsAbout ----
-    // AI Overview / ChatGPT / Perplexity, "guvenilir / odullu / uzman" sinyallerini bu alanlardan okur.
+    // E-E-A-T: yalnızca hizmet kapsamından doğrulanabilen marka ve uzmanlık ilişkileri.
     $brandTrust = seo_runtime_schema_brand_trust_layer($brand, $canonical_origin);
     foreach ($brandTrust as $k => $v) {
         $moving_company_schema[$k] = $v;
@@ -947,8 +951,7 @@ function schema_factory_build_moving_company_graph(array $site_settings, string 
 }
 
 /**
- * Marka guven katmani — schema.org alanlari ile "Guvenilir / Odullu / Uzman" sinyalleri.
- * Tum degerler ya site_settings'tan ya da defansif default'lardan gelir; uydurma yok.
+ * Marka güven katmanı — yalnızca kanonik hizmet kapsamıyla doğrulanabilen alanlar.
  *
  * @return array<string, mixed>
  */
@@ -963,25 +966,7 @@ function seo_runtime_schema_brand_trust_layer(string $brand, string $canonical_o
         '@id' => seo_runtime_schema_brand_id($canonical_origin),
     ];
 
-    // Slogan (kullanici beyani: 'Guvenilir Marka Odullu Nakliye Firmasi')
-    $out['slogan'] = 'Güvenilir Marka Ödüllü Nakliye Firması';
-
-    // Award listesi — Hakkimizda > "Kalite Belgeleri ve Odüller" ile birebir senkron.
-    // Yeni odul eklendikce: (1) bu liste, (2) Hakkimizda sayfa icerigi,
-    // (3) llms-full-tr.txt Bolum 6, (4) sayfa.php trust badge — DORDU birlikte guncellenir.
-    $out['award'] = [
-        '2024 — ISO 9001 Belgeli İlk Nakliye Firması',
-        '2023 — En İyi Şehirler Arası Nakliyat Firması Ödülü',
-        '2022 — En Çok Tercih Edilen Kurumsal Nakliyat Firması',
-        '2018, 2020, 2022 — Güvenilir Marka Ödülleri',
-        '2016 — Türkiye Altın Marka Ödülü',
-        '2014 — Yılın Lider Taşımacılık Markası',
-    ];
-
-    // foundingDate — marka faaliyet başlangıcı (kanonik: 2001).
-    $out['foundingDate'] = '2001';
-
-    // knowsAbout — uzmanlik alanlari (AI'lar bunu "domain authority" sinyali olarak kullanir).
+    // knowsAbout yalnızca yayımlanan kanonik hizmet alanlarından türetilir.
     $out['knowsAbout'] = [
         'Evden eve nakliyat',
         'Şehirler arası nakliyat',
@@ -1168,56 +1153,47 @@ function seo_runtime_schema_extra_same_as(array $site_settings): array
 }
 
 /**
- * GBP rating → AggregateRating (şema). Iki kaynak: 1) cache/gbp_data.json, 2) settings tablosu.
- * Yapay zeka kaynak gosterimi (AI Overview, ChatGPT, Perplexity) icin kritik.
- *
- * @return array<string, mixed>|null
+ * @param array<string,mixed> $data
+ * @return array<string,mixed>|null
  */
-function seo_runtime_schema_aggregate_rating_from_gbp_cache(): ?array
+function seo_runtime_schema_aggregate_rating_from_gbp_data(array $data): ?array
 {
-    $rating = null;
-    $count = 0;
-
-    // 1) Cache (Places API otomatik veya manuel seed)
-    if (function_exists('mynak_gbp_cache_file_path')) {
-        $path = mynak_gbp_cache_file_path();
-        if (is_readable($path)) {
-            $j = json_decode((string) file_get_contents($path), true);
-            if (is_array($j) && isset($j['rating']) && is_numeric($j['rating'])) {
-                $rating = (string) $j['rating'];
-                $count = (int) ($j['user_ratings_total'] ?? 0);
-            }
-        }
+    if (($data['source'] ?? '') !== 'places_details') {
+        return null;
     }
 
-    // 2) Fallback: settings tablosu (cache yoksa)
-    if ($rating === null && isset($GLOBALS['conn']) && $GLOBALS['conn'] instanceof mysqli) {
-        $res = @$GLOBALS['conn']->query(
-            "SELECT name, value FROM settings WHERE name IN ('google_place_rating','google_total_reviews')"
-        );
-        if ($res) {
-            $tmp = [];
-            while ($row = $res->fetch_assoc()) {
-                $tmp[$row['name']] = (string) $row['value'];
-            }
-            if (isset($tmp['google_place_rating']) && is_numeric($tmp['google_place_rating'])) {
-                $rating = $tmp['google_place_rating'];
-                $count = (int) ($tmp['google_total_reviews'] ?? 0);
-            }
-        }
-    }
-
-    if ($rating === null || $count < 1) {
+    $rating = $data['rating'] ?? null;
+    $count = (int) ($data['user_ratings_total'] ?? 0);
+    if (!is_numeric($rating) || (float) $rating <= 0 || (float) $rating > 5 || $count < 1) {
         return null;
     }
 
     return [
         '@type' => 'AggregateRating',
-        'ratingValue' => $rating,
+        'ratingValue' => (string) $rating,
         'reviewCount' => $count,
         'bestRating' => '5',
         'worstRating' => '1',
     ];
+}
+
+/**
+ * @return array<string, mixed>|null
+ */
+function seo_runtime_schema_aggregate_rating_from_gbp_cache(): ?array
+{
+    if (!function_exists('mynak_gbp_cache_file_path')) {
+        return null;
+    }
+
+    $path = mynak_gbp_cache_file_path();
+    if (!is_readable($path)) {
+        return null;
+    }
+
+    $data = json_decode((string) file_get_contents($path), true);
+
+    return is_array($data) ? seo_runtime_schema_aggregate_rating_from_gbp_data($data) : null;
 }
 
 /**
@@ -1331,11 +1307,8 @@ function schema_factory_page_type_ld_fragment(
 
             $svc['offers'] = [
                 '@type' => 'Offer',
-                'availability' => 'https://schema.org/InStock',
                 'businessFunction' => 'https://schema.org/Sell',
-                'priceCurrency' => 'TRY',
-                'price' => '0',
-                'description' => 'Ücretsiz ekspertiz ve yazılı teklif; sigorta kapsamı ve sözleşme maddeleri keşif sonrası net olarak paylaşılır.',
+                'description' => 'Talep bilgilerine göre yazılı teklif hazırlanır; sözleşme ve güvence seçeneklerinin kapsamı teklif aşamasında belirtilir.',
                 'url' => rtrim($canonical_origin, '/') . '/teklif-alin',
                 'seller' => ['@id' => $moving_company_at_id],
             ];
@@ -1360,7 +1333,7 @@ function schema_factory_page_type_ld_fragment(
             // Service.serviceOutput — hizmetin somut çıktısı (yazılı teklif + sigorta + sözleşme).
             $svc['serviceOutput'] = [
                 '@type' => 'Thing',
-                'name' => 'Yazılı teklif, sigortalı taşıma ve sözleşmeli hizmet çıktısı',
+                'name' => 'Yazılı teklif ile kapsamı belirtilen sözleşme ve güvence seçenekleri',
             ];
 
             // aggregateRating Service üzerinde kullanılmaz (GSC Review snippets: geçersiz parent_node).
@@ -1448,10 +1421,7 @@ function schema_factory_page_type_ld_fragment(
             $authorNode = seo_runtime_resolve_blog_author($blog, $site_settings, $orgId, $orgName, $origin);
             $datePub = (string) ($bp['date_published'] ?? '');
             $dateMod = (string) ($bp['date_modified'] ?? '');
-            if ($datePub === '') {
-                $datePub = date('Y-m-d');
-            }
-            if ($dateMod === '') {
+            if ($dateMod === '' && $datePub !== '') {
                 $dateMod = $datePub;
             }
             $schema = [
@@ -1465,8 +1435,6 @@ function schema_factory_page_type_ld_fragment(
                 ],
                 'isPartOf' => ['@id' => seo_runtime_schema_website_id($canonical_origin)],
                 'author' => $authorNode,
-                'datePublished' => $datePub,
-                'dateModified' => $dateMod,
                 'publisher' => $orgId !== ''
                     ? ['@id' => $orgId]
                     : [
@@ -1477,29 +1445,24 @@ function schema_factory_page_type_ld_fragment(
                 'articleBody' => (string) ($bp['article_body_plain'] ?? ''),
                 'wordCount' => (int) ($bp['word_count'] ?? 0),
             ];
+            if ($datePub !== '') {
+                $schema['datePublished'] = $datePub;
+            }
+            if ($dateMod !== '') {
+                $schema['dateModified'] = $dateMod;
+            }
             $img = (string) ($bp['image_url'] ?? '');
-            $imgW = (int) ($bp['image_width'] ?? 1200);
-            $imgH = (int) ($bp['image_height'] ?? 675);
-            if ($imgW < 1) {
-                $imgW = 1200;
-            }
-            if ($imgH < 1) {
-                $imgH = 675;
-            }
+            $imgW = (int) ($bp['image_width'] ?? 0);
+            $imgH = (int) ($bp['image_height'] ?? 0);
             if ($img !== '') {
                 $schema['image'] = [
                     '@type' => 'ImageObject',
                     'url' => $img,
-                    'width' => $imgW,
-                    'height' => $imgH,
                 ];
-            } else {
-                $schema['image'] = [
-                    '@type' => 'ImageObject',
-                    'url' => $origin . 'uploads/logo/my-nakliyat-logo.webp',
-                    'width' => 1200,
-                    'height' => 675,
-                ];
+                if ($imgW > 0 && $imgH > 0) {
+                    $schema['image']['width'] = $imgW;
+                    $schema['image']['height'] = $imgH;
+                }
             }
             if ($postUrl !== '') {
                 $schema['url'] = $postUrl;
@@ -1854,28 +1817,41 @@ function seo_runtime_schema_case_study_review_node(string $canonical, string $or
         return null;
     }
     $body = trim((string) ($caseStudy['musteri_yorumu'] ?? ''));
-    if ($body === '') {
+    $reviewerName = trim((string) ($caseStudy['musteri_ad'] ?? ''));
+    if (!function_exists('mynak_blog_service_context')) {
+        require_once __DIR__ . '/service_guide_hubs.php';
+    }
+    $serviceContext = function_exists('mynak_blog_service_context')
+        ? mynak_blog_service_context($caseStudy)
+        : null;
+    if ($body === '' || $reviewerName === '' || !is_array($serviceContext)) {
         return null;
     }
+    $serviceId = rtrim(seo_runtime_schema_origin($canonical), '/')
+        . '/' . ltrim((string) $serviceContext['service_slug'], '/') . '#service';
     $node = [
         '@type' => 'Review',
         '@id' => rtrim($canonical, '/') . '#review',
         'url' => $canonical,
-        'itemReviewed' => ['@id' => $organizationId],
-        'reviewRating' => [
-            '@type' => 'Rating',
-            'ratingValue' => (string) (float) ($caseStudy['puan'] ?? 5),
-            'bestRating' => '5',
-            'worstRating' => '1',
-        ],
+        'itemReviewed' => ['@id' => $serviceId],
+        'publisher' => ['@id' => $organizationId],
         'name' => (string) ($caseStudy['baslik'] ?? 'Müşteri Hikayesi'),
         'reviewBody' => $body,
         'author' => [
             '@type' => 'Person',
-            'name' => (string) ($caseStudy['musteri_ad'] ?? 'MY Nakliyat Müşterisi'),
+            'name' => $reviewerName,
         ],
         'isPartOf' => ['@id' => seo_runtime_schema_webpage_id($canonical)],
     ];
+    $rating = (float) ($caseStudy['puan'] ?? 0);
+    if ($rating > 0 && $rating <= 5) {
+        $node['reviewRating'] = [
+            '@type' => 'Rating',
+            'ratingValue' => (string) $rating,
+            'bestRating' => '5',
+            'worstRating' => '1',
+        ];
+    }
     if (!empty($caseStudy['created_at'])) {
         $timestamp = strtotime((string) $caseStudy['created_at']);
         if ($timestamp !== false) {

@@ -18,6 +18,43 @@ if (defined('MYNAK_SEO_AUTHOR_RESOLVER_LOADED')) {
 }
 define('MYNAK_SEO_AUTHOR_RESOLVER_LOADED', true);
 
+function seo_runtime_author_is_organization_identity(string $name, string $orgName): bool
+{
+    $normalized = mb_strtolower(trim($name), 'UTF-8');
+    $normalizedOrg = mb_strtolower(trim($orgName), 'UTF-8');
+    if ($normalized === '' || ($normalizedOrg !== '' && $normalized === $normalizedOrg)) {
+        return true;
+    }
+    foreach ([
+        'my nakliyat', 'site editörü', 'site editoru', 'nakliye uzmanı', 'nakliye uzmani',
+        'nakliye ekspertizi', 'müşteri ilişkileri', 'musteri iliskileri', 'içerik ekibi',
+        'icerik ekibi', 'editör ekibi', 'editor ekibi', 'yayın ekibi', 'yayin ekibi',
+    ] as $term) {
+        if (str_contains($normalized, $term)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+/**
+ * @return array<string,mixed>
+ */
+function seo_runtime_author_organization_node(string $orgId, string $orgName, string $origin): array
+{
+    $node = [
+        '@type' => 'Organization',
+        'name' => $orgName,
+        'url' => $origin,
+    ];
+    if ($orgId !== '') {
+        $node['@id'] = $orgId;
+    }
+
+    return $node;
+}
+
 /**
  * Authors tablosundan ham satır okur. Tablo yoksa veya sorgu başarısızsa null.
  *
@@ -193,13 +230,22 @@ function seo_runtime_resolve_blog_author(?array $blog, array $site_settings, str
     }
     $row = seo_runtime_author_row($authorId);
     if (is_array($row)) {
+        $rowName = trim((string) ($row['name'] ?? ''));
+        if (seo_runtime_author_is_organization_identity($rowName, $orgName)) {
+            return seo_runtime_author_organization_node($orgId, $orgName, $origin);
+        }
+
         return seo_runtime_author_row_to_person($row, $orgId, $orgName, $origin);
     }
 
     // 2) Eski blog.yazar_adi (geriye uyum)
     if (is_array($blog) && !empty($blog['yazar_adi'])) {
+        $legacyName = trim((string) $blog['yazar_adi']);
+        if (seo_runtime_author_is_organization_identity($legacyName, $orgName)) {
+            return seo_runtime_author_organization_node($orgId, $orgName, $origin);
+        }
         $legacyRow = [
-            'name' => (string) $blog['yazar_adi'],
+            'name' => $legacyName,
             'title' => (string) ($site_settings['blog_default_author_title'] ?? ''),
             'bio' => (string) ($site_settings['blog_default_author_bio'] ?? ''),
             'url' => (string) ($site_settings['blog_default_author_url'] ?? ''),
@@ -210,20 +256,15 @@ function seo_runtime_resolve_blog_author(?array $blog, array $site_settings, str
     }
 
     // 3) settings fallback
+    $settingsName = trim((string) ($site_settings['blog_default_author_name'] ?? ''));
+    if ($settingsName !== '' && seo_runtime_author_is_organization_identity($settingsName, $orgName)) {
+        return seo_runtime_author_organization_node($orgId, $orgName, $origin);
+    }
     $fromSettings = seo_runtime_author_person_from_settings($site_settings, $orgId, $orgName, $origin);
     if (is_array($fromSettings)) {
         return $fromSettings;
     }
 
     // 4) En son: Organization (publisher)
-    $org = [
-        '@type' => 'Organization',
-        'name' => $orgName,
-        'url' => $origin,
-    ];
-    if ($orgId !== '') {
-        $org['@id'] = $orgId;
-    }
-
-    return $org;
+    return seo_runtime_author_organization_node($orgId, $orgName, $origin);
 }
