@@ -185,6 +185,8 @@ $favicon = isset($site_settings['favicon']) ? (string) $site_settings['favicon']
     <link rel="stylesheet" href="<?php echo ASSET_PATH; ?>css/slider.min.css">
     <link rel="stylesheet" href="<?php echo ASSET_PATH; ?>css/common-style.min.css">
     <link rel="stylesheet" href="<?php echo ASSET_PATH; ?>css/main.min.css">
+    <!-- İyileştirme katmanı: erişilebilirlik + okunabilirlik cilası (en son yüklenir) -->
+    <link rel="stylesheet" href="<?php echo ASSET_PATH; ?>css/mynak-enhance.css?v=20260713">
 
     <?php
     /**

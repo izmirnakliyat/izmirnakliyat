@@ -1,0 +1,91 @@
+/*===================================================
+    MY Nakliyat — İyileştirme (enhancement) katmanı
+    ---------------------------------------------------
+    Yalnızca ÜZERİNE YAZAN (override) kurallar içerir; tema
+    yapısını/konumlandırmayı değiştirmez. En son yüklendiği
+    için erişilebilirlik, okunabilirlik ve mikro-etkileşim
+    cilası ekler. Mevcut CSS değişkenleri (common-style.css)
+    ile uyumludur.
+=====================================================*/
+
+/* --- Metin oluşturma (keskinlik/okunabilirlik) --- */
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+/* Uzun başlıkların dengeli sarılması (destekleyen tarayıcıda);
+   desteklenmezse yok sayılır, mevcut görünüm korunur. */
+h1, h2, h3 {
+    text-wrap: balance;
+}
+
+p {
+    text-wrap: pretty;
+}
+
+/* --- Seçim (selection) rengi marka ile uyumlu --- */
+::selection {
+    background-color: var(--primary-color, #0046ad);
+    color: #fff;
+}
+
+/* --- Erişilebilirlik: klavye odak halkası ---
+   Fare ile tıklamada görünmez (:focus-visible), yalnızca
+   klavye/erişilebilirlik kullanıcıları için belirginleşir. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible,
+.btn:focus-visible {
+    outline: 3px solid var(--primary-color, #0046ad);
+    outline-offset: 2px;
+    border-radius: 3px;
+}
+
+/* --- Sabit üst menü altında çapa (anchor) hizalama --- */
+html {
+    scroll-padding-top: 90px;
+}
+
+:target {
+    scroll-margin-top: 90px;
+}
+
+/* --- Buton mikro-etkileşimi (boyut değişmez, yalnız his) --- */
+.btn {
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.2s ease, color 0.2s ease;
+}
+
+.btn:active {
+    transform: translateY(1px);
+}
+
+/* --- Dokunmatik cihazlarda mavi tap-highlight temizliği --- */
+a, button, .btn, [role="button"] {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* --- Görsellerin taşmasına karşı güvenlik (içerik alanları) --- */
+.blog-detay img,
+.page-content img,
+article img,
+.service-details img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* --- Hareket azaltma tercihi (erişilebilirlik) --- */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+    }
+}
