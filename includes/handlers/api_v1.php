@@ -282,20 +282,24 @@ function mynak_api_emit_entities(mysqli $conn): bool
     $website = seo_runtime_schema_website_home_graph($base, $settings, $organizationId);
     unset($website['@context']);
 
-    $services = seo_runtime_schema_primary_service_nodes($base, $organizationId);
+    $services = seo_runtime_schema_canonical_service_nodes($base, $organizationId);
+    $serviceGraphSlugsByUrl = [];
+    foreach (seo_runtime_canonical_service_definitions() as $definition) {
+        $serviceUrl = seo_rt_primary_service_public_url($base, (string) $definition['graph_slug']);
+        $serviceGraphSlugsByUrl[rtrim($serviceUrl, '/')] = (string) $definition['graph_slug'];
+    }
     $serviceIds = array_values(array_filter(array_map(
         static fn(array $node): string => (string) ($node['@id'] ?? ''),
         $services
     )));
     $contentNodes = [];
     foreach ($services as $index => $service) {
-        $graphSlug = seo_runtime_schema_graph_slug_from_pipeline([], (string) ($service['url'] ?? ''));
-        foreach (seo_rt_primary_service_lines() as $line) {
-            if ((string) $line['public_slug'] === trim((string) parse_url((string) ($service['url'] ?? ''), PHP_URL_PATH), '/')) {
-                $graphSlug = (string) $line['graph_slug'];
-                break;
-            }
-        }
+        $serviceUrl = rtrim((string) ($service['url'] ?? ''), '/');
+        $graphSlug = $serviceGraphSlugsByUrl[$serviceUrl]
+            ?? seo_runtime_schema_graph_slug_from_pipeline(
+                [],
+                trim((string) parse_url($serviceUrl, PHP_URL_PATH), '/')
+            );
         $related = [];
         foreach ($serviceIds as $serviceId) {
             if ($serviceId !== (string) ($service['@id'] ?? '')) {

@@ -110,6 +110,20 @@ final class EntityGraphSchemaTest extends TestCase
         $this->assertSame(0, $status, implode("\n", $output));
     }
 
+    public function testCanonicalServiceNodesCoverEveryPublishedService(): void
+    {
+        $nodes = seo_runtime_schema_canonical_service_nodes(
+            self::ORIGIN,
+            self::ORIGIN . '/#organization'
+        );
+        $ids = array_column($nodes, '@id');
+
+        $this->assertCount(11, $nodes);
+        $this->assertSame($ids, array_values(array_unique($ids)));
+        $this->assertContains(self::ORIGIN . '/antika-piyano-tasimaciligi#service', $ids);
+        $this->assertContains(self::ORIGIN . '/mobil-asansor-kiralama#service', $ids);
+    }
+
     public function testTurkishEntityIdsAreStableAsciiSlugs(): void
     {
         $this->assertSame('izmir', seo_runtime_schema_entity_slug('İzmir'));

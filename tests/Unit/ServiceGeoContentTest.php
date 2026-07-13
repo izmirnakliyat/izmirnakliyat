@@ -15,6 +15,18 @@ final class ServiceGeoContentTest extends TestCase
         require_once PROJECT_ROOT . '/includes/handlers/api_v1.php';
     }
 
+    private function renderLlms(string $uri): string
+    {
+        $path = PROJECT_ROOT . '/llms.php';
+        $code = 'define("SITE_URL", "https://www.mynakliyat.com.tr");'
+            . ' $_SERVER["REQUEST_URI"] = ' . var_export($uri, true) . ';'
+            . ' ob_start(); require ' . var_export($path, true) . '; echo ob_get_clean();';
+        exec(escapeshellarg(PHP_BINARY) . ' -r ' . escapeshellarg($code), $output, $status);
+        $this->assertSame(0, $status, implode("\n", $output));
+
+        return implode("\n", $output);
+    }
+
     public function testEveryPublishedServiceDefinitionHasQuickAnswerAndFiveToTenFaqs(): void
     {
         $slugs = [
@@ -157,6 +169,23 @@ final class ServiceGeoContentTest extends TestCase
         $this->assertStringContainsString('Taşınma Rehberi', $html);
         $this->assertStringNotContainsString('/evden-eve-nakliyat-adim-adim-tasinma-rehberi', $html);
         $this->assertSame(3, substr_count($html, '<li'));
+    }
+
+    public function testLlmsIndexPublishesStableEntityReferences(): void
+    {
+        $output = $this->renderLlms('/llms.txt');
+
+        foreach (['/#organization', '/#brand', '/#website', 'Q140273727', '/api/v1/entities.json'] as $reference) {
+            $this->assertStringContainsString($reference, $output);
+        }
+    }
+
+    public function testLlmsCorpusUsesDistinctMachineReadableHeading(): void
+    {
+        $output = $this->renderLlms('/llms-corpus.txt');
+
+        $this->assertStringStartsWith('# LLMS CORPUS', $output);
+        $this->assertStringContainsString('## MY Nakliyat İçerik Corpus’u', $output);
     }
 
     public function testCanonicalServiceDefinitionsContainNoAliasUrls(): void

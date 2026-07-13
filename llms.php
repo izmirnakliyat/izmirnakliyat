@@ -36,6 +36,13 @@ if (!$isCorpus) {
     echo "# MY Nakliyat\n\n";
     echo "> MY Nakliyat, İzmir merkezli evden eve, şehir içi, şehirler arası, kurumsal, asansörlü ve özel eşya taşıma hizmetleri sunar. Aşağıdaki bağlantılar sitenin kanonik kaynaklarıdır.\n\n";
 
+    echo "## Entity IDs\n\n";
+    echo '- Organization: ' . $siteUrl . "/#organization\n";
+    echo '- Brand: ' . $siteUrl . "/#brand\n";
+    echo '- WebSite: ' . $siteUrl . "/#website\n";
+    echo "- Wikidata: https://www.wikidata.org/wiki/Q140273727\n";
+    echo '- Entity Graph API: ' . $siteUrl . "/api/v1/entities.json\n\n";
+
     echo "## Resmi Kaynaklar\n\n";
     echo '- [Ana Sayfa](' . $siteUrl . "/)\n";
     echo '- [Hakkımızda](' . $siteUrl . "/hakkimizda)\n";
@@ -74,7 +81,8 @@ if (!$isCorpus) {
     return;
 }
 
-echo "# MY Nakliyat İçerik Corpus’u\n\n";
+echo "# LLMS CORPUS\n\n";
+echo "## MY Nakliyat İçerik Corpus’u\n\n";
 echo "Bu corpus, MY Nakliyat'ın kanonik hizmet açıklamalarını, görünür sık sorulan sorularını, ilgili rehberlerini ve doğrulanabilir kurumsal kaynaklarını bir arada sunar. Alıntılarda her bölümde belirtilen kanonik sayfa kullanılmalıdır.\n\n";
 
 echo "## Kuruluş\n\n";
