@@ -2,13 +2,8 @@
 /**
  * Firma aciklamasi kanonik guncelleme — settings tablosu.
  *
- * Eski (DB'de oturan):
- *   "MY Nakliyat (R) ... saglayan odullu ve yuksek puanli Izmir nakliyat firmasidir."
- *   ('Esya Depolama' yok, 'Guvenilir Marka odullu' yerine 'odullu ve yuksek puanli')
- *
- * Yeni (kanonik, kullanici beyani):
- *   "MY Nakliyat (R) Evden eve nakliyat, Ofis tasima, Esya Depolama, Parca esya tasima
- *    & Sehirler arasi nakliyati saglayan Guvenilir Marka odullu Izmir nakliyat firmasidir."
+ * Kurumsal açıklamaları doğrulanabilir hizmet kapsamıyla tek kanonik metinde birleştirir.
+ * Ödül, puan, kuruluş yılı veya üstünlük iddiası üretmez.
  *
  * Etkilenen settings key'leri:
  *   - short_description
@@ -24,20 +19,17 @@
 declare(strict_types=1);
 if (PHP_SAPI !== 'cli') exit("CLI only.\n");
 
-// Direkt mysqli — config/db.php icindeki guard scriptini bypass et (CLI hizli yol).
-$conn = new mysqli('localhost', 'root', '', 'mynakliyat', 3306);
-if ($conn->connect_error) {
-    fwrite(STDERR, 'DB connect error: ' . $conn->connect_error . PHP_EOL);
-    exit(1);
+require __DIR__ . '/../config/db.php';
+if (!isset($conn) || !($conn instanceof mysqli)) {
+    throw new RuntimeException('Veritabanı bağlantısı kurulamadı.');
 }
-$conn->set_charset('utf8mb4');
 
 $apply = in_array('--apply', $argv ?? [], true);
 
-$canonical = 'MY Nakliyat ® Evden eve nakliyat, Ofis taşıma, Eşya Depolama, Parça eşya taşıma & Şehirler arası nakliyatı sağlayan Güvenilir Marka ödüllü İzmir nakliyat firmasıdır.';
+$canonical = 'MY Nakliyat; evden eve nakliyat, ofis taşıma, eşya depolama, parça eşya taşıma ve şehirler arası nakliyat hizmetleri sunan İzmir merkezli taşıma firmasıdır.';
 
 // Meta description (155 karakter siniri kategorisinde olabilir; biraz kisa varyant)
-$canonicalMeta = 'MY Nakliyat ® Evden eve nakliyat, Ofis taşıma, Eşya Depolama, Parça eşya taşıma & Şehirler arası nakliyat. Güvenilir Marka ödüllü İzmir nakliyat firması — 270+ Google yorumu 5,0 puan.';
+$canonicalMeta = 'MY Nakliyat; İzmir evden eve nakliyat, ofis taşıma, eşya depolama, parça eşya ve şehirler arası nakliyat hizmetleri için yazılı teklif sunar.';
 
 $targets = [
     'short_description'        => $canonical,

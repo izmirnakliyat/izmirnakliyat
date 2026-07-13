@@ -6,6 +6,9 @@ declare(strict_types=1);
 
 $page_title = 'Musteri Hikayesi';
 require_once __DIR__ . '/includes/header.php';
+if (!isset($conn) || !($conn instanceof mysqli)) {
+    throw new RuntimeException('Veritabanı bağlantısı kurulamadı.');
+}
 
 $cs = [
     'id' => 0,
@@ -15,7 +18,7 @@ $cs = [
     'icerik' => '',
     'musteri_ad' => '',
     'musteri_yorumu' => '',
-    'puan' => 5.0,
+    'puan' => null,
     'kalkis_il' => '',
     'varis_il' => '',
     'ev_tipi' => '',
@@ -24,7 +27,7 @@ $cs = [
     'gorsel' => '',
     'meta_title' => '',
     'meta_description' => '',
-    'status' => 1,
+    'status' => 0,
 ];
 $flashSuccess = '';
 $flashError = '';
@@ -51,7 +54,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $cs['icerik']           = (string) ($_POST['icerik'] ?? '');
     $cs['musteri_ad']       = trim((string) ($_POST['musteri_ad'] ?? ''));
     $cs['musteri_yorumu']   = trim((string) ($_POST['musteri_yorumu'] ?? ''));
-    $cs['puan']             = (float) ($_POST['puan'] ?? 5.0);
+    $puanRaw = trim((string) ($_POST['puan'] ?? ''));
+    $cs['puan']             = $puanRaw !== '' ? (float) $puanRaw : null;
     $cs['kalkis_il']        = trim((string) ($_POST['kalkis_il'] ?? ''));
     $cs['varis_il']         = trim((string) ($_POST['varis_il'] ?? ''));
     $cs['ev_tipi']          = trim((string) ($_POST['ev_tipi'] ?? ''));
@@ -60,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $cs['gorsel']           = trim((string) ($_POST['gorsel'] ?? ''));
     $cs['meta_title']       = trim((string) ($_POST['meta_title'] ?? ''));
     $cs['meta_description'] = trim((string) ($_POST['meta_description'] ?? ''));
-    $cs['status']           = isset($_POST['status']) ? (int) $_POST['status'] : 1;
+    $cs['status']           = isset($_POST['status']) ? (int) $_POST['status'] : 0;
 
     if ($cs['slug'] === '') {
         $cs['slug'] = mb_strtolower($cs['baslik'], 'UTF-8');
@@ -75,8 +79,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($cs['baslik'] === '' || $cs['slug'] === '') {
         $flashError = 'Baslik ve slug zorunludur.';
     } else {
-        if ($cs['puan'] < 1) { $cs['puan'] = 1.0; }
-        if ($cs['puan'] > 5) { $cs['puan'] = 5.0; }
+        if ($cs['puan'] !== null && $cs['puan'] < 1) { $cs['puan'] = 1.0; }
+        if ($cs['puan'] !== null && $cs['puan'] > 5) { $cs['puan'] = 5.0; }
         $tasimaTarihi = $cs['tasima_tarihi'] !== '' ? $cs['tasima_tarihi'] : null;
 
         if ($editId > 0) {
@@ -159,7 +163,7 @@ if (isset($_GET['saved'])) { $flashSuccess = 'Hikaye olusturuldu.'; }
                         <input type="text" name="musteri_ad" class="form-control" maxlength="120" value="<?php echo htmlspecialchars((string) $cs['musteri_ad']); ?>" placeholder="Or: Mehmet K.">
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label">Puan (1.0 - 5.0)</label>
+                        <label class="form-label">Puan (doğrulanmışsa, 1.0 - 5.0)</label>
                         <input type="number" step="0.5" min="1" max="5" name="puan" class="form-control" value="<?php echo htmlspecialchars((string) $cs['puan']); ?>">
                     </div>
                     <div class="col-12">
