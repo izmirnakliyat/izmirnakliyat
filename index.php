@@ -373,12 +373,17 @@ require_once __DIR__ . '/includes/header.php';
                 <?php foreach ($services as $service): ?>
                     <div class="col-lg-4 col-md-6">
                         <?php
-                        // Kart linki: tek kaynak = hizmet slug'ı → kendi detay sayfası. Slug boşsa link yok.
+                        // Kart linki: admin "Hizmetler" bölümündeki yazılı link (services.link) önceliklidir;
+                        // boşsa hizmet slug'ından kendi detay sayfasına düşer. İkisi de boşsa kart bağlantısız.
+                        $svcLink = trim((string) ($service['link'] ?? ''));
                         $svcSlug = trim((string) ($service['slug'] ?? ''), '/');
-                        $svcCardUrl = $svcSlug !== '' ? mynak_abs_url_from_public_path(mynak_public_path($svcSlug)) : '';
+                        $svcCardUrl = $svcLink !== ''
+                            ? $svcLink
+                            : ($svcSlug !== '' ? mynak_abs_url_from_public_path(mynak_public_path($svcSlug)) : '');
+                        $svcRel = ($svcLink !== '' && strpos($svcLink, 'http') === 0) ? ' rel="noopener"' : '';
                         ?>
                         <?php if ($svcCardUrl !== ''): ?>
-                            <a href="<?php echo htmlspecialchars($svcCardUrl, ENT_QUOTES, 'UTF-8'); ?>" class="service-link-wrapper">
+                            <a href="<?php echo htmlspecialchars($svcCardUrl, ENT_QUOTES, 'UTF-8'); ?>" class="service-link-wrapper"<?php echo $svcRel; ?>>
                         <?php endif; ?>
                         <div class="service-item wow fade-in-bottom" data-wow-delay="<?php echo $delay; ?>ms">
                             <div class="service-thumb">
