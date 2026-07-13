@@ -373,14 +373,15 @@ require_once __DIR__ . '/includes/header.php';
                 <?php foreach ($services as $service): ?>
                     <div class="col-lg-4 col-md-6">
                         <?php
-                        // Kart linki: admin "Hizmetler" bölümündeki yazılı link (services.link) önceliklidir;
-                        // boşsa hizmet slug'ından kendi detay sayfasına düşer. İkisi de boşsa kart bağlantısız.
-                        $svcLink = trim((string) ($service['link'] ?? ''));
+                        // Kart linki: her hizmet kartı kendi slug detay sayfasına eşleşir
+                        // (ör. izmir-evden-eve-nakliyat → /izmir-evden-eve-nakliyat). Slug boşsa
+                        // admin "Hizmetler" bölümündeki yazılı link'e düşer; ikisi de boşsa bağlantısız.
                         $svcSlug = trim((string) ($service['slug'] ?? ''), '/');
-                        $svcCardUrl = $svcLink !== ''
-                            ? $svcLink
-                            : ($svcSlug !== '' ? mynak_abs_url_from_public_path(mynak_public_path($svcSlug)) : '');
-                        $svcRel = ($svcLink !== '' && strpos($svcLink, 'http') === 0) ? ' rel="noopener"' : '';
+                        $svcLink = trim((string) ($service['link'] ?? ''));
+                        $svcCardUrl = $svcSlug !== ''
+                            ? mynak_abs_url_from_public_path(mynak_public_path($svcSlug))
+                            : $svcLink;
+                        $svcRel = ($svcSlug === '' && $svcLink !== '' && strpos($svcLink, 'http') === 0) ? ' rel="noopener"' : '';
                         ?>
                         <?php if ($svcCardUrl !== ''): ?>
                             <a href="<?php echo htmlspecialchars($svcCardUrl, ENT_QUOTES, 'UTF-8'); ?>" class="service-link-wrapper"<?php echo $svcRel; ?>>
