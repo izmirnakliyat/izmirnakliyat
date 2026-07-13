@@ -370,6 +370,7 @@ function seo_runtime_service_content_key(string $slug): string
         'piyano-tasima' => 'antika-piyano-tasimaciligi',
         'piyano-tasimaciligi' => 'antika-piyano-tasimaciligi',
         'antika-tasima' => 'antika-piyano-tasimaciligi',
+        'antika-ve-piyano-tasima' => 'antika-piyano-tasimaciligi',
         'mobilya-montaj' => 'mobilya-montaj-kurulum',
         'esya-deposu' => 'esya-depolama',
         'izmir-esya-depolama' => 'esya-depolama',

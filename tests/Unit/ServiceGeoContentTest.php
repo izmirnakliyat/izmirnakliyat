@@ -89,6 +89,7 @@ final class ServiceGeoContentTest extends TestCase
         $html = seo_runtime_service_generated_faq_html('antika-piyano-tasimaciligi');
 
         $this->assertCount(6, $pairs);
+        $this->assertCount(6, seo_runtime_service_published_faq_pairs('antika-ve-piyano-tasima'));
         $this->assertSame(6, substr_count($html, '<details'));
         foreach ($pairs as $pair) {
             $this->assertStringContainsString(
