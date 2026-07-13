@@ -47,3 +47,14 @@ phpstan-tmp-*
 tmp_*.html
 tmp_*.txt
 tmp_*.php
+
+# Editör/otomatik yedek dosyaları (ör. dosya~20260628...~)
+*~
+*.orig
+*.bak
+
+# Zaman damgalı kaynak yedekleri (ör. process_form.php.backup.2025...)
+*.backup.*
+
+# Composer çalıştırılabilir arşivi (araç; repoda tutulmaz)
+composer.phar
