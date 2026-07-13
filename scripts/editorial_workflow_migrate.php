@@ -24,6 +24,9 @@
 declare(strict_types=1);
 
 require __DIR__ . '/../config/db.php';
+if (!isset($conn) || !($conn instanceof mysqli)) {
+    throw new RuntimeException('Veritabanı bağlantısı kurulamadı.');
+}
 
 $DRY_RUN       = in_array('--dry-run', $argv, true);
 $REASSIGN_ALL  = in_array('--reassign-all', $argv, true);
