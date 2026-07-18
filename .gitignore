@@ -47,3 +47,7 @@ phpstan-tmp-*
 tmp_*.html
 tmp_*.txt
 tmp_*.php
+
+# cPanel/FTP tilde yedekleri ve tarihli .backup dosyaları (tekrar commit'lenmesin)
+*~
+*.backup.*
