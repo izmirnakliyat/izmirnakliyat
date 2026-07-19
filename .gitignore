@@ -9,9 +9,9 @@ cache/
 *.log
 error_log
 
-# Yüklemeler (depo şişmesin; geri alma çoğunlukla kod içindir)
-uploads/
-wp-content/
+# Büyük yedek arşivler
+mynakliyat.zip
+.cursor_sc_drilldown.zip
 
 # Yedek klasörü
 .snapshots/
@@ -39,7 +39,15 @@ tools/phpstan.phar
 .phpstan.cache/
 phpstan-tmp-*
 
+# PHPUnit
+.phpunit.cache/
+.phpunit.result.cache
+
 # Geçici test dosyaları
 tmp_*.html
 tmp_*.txt
 tmp_*.php
+
+# cPanel/FTP tilde yedekleri ve tarihli .backup dosyaları (tekrar commit'lenmesin)
+*~
+*.backup.*

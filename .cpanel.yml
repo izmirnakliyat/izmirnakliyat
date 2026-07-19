@@ -1,0 +1,15 @@
+---
+# cPanel Git™ Version Control dağıtım tanımı.
+# cPanel bu dosyayı klonlanan repoda bulur ve "Deploy HEAD Commit" ile aşağıdaki
+# görevleri çalıştırır. NOT: Otomatik dağıtım için hesapta shell/SSH erişimi gerekir.
+#
+# Güvenlik: canlı .env ASLA yüklenmez/üzerine yazılmaz; büyük medya (uploads, wp-content)
+# ayrı yönetilir ve dokunulmaz; --delete kullanılmaz (canlıdaki dosyalar silinmez).
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/mynakliyattr/public_html  # pragma: allowlist secret
+    - /usr/bin/rsync -a --exclude='.git' --exclude='.gitignore' --exclude='.gitattributes' --exclude='.env' --exclude='.env.example' --exclude='vendor' --exclude='logs' --exclude='cache' --exclude='node_modules' --exclude='.cursor' --exclude='.cursor_sc_drilldown' --exclude='uploads' --exclude='wp-content' --exclude='deploy' --exclude='tests' --exclude='composer.phar' --exclude='composer.lock' --exclude='tools/phpstan.phar' --exclude='.cpanel.yml' --exclude='AGENTS.md' --exclude='*~' ./ "$DEPLOYPATH/"
+    # Canlı temizlik: yalnızca site kökü (DEPLOYPATH) altındaki cPanel/FTP tilde yedekleri ve .php.backup dosyaları
+    # (aktif dosyalara, medyaya ve diğer sitelere dokunmaz; idempotent — her deploy'da güvenle çalışır).
+    - /usr/bin/find "$DEPLOYPATH" -type f -name '*~' -delete || true
+    - /usr/bin/find "$DEPLOYPATH" -type f -name '*.php.backup.*' -delete || true

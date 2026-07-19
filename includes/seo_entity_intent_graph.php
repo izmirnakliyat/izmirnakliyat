@@ -152,8 +152,12 @@ function seo_ei_izmir_metro_district_location_defs(): array
 function seo_ei_izmir_district_names_local_pack_order(): array
 {
     return [
-        'Konak', 'Karşıyaka', 'Bornova', 'Buca', 'Çiğli', 'Gaziemir', 'Balçova',
-        'Narlıdere', 'Güzelbahçe', 'Bayraklı', 'Alsancak',
+        // Merkez / yüksek yoğunluklu metropol ilçeleri (yerel paket önceliği)
+        'Konak', 'Karşıyaka', 'Bornova', 'Buca', 'Bayraklı', 'Karabağlar',
+        'Gaziemir', 'Balçova', 'Narlıdere', 'Çiğli', 'Güzelbahçe', 'Alsancak',
+        // Genişletilmiş İzmir hizmet bölgesi ilçeleri (areaServed kapsamı)
+        'Menemen', 'Torbalı', 'Menderes', 'Kemalpaşa', 'Urla', 'Aliağa',
+        'Seferihisar', 'Foça',
     ];
 }
 
@@ -209,9 +213,29 @@ function seo_ei_merge_related_with_intents(
     float $weight,
     string $lookup
 ): array {
-    unset($slug, $pillar, $defs, $weight, $lookup);
+    unset($pillar, $weight, $lookup);
+    $related = array_values(array_unique(array_map('strval', $related)));
 
-    return array_values(array_unique(array_map('strval', $related)));
+    // Yalnızca İzmir ilçe hizmet sayfalarında: kullanıcının doğal sonraki adımı olan
+    // ana hizmet + fiyat + teklif hublarını mevcut "İlgili sayfalar" bloğunda öne al.
+    // İlçe dışı tüm slug'larda davranış değişmez (eski no-op ile birebir aynı).
+    if ($slug === '' || !function_exists('mynak_faz2_is_ilce_slug') || !mynak_faz2_is_ilce_slug($slug)) {
+        return $related;
+    }
+
+    // Öncelikli hublar — yalnızca cluster tanımında GERÇEKTEN var olanlar (yeni URL üretilmez)
+    // ve sayfanın kendisi olmayanlar. Sıra: ana hizmet → teklif → fiyat.
+    $priorityHubs = ['izmir-evden-eve-nakliyat', 'teklif-alin', 'fiyat'];
+    $front = [];
+    foreach ($priorityHubs as $hub) {
+        if ($hub !== $slug && isset($defs[$hub])) {
+            $front[] = $hub;
+        }
+    }
+
+    // Öne alınanlar + mevcut ilgili linkler; tekrarsız (aynı hedefe çift link yok).
+    // Nihai kırpma (≤6) ve render değişmeden downstream'de yapılır.
+    return array_values(array_unique(array_merge($front, $related)));
 }
 
 /**

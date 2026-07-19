@@ -32,6 +32,8 @@ if (isset($conn) && $conn instanceof mysqli) {
 
 $site_url = defined('SITE_URL') ? rtrim((string) SITE_URL, '/') : '';
 $defs = seo_rt_pillar_cluster_definitions();
+// /llms-corpus.txt → front_controller.php $_GET['full']='1' ayarlar (index ile aynı grafik + tam içerik gövdesi).
+$is_corpus = !empty($_GET['full']);
 
 $llms_pipeline = canonical_seo_pipeline_core([
     'relPath' => seo_runtime_compute_rel_path_from_request_uri($_SERVER['REQUEST_URI'] ?? '/llms.txt'),
@@ -44,7 +46,9 @@ $llms_ctx = isset($llms_pipeline['llms_export_context']) && is_array($llms_pipel
     ? $llms_pipeline['llms_export_context'] : [];
 $layout = isset($llms_ctx['section_layout']) && is_array($llms_ctx['section_layout']) ? $llms_ctx['section_layout'] : [];
 
-echo "# LLMS — CANONICAL (canlı); /llms-full-tr.* = NON-CANONICAL politika özeti.\n\n";
+echo $is_corpus
+    ? "# LLMS-CORPUS — CANONICAL (canlı; tam içerik gövdesi dahil); /llms-full-tr.* = NON-CANONICAL politika özeti.\n\n"
+    : "# LLMS — CANONICAL (canlı); /llms-full-tr.* = NON-CANONICAL politika özeti.\n\n";
 echo '# canonical_seo_pipeline.page_type=' . (string) ($llms_pipeline['page_type'] ?? '') . "\n";
 echo '# canonical_seo_pipeline.llms_export_context.grouping=' . (string) ($llms_ctx['grouping'] ?? '') . "\n\n";
 echo "# LLMS — İzmir nakliyat site grafiği + niyet haritası\n\n";
@@ -69,6 +73,51 @@ echo "LLM-friendly markdown olarak servis edilir. Örnek:\n";
 echo '  curl -H "Accept: text/markdown" ' . $site_url . "/izmir-evden-eve-nakliyat-hizmeti\n";
 echo '  ' . $site_url . "/{slug}?format=markdown\n";
 echo "X-Robots-Tag: noindex,follow — Google indexlemez, LLM/AI okuyabilir.\n\n";
+
+/*
+ * Coğrafi kapsam + hizmet envanteri (AI/LLM okunabilir).
+ * SSOT: includes/llms_izmir_data.php (İzmir ilçeleri + hizmet tipleri),
+ *       includes/llms_turkiye_iller.php (81 il). llms-full-tr.txt ile aynı kaynak → tutarlı.
+ * Yalnızca /llms.txt metnine yazılır; hiçbir render/HTML/URL etkilenmez.
+ */
+$izmirGeoData = @include __DIR__ . '/includes/llms_izmir_data.php';
+$trIllerData = @include __DIR__ . '/includes/llms_turkiye_iller.php';
+$izmirDistricts = (is_array($izmirGeoData) && isset($izmirGeoData['districts']) && is_array($izmirGeoData['districts']))
+    ? $izmirGeoData['districts'] : [];
+$serviceLeafTypes = (is_array($izmirGeoData) && isset($izmirGeoData['service_leaf_types']) && is_array($izmirGeoData['service_leaf_types']))
+    ? $izmirGeoData['service_leaf_types'] : [];
+$trProvinces = (is_array($trIllerData) && isset($trIllerData['provinces_plate_order']) && is_array($trIllerData['provinces_plate_order']))
+    ? $trIllerData['provinces_plate_order'] : [];
+
+if (!empty($serviceLeafTypes)) {
+    echo "## Hizmet envanteri (birincil hizmet tipleri)\n\n";
+    foreach ($serviceLeafTypes as $svc) {
+        echo '- ' . (string) $svc . "\n";
+    }
+    echo 'Yapılandırılmış hizmet listesi (canlı): ' . $site_url . "/api/v1/services.json\n\n";
+}
+
+if (!empty($izmirDistricts)) {
+    echo '## İzmir ilçe kapsamı (' . count($izmirDistricts) . " ilçe — evden eve + tüm hizmetler)\n\n";
+    echo "MY Nakliyat, İzmir Büyükşehir'in tüm ilçelerinde evden eve nakliyat, asansörlü taşımacılık, eşya depolama ve ofis taşıma hizmeti verir.\n";
+    echo "İlçe hizmet sayfası deseni: " . $site_url . "/{ilçe-slug}-evden-eve-nakliyat\n";
+    echo 'Yapılandırılmış konum verisi (canlı): ' . $site_url . "/api/v1/locations.json\n\n";
+    foreach ($izmirDistricts as $d) {
+        echo '- ' . (string) $d . ", İzmir\n";
+    }
+    echo "\n";
+}
+
+if (!empty($trProvinces)) {
+    $sehirlerarasiPath = function_exists('seo_rt_graph_path_for_slug')
+        ? seo_rt_graph_path_for_slug('sehirler-arasi-nakliyat') : '/sehirlerarasi-nakliyat';
+    if ($sehirlerarasiPath === '' || ($sehirlerarasiPath[0] ?? '') !== '/') {
+        $sehirlerarasiPath = '/' . ltrim($sehirlerarasiPath, '/');
+    }
+    echo '## Türkiye şehirler arası kapsam (' . count($trProvinces) . " il)\n\n";
+    echo 'İzmir merkezli şehirler arası nakliyat, 81 ilin tamamına hizmet verir: ' . $site_url . $sehirlerarasiPath . "\n";
+    echo 'Kapsanan iller (plaka sırası): ' . implode(', ', array_map('strval', $trProvinces)) . "\n\n";
+}
 
 $b = null;
 $payload = null;
@@ -149,55 +198,64 @@ foreach ($layout as $section) {
         continue;
     }
     if ($section === 'trust_signals_block') {
-        echo "## trust_signals_block\n\n";
+        echo "## Güven sinyalleri (trust_signals_block — yalnızca doğrulanabilir)\n\n";
         if (function_exists('seo_llms_trust_signals_readable_block')) {
             $trustBlk = seo_llms_trust_signals_readable_block($site_settings);
             $encTrust = json_encode($trustBlk, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
             echo $encTrust !== false ? $encTrust : '{}';
             echo "\n";
+        } else {
+            echo "(Güven sinyali bloğu yüklenemedi.)\n";
         }
         continue;
     }
     if ($section === 'authority_json') {
-        echo "## Authority + içerik sinyalleri (okunabilir)\n\n";
+        echo "## Authority + içerik sinyalleri (yalnızca doğrulanabilir; tahmini/sabit skor yok)\n\n";
         echo "Katman: includes/seo_authority_signal_layer.php (seo_as_*)\n\n";
 
         if (function_exists('seo_as_llm_authority_export')) {
             $authPayload = seo_as_llm_authority_export($defs, $site_settings);
-            $ts = $authPayload['trust_summary'] ?? [];
-            echo 'Güven (EEAT-light) toplam skor: ' . (int) ($ts['trust_signal_score'] ?? 0) . "/100\n";
-            echo '- İletişim sayfası tanımı: ' . (!empty($ts['has_contact_page']) ? 'var' : 'yok') . "\n";
-            echo '- Hakkımızda tanımı: ' . (!empty($ts['has_about_page']) ? 'var' : 'yok') . "\n";
-            echo '- Hizmet alanı netliği: ' . (!empty($ts['has_service_area_clarity']) ? 'var' : 'zayıf') . "\n";
-            echo '- Kuruluş şeması doluluk: ' . (int) ($ts['organization_schema_completeness'] ?? 0) . "/100\n\n";
+            $ts = $authPayload['trust_signals'] ?? [];
+            echo "### Güven sinyalleri (kod grafiği + gerçek veri)\n\n";
+            echo '- İletişim sayfası: ' . (!empty($ts['has_contact_page']) ? 'var' : 'yok') . "\n";
+            echo '- Hakkımızda sayfası: ' . (!empty($ts['has_about_page']) ? 'var' : 'yok') . "\n";
+            echo '- Fiyat sayfası: ' . (!empty($ts['has_pricing_page']) ? 'var' : 'yok') . "\n";
+            echo '- Teklif akışı: ' . (!empty($ts['has_quote_flow']) ? 'var' : 'yok') . "\n";
+            echo '- Hizmet alanı netliği: '
+                . (!empty($ts['has_service_area_clarity'])
+                    ? 'var (' . (int) ($ts['service_area_district_count'] ?? 0) . ' ilçe)'
+                    : 'zayıf') . "\n";
+            echo '- Birincil hizmet sayısı: ' . (int) ($ts['primary_service_count'] ?? 0) . "\n";
+            echo '- Genel iletişim: '
+                . (!empty($ts['has_public_phone']) ? 'telefon var' : 'telefon yok') . ', '
+                . (!empty($ts['has_public_email']) ? 'e-posta var' : 'e-posta yok') . ', '
+                . (!empty($ts['has_public_address']) ? 'adres var' : 'adres yok') . "\n";
+            if (is_array($ts['aggregate_rating'] ?? null)) {
+                echo '- Google puanı: ' . (string) ($ts['aggregate_rating']['rating_value'] ?? '')
+                    . ' (' . (int) ($ts['aggregate_rating']['review_count'] ?? 0) . " yorum)\n\n";
+            } else {
+                echo "- Google puanı: hesaplanamadı (gerçek GBP verisi tanımlı değil)\n\n";
+            }
 
-            echo "### Hizmet bazlı otorite + derinlik (özet)\n\n";
+            echo "### Hizmet rolleri (cluster grafiğinden; içerik derinliği gerçek DB kelime sayısı)\n\n";
             foreach ($authPayload['services_authority'] ?? [] as $pSlug => $row) {
-                $title = isset($row['nav_title']) ? (string) $row['nav_title'] : $pSlug;
-                echo '- ' . $title . ' (`' . $pSlug . "`)\n";
-                echo '  - authority_score: ' . (int) ($row['authority_score'] ?? 0);
-                echo ', content_depth_score: ' . (int) ($row['content_depth_score'] ?? 0);
-                echo ', trust_signal_score: ' . (int) ($row['trust_signal_score'] ?? 0) . "\n";
-                echo '  - is_pillar_service: ' . (!empty($row['is_pillar_service']) ? 'true' : 'false');
-                echo ', authority_multiplier: ' . (string) ($row['authority_multiplier'] ?? '1');
-                echo ', priority_indexing_weight: ' . (int) ($row['priority_indexing_weight'] ?? 0);
-                echo ', tier: ' . (string) ($row['service_tier'] ?? '') . "\n\n";
-            }
-
-            echo "### En yüksek otorite (ilk 8)\n\n";
-            foreach ($authPayload['top_authority_pages'] ?? [] as $row) {
-                $ps = isset($row['slug']) ? (string) $row['slug'] : '';
-                $nt = isset($row['nav_title']) ? (string) $row['nav_title'] : $ps;
-                echo '- ' . $nt . ' — authority ' . (int) ($row['authority_score'] ?? 0) . ', depth ' . (int) ($row['content_depth_score'] ?? 0) . "\n";
+                $title = isset($row['nav_title']) ? (string) $row['nav_title'] : (string) $pSlug;
+                $wc = $row['content_word_count'] ?? null;
+                echo '- ' . $title . ' (`' . $pSlug . '`) — rol: ' . (string) ($row['role'] ?? '');
+                echo ', içerik: ' . (is_int($wc) ? $wc . ' kelime' : 'hesaplanamadı') . "\n";
             }
             echo "\n";
 
-            echo "### İçerik derinliği sıralaması (ilk 8, hizmet)\n\n";
-            foreach ($authPayload['content_depth_ranking'] ?? [] as $row) {
-                $ps = isset($row['slug']) ? (string) $row['slug'] : '';
-                echo '- `' . $ps . '` — depth ' . (int) ($row['content_depth_score'] ?? 0) . "\n";
+            if (!empty($authPayload['content_depth_ranking'])) {
+                echo "### İçerik derinliği sıralaması (gerçek kelime sayısı, ilk 8)\n\n";
+                foreach (array_slice($authPayload['content_depth_ranking'], 0, 8) as $row) {
+                    $ps = isset($row['slug']) ? (string) $row['slug'] : '';
+                    echo '- `' . $ps . '` — ' . (int) ($row['content_word_count'] ?? 0) . " kelime\n";
+                }
+                echo "\n";
+            } else {
+                echo "### İçerik derinliği\n\nhesaplanamadı (canlı içerik/DB gerekli; tahmini değer üretilmez).\n\n";
             }
-            echo "\n";
 
             echo "## Authority layer (JSON)\n\n";
             $authJson = json_encode($authPayload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
@@ -206,5 +264,66 @@ foreach ($layout as $section) {
         } else {
             echo "(Authority katmanı yüklenemedi: seo_as_llm_authority_export tanımsız.)\n";
         }
+    }
+}
+
+/*
+ * /llms-corpus.txt — tam içerik gövdesi (yalnızca $is_corpus modunda).
+ * Gerçek DB içeriğini (services + yayınlanmış blog) markdown olarak dökümler.
+ * DB/içerik yoksa açık not bırakır; index (/llms.txt) çıktısını değiştirmez.
+ */
+if ($is_corpus) {
+    echo "## İçerik gövdesi (corpus — tam metin, markdown)\n\n";
+    $corpusEmitted = 0;
+
+    if (isset($conn) && $conn instanceof mysqli && function_exists('mynak_html_to_markdown')) {
+        $mdOf = static function (string $html): string {
+            if (function_exists('mynak_blok_isle')) {
+                $html = (string) mynak_blok_isle($html);
+            }
+            return trim(mynak_html_to_markdown($html));
+        };
+
+        // 1) Hizmet sayfaları (services.icerik)
+        $svcStmt = @$conn->prepare('SELECT slug, icerik FROM services WHERE status = 1 ORDER BY id ASC');
+        if ($svcStmt !== false && $svcStmt->execute()) {
+            $svcRes = $svcStmt->get_result();
+            if ($svcRes instanceof mysqli_result) {
+                while ($row = $svcRes->fetch_assoc()) {
+                    $slug = (string) ($row['slug'] ?? '');
+                    $md = $mdOf((string) ($row['icerik'] ?? ''));
+                    if ($slug === '' || $md === '') {
+                        continue;
+                    }
+                    echo '### /' . $slug . "\n\n" . $md . "\n\n---\n\n";
+                    $corpusEmitted++;
+                }
+            }
+            $svcStmt->close();
+        }
+
+        // 2) Yayınlanmış blog yazıları (durum=3), güvenli üst sınır.
+        $blogStmt = @$conn->prepare('SELECT slug, baslik, icerik FROM blog_posts WHERE durum = 3 ORDER BY id DESC LIMIT 500');
+        if ($blogStmt !== false && $blogStmt->execute()) {
+            $blogRes = $blogStmt->get_result();
+            if ($blogRes instanceof mysqli_result) {
+                while ($row = $blogRes->fetch_assoc()) {
+                    $slug = (string) ($row['slug'] ?? '');
+                    $title = trim((string) ($row['baslik'] ?? ''));
+                    $md = $mdOf((string) ($row['icerik'] ?? ''));
+                    if ($slug === '' || $md === '') {
+                        continue;
+                    }
+                    echo '### /' . $slug . ($title !== '' ? ' — ' . $title : '') . "\n\n" . $md . "\n\n---\n\n";
+                    $corpusEmitted++;
+                }
+            }
+            $blogStmt->close();
+        }
+    }
+
+    if ($corpusEmitted === 0) {
+        echo "(İçerik gövdesi bulunamadı: veritabanı erişilemiyor veya yayınlanmış içerik yok. "
+            . "Canlı ortamda services.icerik + yayınlanmış blog yazıları buraya markdown olarak dökümlenir.)\n";
     }
 }

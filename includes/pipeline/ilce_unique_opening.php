@@ -113,152 +113,93 @@ function mynak_ilce_unique_opening_html(string $slug): string
 function mynak_ilce_unique_opening_map(): array
 {
     return [
-        'aliaga-evden-eve-nakliyat' => 'Aliağa’da evden eve nakliyat, sanayi ve liman trafiğiyle belirlenir; ağır araç hareketi şehir içi zamanlamayı riskli kılar.
+        'aliaga-evden-eve-nakliyat' => 'Aliağa, İzmir’in kuzeyinde denize kıyısı olan bir ilçedir; ama kimliğini büyük ölçüde limanından, rafinerisinden ve ağır sanayi tesislerinden alır. İlçede yaşayanların önemli bir bölümü bu tesislerde çalışır ve gün çoğu zaman vardiyalara göre şekillenir.
 
-Taşınma “saat değil, trafik penceresi” ile planlanır.
+Sanayi bölgelerine giden yollarda ağır araç trafiği yoğundur. Konut alanları ise merkezde ve yeni sitelerde toplanır.
 
-MY Nakliyat dinamik rota, sanayi akışına göre çıkış noktası ve ekip konumunu aynı operasyon çizgisinde toplar.
+Bir taşınmada hem bu trafiği hem de vardiya saatlerini hesaba katmak, planı gerçeğe daha yakın hâle getirir.
 
-Hizmet yaklaşımı:
+Aliağa’da bir taşınmayı, ilçenin sanayi temposu ve yol yoğunluğuyla birlikte ele alıyoruz.',
 
-Evden eve nakliyat (sanayi trafiğine göre planlı)
-Parça eşya taşıma
-Ofis taşımacılığı
-Şehirler arası nakliyat
-Eşya depolama
-Asansörlü taşımacılık (yüksek katlı yapılarda)',
+        'balcova-evden-eve-nakliyat' => 'Balçova, İzmir merkezine çok yakın, sınırları dar ama günlük yaşamı hareketli bir ilçedir. Termal kaplıcaları, teleferiği ve üniversitesiyle tanınır; konut dokusu ağırlıkla sitelerden oluşur.
 
-        'balcova-evden-eve-nakliyat' => 'Balçova’da “erişim planlaması” gerekir; site kuralları ve asansör saatleri operasyon hızını belirler.
+Site yaşamının yaygın olması, taşınmada asansör sırasını ve site giriş kurallarını öne çıkarır.
 
-MY Nakliyat bina yönetimiyle ilerler; gün, önceden netleşen erişim planıyla, bekleme olmadan akar.
+Hangi sitede ve kaçıncı katta oturulduğu önceden bilinirse, uygun ekip ve saat buna göre ayarlanabilir.
 
-Hizmet yapısı:
+Balçova’da evden eve taşımayı, site düzenine ve merkeze yakın konumuna göre planlıyoruz.',
 
-Evden eve nakliyat
-Parça eşya taşıma
-Ofis taşımacılığı
-Şehirler arası nakliyat
-Eşya depolama
-Asansörlü taşımacılık (yüksek kat avantajı)',
+        'bayındır-evden-eve-nakliyat-hizmetleri' => 'Bayındır, İzmir’in doğusunda, çiçek ve fidan yetiştiriciliğiyle tanınan bir tarım ilçesidir. İlçe merkezi küçük ve sakindir; çevresi ise seralara, bahçelere ve köylere yayılır.
 
-        'bayındır-evden-eve-nakliyat-hizmetleri' => 'Bayındır’da yarı kırsal lojistik modeli geçerli; değişken mesafe, standart süre planını çoğu kez dışlar.
+Yerleşimin dağınık olması ve merkeze mesafe, taşınmada yol süresini belirleyen başlıca konudur.
 
-MY Nakliyat “mesafe tabanlı akış” uygular: rota, erişim noktaları ve gerekirse etaplar önceden belli.
+Çıkış ve varış adreslerinin köyde mi yoksa merkezde mi olduğunu önceden konuşmak, günün planını netleştirir.
 
-Hizmet kapsamı:
+Bayındır’daki taşınmalarda ilçenin tarımsal ve dağınık yerleşim yapısını göz önünde tutuyoruz.',
 
-Evden eve nakliyat
-Parça eşya taşıma
-Ofis taşımacılığı
-Şehirler arası nakliyat
-Eşya depolama
-Asansörlü taşımacılık (uygun yapılarda)',
+        'bayrakli-evden-eve-nakliyat' => 'Bayraklı, son yıllarda yüksek katlı iş kuleleri ve rezidanslarla öne çıkan, aynı zamanda eski mahalleleri de bulunan bir ilçedir.
 
-        'bayrakli-evden-eve-nakliyat' => 'Bayraklı’da yüksek katlı yapı, operasyonu dikey lojistiğe çevirir; asansör ve kat planı trafikten öne çıkar.
+Yeni yapılarda asansör ve otopark düzeni belirleyiciyken, eski mahallelerde sokak genişliği ve kat sayısı öne çıkar.
 
-MY Nakliyat kat bazlı ilerletir: asansör pencereleri, taşıma sırası ve ekip yönlendirmesi, bina içi kaybı kısar.
+Yeni bir rezidansta mı yoksa eski bir binada mı oturulduğu, hazırlanacak ekipmanı doğrudan etkiler.
 
-Hizmetler:
+Bayraklı’da evden eve taşımayı, binanın türüne ve bulunduğu bölgeye göre planlıyoruz.',
 
-Evden eve nakliyat
-Parça eşya taşıma
-Ofis taşımacılığı
-Şehirler arası nakliyat
-Eşya depolama
-Asansörlü taşımacılık (yüksek kat standardı)',
+        'bergama-evden-eve-nakliyat' => 'Bergama, antik Pergamon’un mirasını taşıyan, tarih ve turizmle iç içe köklü bir ilçedir. İlçenin kendine ait hareketli bir merkezi vardır; çevresinde ise tarım ve kırsal mahalleler yer alır.
 
-        'bergama-evden-eve-nakliyat' => 'Bergama’da tarihi doku ve yeni mahalleler iç içe; dar sokak veya mesafe, erişimi farklı kılar.
+Tarihi merkezdeki eski ve dar sokaklar ile ilçenin İzmir’e uzaklığı, taşınmada araç erişimini ve yol süresini öne çıkarır.
 
-MY Nakliyat taşımayı, yapı tipine göre lojistik plana bağlar: bina erişimi, araç konumu ve akış taslakta netleşir.
+Aracın adrese ne kadar yaklaşabildiğini ve mesafeyi baştan bilmek, planı netleştirir.
 
-Hizmet yapısı:
+Bergama’da bir taşınmayı, tarihi merkezin erişim koşulları ve ilçe mesafesiyle birlikte değerlendiriyoruz.',
 
-Evden eve nakliyat
-Parça eşya taşıma
-Ofis taşımacılığı
-Şehirler arası nakliyat
-Eşya depolama
-Asansörlü taşımacılık (yüksek katlı yapılarda)',
+        'beydag-evden-eve-nakliyat' => 'Beydağ, İzmir’in doğu ucunda, dağlık ve büyük ölçüde kırsal bir ilçedir. Nüfus azdır; yerleşim, küçük ilçe merkezi ile dağ köyleri arasında dağılır.
 
-        'beydag-evden-eve-nakliyat' => 'Beydağ’da kırsal yapı ve mesafeler şehir içi modelden ayrışır; süreyi yol ve ev aralığı belirler.
+Şehir merkezine uzaklık ve köyleri bağlayan yolların yapısı, bir taşınmada en çok yol süresini ve güzergâhı belirler.
 
-MY Nakliyat rota ve erişimi kilitler: güzergâh, yükleme noktası ve akış, kontrollü ilerler.
+Adresin merkezde mi yoksa yukarı köylerden birinde mi olduğu, günün nasıl planlanacağını doğrudan değiştirir.
 
-Hizmetler:
+Beydağ’da bir taşınmayı, ilçenin dağlık yapısı ve mesafesiyle birlikte ele alıyoruz.',
 
-Evden eve nakliyat
-Parça eşya taşıma
-Ofis taşımacılığı
-Şehirler arası nakliyat
-Eşya depolama
-Asansörlü taşımacılık (uygun yapılarda)',
+        'bornova-evden-eve-nakliyat' => 'Bornova, İzmir’in doğusunda yer alan büyük ve kalabalık bir ilçedir. Üniversite çevresindeki öğrenci nüfusu, eski mahalleler ve yeni yükselen siteler bir arada bulunur.
 
-        'bornova-evden-eve-nakliyat' => 'Bornova’da öğrenci ve sürekli hareket, yüksek tempolu lojistik ister; kısa dönem taşınmalar planı gerektirir.
+Bazı sokaklar dar ve tek yönlüdür; yeni site bölgelerinde ise giriş ve asansör düzeni farklıdır.
 
-MY Nakliyat hızlı keşif ve hazır operasyon modeliyle ilerler: ekip, bina erişimi ve gün, minimum bekleme için hizalanır.
+Adresin hangi tür bir yerleşimde olduğunu önceden bilmek, taşınma saatini ve ekibi buna göre ayarlamaya yardımcı olur.
 
-Hizmet kapsamı:
+Bornova’da evden eve taşımayı, mahallenin yapısına ve adresin durumuna göre planlıyoruz.',
 
-Evden eve nakliyat
-Parça eşya taşıma
-Ofis taşımacılığı
-Şehirler arası nakliyat
-Eşya depolama
-Asansörlü taşımacılık (özellikle yüksek katlı bölgelerde)',
+        'buca-evden-eve-nakliyat' => 'Buca, İzmir’in en kalabalık ilçelerinden biridir; üniversite kampüsleri ve öğrenci nüfusu yıl boyunca hareketli bir yerleşim oluşturur.
 
-        'buca-evden-eve-nakliyat' => 'Buca’da evden eve nakliyat, yoğun yerleşim ve öğrenci hareketi nedeniyle sabit operasyon modeliyle yönetilemez; gün içinde aynı mahallede bile trafik ve erişim değişir.
+Apartmanların sık olduğu mahallelerde sokaklar dardır; bazı adreslerde taşıma aracı binanın önüne kadar yaklaşamaz.
 
-Kritik mesele araç erişimidir: birçok sokakta bina önü yok, süreç yalnızca yükleme–boşaltma değil ara lojistik akış yönetimidir.
+Bu yüzden aracın nereye kadar girebildiğini ve kat durumunu önceden bilmek, taşınma gününü daha rahat planlamaya yardımcı olur.
 
-MY Nakliyat çok katmanlı planlama yürütür: erişim noktası, bina içi rota ve ekip sahada buna göre; yüksek katlarda asansörlü taşımacılık süreci hızlandırır. Amaç, yoğun yapıda operasyonu kesintisiz ve kontrollü tutmaktır.
+Buca’da evden eve taşımayı, mahallenin yoğunluğuna ve adresin erişimine göre planlıyoruz.',
 
-Hizmet kapsamı:
+        'cesme-evden-eve-nakliyat' => 'Çeşme, yılın büyük bölümünde sakin; yaz aylarında ise nüfusu ve trafiği belirgin biçimde artan bir ilçedir. Konutların önemli kısmı yazlık ve site tipindedir.
 
-Evden eve nakliyat
-Parça eşya taşıma
-Ofis taşımacılığı
-Şehirler arası nakliyat
-Eşya depolama
-Asansörlü taşımacılık',
+Bu mevsimsel fark taşınmayı doğrudan etkiler: yaz döneminde yollar yoğunlaşır, site giriş saatleri ve otopark sınırlı olur.
 
-        'cesme-evden-eve-nakliyat' => 'Çeşme’de sezonluk yoğunluk değişir; yaz trafiği, site ve erişim saatleri operasyonu yönetir.
+Taşınmanın hangi mevsimde ve günün hangi saatinde yapılacağını önceden belirlemek, bu yoğunluğu yönetmeye yardımcı olur.
 
-MY Nakliyat sezon ve saat planı kurgular; villa ve büyük hacim, saatle birlikte netleşir.
+Çeşme’de evden eve taşımayı, sezon durumuna ve site erişim koşullarına göre planlıyoruz.',
 
-Hizmet kapsamı:
+        'cigli-evden-eve-nakliyat' => 'Çiğli, İzmir’in kuzeyinde; büyük konut siteleri, sanayi bölgeleri ve açık alanların bir arada bulunduğu geniş bir ilçedir.
 
-Evden eve nakliyat
-Parça eşya taşıma
-Ofis taşımacılığı
-Şehirler arası nakliyat
-Eşya depolama
-Asansörlü taşımacılık',
+Site bölgelerinde giriş saatleri ve asansör, sanayiye yakın yollarda ise araç trafiği taşınmayı etkiler.
 
-        'cigli-evden-eve-nakliyat' => 'Çiğli’de site, sanayi ve konut iç içe; değişken trafik, çift yönlü ve esnek plan ister.
+Yükleme noktasının bir site içinde mi yoksa daha açık bir alanda mı olduğu, günün planını değiştirir.
 
-MY Nakliyat rota ve zamanı optimize eder: bina erişimi, araç saatleri ve ekip. Yüksek katlarda asansörlü taşımacılık ile süre kısalır.
+Çiğli’de evden eve taşımayı, ilçenin bu karma yapısına göre planlıyoruz.',
 
-Hizmet kapsamı:
+        'dikili-evden-eve-nakliyat' => 'Dikili, sahil kesiminde yazlık hareketliliğin, iç kesimlerde ise tarımın öne çıktığı bir ilçedir. Kıyıdaki yerleşim yaz aylarında dolar, kış aylarında seyrelir.
 
-Evden eve nakliyat
-Parça eşya taşıma
-Ofis taşımacılığı
-Şehirler arası nakliyat
-Eşya depolama
-Asansörlü taşımacılık',
+Yaz döneminde sahil yolundaki yoğunluk ve ilçenin İzmir’e mesafesi, taşınmada zamanlamayı önemli kılar.
 
-        'dikili-evden-eve-nakliyat' => 'Dikili’de yaz hareketi sezonluk fark yaratır; sahil hattı yoğunluğu zamanlamayı etkiler.
+Adresin sahilde mi yoksa iç mahallelerde mi olduğunu bilmek, güzergâhı ve saati netleştirir.
 
-MY Nakliyat sezona ve trafiğe göre saatleri ayarlar; büyük hacimde asansörlü taşımacılık operasyonu kısaltır.
-
-Hizmetler:
-
-Evden eve nakliyat
-Parça eşya taşıma
-Ofis taşımacılığı
-Şehirler arası nakliyat
-Eşya depolama
-Asansörlü taşımacılık',
+Dikili’deki taşınmalarda mevsim yoğunluğunu ve ilçenin konumunu göz önünde tutuyoruz.',
 
         'evden-eve-nakliyat' => 'İzmir’de her ilçenin zorluğu ayrıdır: Konak trafiği, Bayraklı yüksek kat, Urla mesafesi, Bornova yoğunluğu ayrı ayrı yönetilmeli.
 
@@ -273,44 +214,29 @@ Ofis taşımacılığı
 Eşya depolama
 Asansörlü taşımacılık',
 
-        'foca-evden-eve-nakliyat' => 'Foça’da dar sokak ve kıyı, araç her eve kadar sokmaz; yaz trafiği de değişkendir.
+        'foca-evden-eve-nakliyat' => 'Foça, eski ve dar sokaklı yerleşimiyle bilinen bir sahil ilçesidir; bu doku, taşınmada aracın her kapıya kadar yaklaşamamasına yol açabilir. Yaz aylarında ilçenin hareketi belirgin biçimde artar.
 
-MY Nakliyat etaplı model ve gerekirse ara lojistik noktayla operasyonu kesintisiz tutar.
+Dar sokaklarda taşıma çoğu zaman aracın durabildiği en yakın noktadan yürütülür; bu da ek taşıma mesafesi anlamına gelir.
 
-Hizmetler:
+Adresin sokak genişliğini ve aracın nereye kadar girebileceğini önceden bilmek, günün planını gerçekçi kılar.
 
-Evden eve nakliyat
-Parça eşya taşıma
-Ofis taşımacılığı
-Şehirler arası nakliyat
-Eşya depolama
-Asansörlü taşımacılık',
+Foça’da bir taşınmayı, dar sokak erişimi ve sezon yoğunluğuyla birlikte değerlendiriyoruz.',
 
-        'gaziemir-evden-eve-nakliyat' => 'Gaziemir’de sanayi ve konut aynı hatta; ağır ve bireysel trafik, plan zorunlu kılar.
+        'gaziemir-evden-eve-nakliyat' => 'Gaziemir, İzmir’in güneyinde, havalimanına ve şehir merkezine yakın bir ilçedir. Sanayi tesisleri ile konut alanları çoğu yerde iç içe geçmiştir.
 
-MY Nakliyat saat analizi ve yedek rota ile ilerler; yüksek katlarda asansörlü taşımacılık, süre ve güveni dengeler.
+Bu karışık doku, hem yük araçlarının hem de günlük trafiğin aynı yollarda yoğunlaşmasına yol açar.
 
-Hizmet kapsamı:
+Taşınma saatini bu trafiğe göre seçmek, gün içinde beklenmedik gecikmeleri azaltmaya yardımcı olur.
 
-Evden eve nakliyat
-Parça eşya taşıma
-Ofis taşımacılığı
-Şehirler arası nakliyat
-Eşya depolama
-Asansörlü taşımacılık',
+Gaziemir’de evden eve taşımayı, sanayi ile konutun iç içe olduğu bu yapıya göre planlıyoruz.',
 
-        'guzelbahce-evden-eve-nakliyat' => 'Güzelbahçe’de villa, bahçe ve büyük hacim, standart daire taşımasına dönük değil; erişim ve iç mesafe süreyi yönetir.
+        'guzelbahce-evden-eve-nakliyat' => 'Güzelbahçe’de konutların önemli bölümü bahçeli ev ve villadır; siteler de yaygındır. Nüfus görece düşük, yerleşim ferahtır.
 
-MY Nakliyat alan bazlı lojistik kurgular: konum, yükleme bölümleri, hacimde asansörlü taşımacılık. Amaç, geniş alanı kontrollü operasyon fırsatına çevirmek.
+Bahçeli ev ve villalarda eşya hacmi çoğu zaman yüksektir; bu da taşımada daha fazla planlama gerektirir.
 
-Hizmet kapsamı:
+Adresin bir villa mı yoksa site içinde bir daire mi olduğunu bilmek, ekip ve araç seçimini belirler.
 
-Evden eve nakliyat
-Parça eşya taşıma
-Ofis taşımacılığı
-Şehirler arası nakliyat
-Eşya depolama
-Asansörlü taşımacılık',
+Güzelbahçe’de evden eve taşımayı, konut tipine ve eşya hacmine göre planlıyoruz.',
 
         'izmir-evden-eve-nakliyat' => 'İzmir’de her ilçe ayrı dinamik: Konak trafiği, Bayraklı kat yükü, Urla mesafesi, Bornova hareketi, farklı operasyon ister.
 
@@ -337,93 +263,132 @@ Yüksek katta asansörlü taşımacılık
 
 MY Nakliyat süreci planlanmış operasyon sayar; parça eşya, ofis taşımacılığı ve şehirler arası ile bütüncül ilerler.',
 
-        'karabaglar-evden-eve-nakliyat' => 'Karabağlar’da apartman ve dar sokak yoğun; eş zamanlı taşınmalar, planı zorlaştırabilir.
+        'karabaglar-evden-eve-nakliyat' => 'Karabağlar’da sokaklar dar, apartmanlar sıktır; İzmir’in en kalabalık ilçelerinden biridir. Aynı gün, aynı çevrede birden fazla taşınma yaşanabilir.
 
-MY Nakliyat bina bazlı ilerir: yükleme sırası, kat, araç erişimi; yüksek katlarda asansörlü taşımacılık, yoğun yapıda kontrollü ve kesintisiz akış hedefi.
+Böyle bir yoğunlukta en kritik konu, aracın binaya yakın durabileceği bir yer bulmaktır.
 
-Hizmet kapsamı:
+Taşınma saatini trafiğin ve park durumunun daha uygun olduğu bir zamana denk getirmek işi kolaylaştırır.
 
-Evden eve nakliyat
-Parça eşya taşıma
-Ofis taşımacılığı
-Şehirler arası nakliyat
-Eşya depolama
-Asansörlü taşımacılık',
+Karabağlar’da evden eve taşımayı, yoğun apartman dokusuna ve park koşullarına göre planlıyoruz.',
 
-        'karsiyaka-evden-eve-nakliyat' => 'Karşıyaka’da site, giriş ve asansör planı, zamanı belirler; prosedür siteye göre değişir.
+        'karsiyaka-evden-eve-nakliyat' => 'Karşıyaka, İzmir’in sahilinde yer alan; hem yoğun çarşı bölgeleri hem de siteleşmiş konut alanları olan bir ilçedir.
 
-MY Nakliyat saat, site yönetimi ve asansörlü ekipmanı önden hizalar; hedef, zaman kaybı olmadan kontrollü, premium taşımacılık.
+Sitelerde asansörün uygunluğu ve giriş saatleri, çarşıya yakın kalabalık sokaklarda ise araç erişimi taşınmayı etkiler.
 
-Hizmetler:
+Adresin bir site içinde mi yoksa cadde üstü bir binada mı olduğunu önceden bilmek, uygun ekip ve saati belirlemeyi kolaylaştırır.
 
-Evden eve nakliyat
-Parça eşya taşıma
-Ofis taşımacılığı
-Şehirler arası nakliyat
-Eşya depolama
-Asansörlü taşımacılık',
+Karşıyaka’da evden eve taşımayı, binanızın türüne ve çevresinin yoğunluğuna göre planlıyoruz.',
 
-        'konak-evden-eve-nakliyat' => 'Konak’ta trafik ve erişim kısıtı, standart modeli zorlaştırır; dar sokak ve tek yönlü akış belirleyicidir.
+        'konak-evden-eve-nakliyat' => 'Konak, İzmir’in tarihi ve ticari merkezidir; Kemeraltı çevresindeki dar, çoğu zaman tek yönlü sokaklar ilçenin dokusunu belirler.
 
-MY Nakliyat entegre lojistikle ilerir: rota, bina önü penceresi ve ekip, gecikmesiz, kontrollü operasyonu hedefler.
+Gün içinde çarşı ve sahil trafiği yoğunlaşır, bazı adreslere araçla yaklaşmak sınırlı kalır.
 
-Hizmet sadece ev taşımayla sınırlı değildir:
+Bu yüzden yükleme için uygun saati ve aracın durabileceği noktayı önceden belirlemek önem taşır.
 
-Parça eşya taşıma
-Ofis taşımacılığı
-Şehirler arası nakliyat
-Eşya depolama çözümleri',
+Konak’ta evden eve taşımayı, merkezin yoğunluğuna ve sokakların erişim durumuna göre planlıyoruz.',
 
-        'menderes-evden-eve-nakliyat' => 'Menderes’te geniş alan ve değişken mesafe; ev aralığı süre üretir.
+        'menderes-evden-eve-nakliyat' => 'Menderes çok geniş bir alana yayılır; havalimanı çevresinden kıyıdaki Özdere ve Gümüldür’e kadar farklı yerleşimleri içine alır.
 
-MY Nakliyat mesafe tabanlı planlar; araç ve etap, kontrolsüz zaman kaybı olmadan ilerletilir.
+Bu yüzden taşınmada ilk belirleyici şey, adresin ilçenin hangi bölgesinde olduğudur; merkez, köy ve kıyı arasındaki mesafe epeyce değişir.
 
-Sunulan hizmetler:
+Çıkış ve varış noktalarını baştan netleştirmek, yol süresini ve güzergâhı öngörülebilir kılar.
 
-Evden eve nakliyat
-Parça eşya taşıma
-Ofis taşımacılığı
-Şehirler arası nakliyat
-Eşya depolama
-Asansörlü taşımacılık',
+Menderes’te bir taşınmayı, adresin bulunduğu bölgeye ve mesafeye göre ele alıyoruz.',
 
-        'seferihisar-evden-eve-nakliyat' => 'Seferihisar’da geniş ve dağınık yerleşim; villa ve mesafe, planı açar.
+        'menemen-evden-eve-nakliyat' => 'Menemen, İzmir’in kuzeyinde ovaya yayılan bir ilçedir. Yapılaşma çoğunlukla az katlı; son yıllarda ilçe merkezine yeni siteler de eklendi.
 
-MY Nakliyat alan ve erişim yönetimini üstlenir: yükleme noktası, kontrollü akış; hız değil düzen, asansörlü taşımacılık ise ihtiyaca göre hız katar.
+Şehir merkezine mesafe ve çevredeki sanayi yollarının araç yoğunluğu, taşınma planını etkileyen başlıca etkenlerdir.
 
-Hizmet kapsamı:
+Bu nedenle çıkış saatini şehir içindeki bir taşınmadan farklı düşünmek, günün akışını daha öngörülebilir kılar.
 
-Evden eve nakliyat
-Parça eşya taşıma
-Ofis taşımacılığı
-Şehirler arası nakliyat
-Eşya depolama
-Asansörlü taşımacılık',
+Menemen’de evden eve taşımayı bu mesafe ve trafik koşullarına göre sizinle birlikte planlıyoruz.',
 
-        'torbali-evden-eve-nakliyat' => 'Torbalı’da sanayi ve ağır trafik, rota ve saati yönetir; gün içi akış değişkendir.
+        'narlidere-evden-eve-nakliyat' => 'Narlıdere denince akla önce deniz kıyısı ve sahil boyunca yükselen siteler gelir; yukarı mahallelere çıkıldıkça sokaklar yokuşlu ve eğimli hâle gelir.
 
-MY Nakliyat saat analizi ve yedek rota ile ilerir; hedef, sanayi hattında kesintisiz operasyon, yüksek katlarda asansörlü taşımacılık.
+Bu iki farklı yerleşim biçimi taşınmayı doğrudan etkiler: sitelerde asansör uygunluğu ve giriş saatleri, yamaç mahallelerde ise aracın eve yaklaşabildiği mesafe önem taşır.
 
-Sunulan hizmetler:
+Adresin özelliklerini önceden konuşmak, hangi ekip ve ekipmanın uygun olacağını netleştirir.
 
-Evden eve nakliyat
-Parça eşya taşıma
-Ofis taşımacılığı
-Şehirler arası nakliyat
-Eşya depolama
-Asansörlü taşımacılık',
+Narlıdere’de evden eve taşımayı, binanızın ve sokağınızın bu koşullarına göre planlıyoruz.',
 
-        'urla-evdeneve-nakliyat' => 'Urla’da dağınık yerleşim ve mesafe, standart modele uymaz; adımlar arası süre oynar.
+        'karaburun-evden-eve-nakliyat' => 'Karaburun, İzmir’in en batısına uzanan ince ve uzun bir yarımadadır. Yerleşim, kıyı boyunca dağılmış köyler ve küçük merkezlerden oluşur; arazi genellikle engebelidir.
 
-MY Nakliyat etaplı lojistik kurgular: konum, yükleme ve erişim önceden belli, mesafeye bağlı gecikmeyi azaltma hedefi; yüksek katlarda asansörlü taşımacılık.
+Şehir merkezine olan uzaklık ve kıvrımlı sahil yolu, bir taşınmada mesafeyi ve zamanlamayı öne çıkarır.
 
-Hizmetler:
+Bu koşullar, yol güzergâhının ve varış saatinin işin başında konuşulmasını gerektirir.
 
-Evden eve nakliyat
-Parça eşya taşıma
-Ofis taşımacılığı
-Şehirler arası nakliyat
-Eşya depolama
-Asansörlü taşımacılık',
+Karaburun’a ya da yarımada içindeki bir adrese taşınmada yolu ve mesafeyi önceden birlikte konuşmayı tercih ediyoruz.',
+
+        'kemalpasa-evden-eve-nakliyat' => 'Doğuda, Nif Dağı’nın eteğinde kurulu Kemalpaşa, tarım alanları ile organize sanayi bölgelerini bir arada barındırır. İlçede hem kırsal mahalleler hem de sanayiye yakın konut bölgeleri vardır.
+
+Sanayi yollarındaki ağır araç trafiği ve ilçenin geniş yayılımı, taşınma gününün planında etkilidir.
+
+Çıkış ve varış noktalarının konumu, güzergâhın baştan belirlenmesinde belirleyici olur.
+
+Kemalpaşa’daki taşınmalarda ilçenin bu tarım ve sanayi dokusunu hesaba katarak ilerliyoruz.',
+
+        'kinik-evden-eve-nakliyat' => 'İzmir’in kuzey ucundaki Kınık, büyük ölçüde kırsal ve tarıma dayalı bir ilçedir. Yerleşim, ilçe merkezi ile çevredeki köyler arasında dağılmıştır.
+
+Şehir merkezine uzaklık ve köyler arası mesafeler, taşınmada yol süresini belirleyen temel unsurdur.
+
+Bu yüzden güzergâh ve zamanlama, işin başında netleştirilir.
+
+Kınık’ta evden eve taşımanın planını bu kırsal yapıya ve mesafeye göre çıkarıyoruz.',
+
+        'kiraz-evden-eve-nakliyat' => 'Kiraz, ilin doğu sınırına yakın, dağlık bir bölgede yer alır. İlçe merkezi ile dağ köyleri arasında yükseklik ve yol farkları belirgindir.
+
+Engebeli arazi ve şehir merkezine uzaklık, bir taşınmada güzergâh seçimini öne çıkarır.
+
+Yolun durumu ve varış noktasının konumu, planlamanın önceden yapılmasını gerektirir.
+
+Kiraz’da bir taşınmayı, bölgenin dağlık yapısı ve mesafesiyle birlikte değerlendiriyoruz.',
+
+        'odemis-evden-eve-nakliyat' => 'Küçük Menderes Ovası’nın ortasındaki Ödemiş, kendi kent merkezi bulunan köklü ve büyük bir ilçedir. Merkezde yoğun bir yerleşim, çevrede ise geniş tarım alanları görülür.
+
+İlçenin İzmir merkezine uzaklığı ve kendi içindeki hareketli merkez trafiği, taşınmayı iki ayrı açıdan etkiler.
+
+Adresin merkezde mi yoksa kırsalda mı olduğuna göre güzergâh ve zamanlama değişir.
+
+Ödemiş’te ilçe içi ve şehirler arası taşımaları bu ölçeğe göre ele alıyoruz.',
+
+        'selcuk-evden-eve-nakliyat' => 'Selçuk, Efes’in hemen yanında, tarih ve turizmle iç içe geçmiş küçük bir ilçedir. İlçe merkezi kompakt, çevresi ise tarım alanları ve ören yerleriyle çevrilidir.
+
+Turizm sezonundaki hareketlilik ve merkezdeki dar yollar, taşınma gününün zamanlamasını etkiler.
+
+Sezonun ve saatin önceden konuşulması, güzergâhın buna göre ayarlanmasına imkân verir.
+
+Selçuk’ta taşınma planını sezon ve merkezdeki yol durumuna göre yapıyoruz.',
+
+        'tire-evden-eve-nakliyat' => 'Tire, dar sokaklı tarihi merkeziyle ve çevresindeki tarım alanlarıyla tanınan bir ilçedir. Eski mahallelerde sokaklar dar, çevre mahallelerde ise yerleşim daha dağınıktır.
+
+Tarihi merkezdeki dar geçitler ve şehir merkezine uzaklık, bir taşınmada araç erişimini öne çıkarır.
+
+Aracın adrese ne kadar yaklaşabildiğinin önceden bilinmesi, planı netleştirir.
+
+Tire’de evden eve taşımada tarihi merkezin erişim koşullarını göz önünde tutuyoruz.',
+
+        'seferihisar-evden-eve-nakliyat' => 'Seferihisar, düşük katlı yapısı ve geniş bir alana yayılan mahalleleriyle öne çıkar; kıyıdaki Sığacık çevresinde yazlık hareketi artar.
+
+Düşük katlı evlerde asansör çoğu zaman gündeme gelmez; asıl konu, dağınık yerleşimde adresler arasındaki mesafedir.
+
+Yaz aylarında kıyı bölgesindeki yoğunluk da taşınma saatini etkiler.
+
+Seferihisar’daki taşınmalarda dağınık yerleşimi ve kıyının sezon yoğunluğunu göz önünde tutuyoruz.',
+
+        'torbali-evden-eve-nakliyat' => 'Torbalı, İzmir’in güneyinde geniş bir ovaya kuruludur; büyük sanayi bölgeleri ile tarım alanlarını bir arada barındırır ve kendi hareketli bir merkezi vardır.
+
+Sanayi yollarındaki ağır araç trafiği ve ilçenin şehir merkezine uzaklığı, taşınmada yol süresini öne çıkarır.
+
+Çıkış ve varış noktalarını önceden konuşmak, günün nasıl ilerleyeceğini daha net gösterir.
+
+Torbalı’da evden eve taşımayı, ilçenin sanayi ile tarım dokusuna ve mesafesine göre planlıyoruz.',
+
+        'urla-evdeneve-nakliyat' => 'Urla’da eski taş evlerin bulunduğu dar sokaklı tarihi merkez ile yeni villa ve site bölgeleri bir arada bulunur. Kıyıdaki İskele çevresi ise yaz aylarında hareketlenir.
+
+Bu yüzden taşınmada adresin tarihi merkezde mi, kıyıda mı yoksa yeni yerleşimlerde mi olduğu belirleyicidir; sokak genişliği ve mesafe buna göre değişir.
+
+Tarihi merkezde araç çoğu zaman kapının önüne kadar giremez; yeni bölgelerde erişim daha rahattır.
+
+Urla’da bir taşınmayı, adresin bulunduğu bölgeye ve sokak yapısına göre planlıyoruz.',
     ];
 }

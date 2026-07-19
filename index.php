@@ -372,8 +372,19 @@ require_once __DIR__ . '/includes/header.php';
             <?php if (!empty($services) && is_array($services)): $delay = 100; ?>
                 <?php foreach ($services as $service): ?>
                     <div class="col-lg-4 col-md-6">
-                        <?php if (!empty($service['link'])): ?>
-                            <a href="<?php echo htmlspecialchars($service['link']); ?>" class="service-link-wrapper"<?php echo (strpos($service['link'], 'http') === 0 ? ' rel=\"noopener\"' : ''); ?>>
+                        <?php
+                        // Kart linki: her hizmet kartı kendi slug detay sayfasına eşleşir
+                        // (ör. izmir-evden-eve-nakliyat → /izmir-evden-eve-nakliyat). Slug boşsa
+                        // admin "Hizmetler" bölümündeki yazılı link'e düşer; ikisi de boşsa bağlantısız.
+                        $svcSlug = trim((string) ($service['slug'] ?? ''), '/');
+                        $svcLink = trim((string) ($service['link'] ?? ''));
+                        $svcCardUrl = $svcSlug !== ''
+                            ? mynak_abs_url_from_public_path(mynak_public_path($svcSlug))
+                            : $svcLink;
+                        $svcRel = ($svcSlug === '' && $svcLink !== '' && strpos($svcLink, 'http') === 0) ? ' rel="noopener"' : '';
+                        ?>
+                        <?php if ($svcCardUrl !== ''): ?>
+                            <a href="<?php echo htmlspecialchars($svcCardUrl, ENT_QUOTES, 'UTF-8'); ?>" class="service-link-wrapper"<?php echo $svcRel; ?>>
                         <?php endif; ?>
                         <div class="service-item wow fade-in-bottom" data-wow-delay="<?php echo $delay; ?>ms">
                             <div class="service-thumb">
@@ -389,7 +400,7 @@ require_once __DIR__ . '/includes/header.php';
                                 <p><?php echo mynak_esc_html((string) ($service['aciklama'] ?? '')); ?></p>
                 </div>
                 </div>
-                        <?php if (!empty($service['link'])): ?>
+                        <?php if ($svcCardUrl !== ''): ?>
                             </a>
                         <?php endif; ?>
                     </div>
