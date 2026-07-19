@@ -28,7 +28,7 @@ function mynak_gbp_post_guide_tr_html(): string
 
     <h3>2. Biçim ve içerik</h3>
     <ul>
-        <li>İlk 2 cümlede: kimin için + net hizmet + İzmir veya 81 il vurgusu.</li>
+        <li>İlk 2 cümlede: kimin için + net hizmet + doğrulanmış hizmet bölgesi.</li>
         <li>1 satır <strong>CTA</strong>: “Hemen Ara / WhatsApp / Teklif” (panelde dönüştüğünüz numara / bağlantı).</li>
         <li><strong>1 dikey / kare</strong> saha veya ekip foto; mümkünse MY Nakliyat aracı / logosu veya telifsiz ekip çekimi.</li>
         <li>Etiket (buton) olarak <strong>“Teklif al”</strong> veya <strong>“Ara”</strong> (işletmeye uygun olandan birini) seçin; çift tık çağrısını aşırı kullanmayın.</li>

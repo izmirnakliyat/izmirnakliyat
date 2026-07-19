@@ -94,10 +94,8 @@ function seo_runtime_document_head(array $ctx): array
         'seo_fallback_content' => $seoFallbackContent,
     ]);
 
-    $meta_robots_tag_html = '';
-    if ($mr !== null && $mr !== '') {
-        $meta_robots_tag_html = '<meta name="robots" content="' . htmlspecialchars($mr, ENT_QUOTES, 'UTF-8') . '">';
-    }
+    $mr = seo_runtime_apply_discover_robots_directive($mr);
+    $meta_robots_tag_html = '<meta name="robots" content="' . htmlspecialchars($mr, ENT_QUOTES, 'UTF-8') . '">';
 
     $pipelineCtx = [
         'relPath' => $relPath,
@@ -112,7 +110,7 @@ function seo_runtime_document_head(array $ctx): array
     if (!isset($ctx['canonical_seo_pipeline']) && function_exists('seo_runtime_trace_record_page_type_decision')) {
         seo_runtime_trace_record_page_type_decision($pipeline['decision']);
     }
-    $moving_company_at_id = rtrim($canonical_origin, '/') . '/#mynak-moving-company';
+    $moving_company_at_id = rtrim($canonical_origin, '/') . '/#organization';
     $legacy_readonly_placeholder = '';
 
     $mynak_base_path = (function_exists('mynak_url_path_prefix') && defined('SITE_URL'))

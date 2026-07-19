@@ -24,6 +24,9 @@
 declare(strict_types=1);
 
 require __DIR__ . '/../config/db.php';
+if (!isset($conn) || !($conn instanceof mysqli)) {
+    throw new RuntimeException('Veritabanı bağlantısı kurulamadı.');
+}
 
 $DRY_RUN       = in_array('--dry-run', $argv, true);
 $REASSIGN_ALL  = in_array('--reassign-all', $argv, true);
@@ -68,14 +71,14 @@ ok("authors tablosu mevcut.");
 // ─────────────────────────────────────────────────────────────────────
 // 1) 3 yeni yazar profili
 // ─────────────────────────────────────────────────────────────────────
-step('1) 3 yeni yazar profili (Site Editörü / Nakliye Uzmanı / Nakliye Ekspertizi)');
+step('1) 3 kurumsal içerik sorumluluğu profili');
 
 $authorProfiles = [
     'site-editoru' => [
-        'name'        => 'Site Editörü',
+        'name'        => 'MY Nakliyat İçerik Ekibi',
         'slug'        => 'site-editoru',
-        'title'       => 'Baş Editör · İçerik & Yayın Sorumlusu',
-        'bio'         => 'My Nakliyat içerik ve yayın editörlüğü. Sektör haberleri, kurumsal duyurular, yıllık sezon rehberleri ve kapsamlı hizmet incelemelerinin son denetimini yapar. Tüm yazılar yayına çıkmadan önce kalite, doğruluk ve okuma akıcılığı açısından bu masadan geçer.',
+        'title'       => 'Kurumsal İçerik Birimi',
+        'bio'         => 'MY Nakliyat hizmetleri, kurumsal duyurular ve müşteri rehberlerinin yayın düzenini yöneten kurumsal içerik birimidir.',
         'url'         => '/yazarlar/site-editoru',
         'email'       => 'editor@mynakliyat.com.tr',
         'photo_url'   => '',
@@ -86,10 +89,10 @@ $authorProfiles = [
         'status'      => 1,
     ],
     'nakliye-uzmani' => [
-        'name'        => 'Nakliye Uzmanı',
+        'name'        => 'MY Nakliyat Operasyon İçerik Ekibi',
         'slug'        => 'nakliye-uzmani',
-        'title'       => 'Nakliye Operasyon Uzmanı · 18+ Yıl Saha Deneyimi',
-        'bio'         => 'Evden eve nakliyat, ofis taşıma, asansörlü çıkarma-indirme, parça eşya taşıma ve eşya depolama operasyonlarında 18 yılı aşkın saha deneyimine sahip operasyon uzmanı. Paketleme teknikleri, asansörlü ekipman seçimi, kat ve mesafe hesabı, taşıma günü iş planı konularında pratik rehberler hazırlar.',
+        'title'       => 'Operasyon İçerik Birimi',
+        'bio'         => 'Evden eve nakliyat, ofis taşıma, asansörlü taşıma, parça eşya ve depolama hizmetlerinin operasyon adımlarını açıklayan kurumsal rehberleri hazırlar.',
         'url'         => '/yazarlar/nakliye-uzmani',
         'email'       => 'uzman@mynakliyat.com.tr',
         'photo_url'   => '',
@@ -100,10 +103,10 @@ $authorProfiles = [
         'status'      => 1,
     ],
     'nakliye-ekspertizi' => [
-        'name'        => 'Nakliye Ekspertizi',
+        'name'        => 'MY Nakliyat Güvence İçerik Ekibi',
         'slug'        => 'nakliye-ekspertizi',
-        'title'       => 'Lojistik Eksperi · Sigorta & Hasar Danışmanı',
-        'bio'         => 'Şehirler arası nakliyat, lojistik mühendisliği, taşıma sigortası, hasar tespiti ve nakliyat sözleşmeleri konularında uzmanlaşmış eksper. Müşterilere taşıma öncesi risk analizi, ekspertiz raporu, sigorta poliçesi okuma ve hasar tazmin süreçlerinde profesyonel danışmanlık sağlar.',
+        'title'       => 'Sözleşme ve Güvence İçerik Birimi',
+        'bio'         => 'Şehirler arası taşıma, sözleşme, sigorta seçenekleri ve hasar bildirim süreçleri hakkında kurumsal bilgilendirme içerikleri hazırlar.',
         'url'         => '/yazarlar/nakliye-ekspertizi',
         'email'       => 'ekspertiz@mynakliyat.com.tr',
         'photo_url'   => '',

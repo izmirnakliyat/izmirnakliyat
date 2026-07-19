@@ -35,10 +35,10 @@ $sample_organization = '{
   },
   "address": {
     "@type": "PostalAddress",
-    "addressLocality": "İstanbul",
+    "addressLocality": "İzmir",
     "addressCountry": "TR"
   },
-  "description": "MY Nakliyat ® Evden eve nakliyat, Ofis taşıma, Eşya Depolama, Parça eşya taşıma & Şehirler arası nakliyatı sağlayan Güvenilir Marka ödüllü İzmir nakliyat firmasıdır."
+  "description": "MY Nakliyat; evden eve nakliyat, ofis taşıma, eşya depolama, parça eşya taşıma ve şehirler arası nakliyat hizmetleri sunan İzmir merkezli taşıma firmasıdır."
 }';
 
 $stmt = $conn->prepare("INSERT INTO rich_snippets (type, name, data, page_type, status) VALUES (?, ?, ?, ?, ?)");

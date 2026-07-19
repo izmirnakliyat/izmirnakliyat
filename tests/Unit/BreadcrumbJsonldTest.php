@@ -254,4 +254,18 @@ class BreadcrumbJsonldTest extends TestCase
         $this->assertNotEmpty($result);
         $this->assertSame('Ana Sayfa', $result[0]['name']);
     }
+
+    public function testVideoWatchBreadcrumbUsesTheExistingGalleryParent(): void
+    {
+        $result = mynak_breadcrumb_build_items(
+            '/video/spulgA_gx7o',
+            'https://www.mynakliyat.com.tr/video/spulgA_gx7o',
+            'https://www.mynakliyat.com.tr'
+        );
+
+        $this->assertCount(3, $result);
+        $this->assertSame('Video', $result[1]['name']);
+        $this->assertSame('https://www.mynakliyat.com.tr/video-galeri', $result[1]['url']);
+        $this->assertSame('https://www.mynakliyat.com.tr/video/spulgA_gx7o', $result[2]['url']);
+    }
 }

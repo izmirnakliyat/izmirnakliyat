@@ -44,11 +44,11 @@ function mynak_phase_b_seo_map(): array
         ],
         'izmir-evden-eve-nakliyat' => [
             'seo_title' => 'İzmir Evden Eve Nakliyat | MY Nakliyat',
-            'meta_description' => 'İzmir evden eve nakliyat: sigortalı taşıma, ücretsiz keşif ve yazılı sözleşme. 30 ilçe ve 81 il hizmeti.',
+            'meta_description' => 'İzmir evden eve nakliyat için eşya, bina erişimi, ambalaj, takvim ve güvence seçeneklerini yazılı teklifle planlayın.',
         ],
         'sehirici-nakliyat' => [
             'seo_title' => 'Şehiriçi Nakliyat İzmir | MY Nakliyat',
-            'meta_description' => 'İzmir şehiriçi nakliyat: aynı gün planlama, sigortalı ekip ve asansörlü taşıma. Ücretsiz ekspertiz için arayın.',
+            'meta_description' => 'İzmir şehir içi nakliyat için eşya, bina erişimi, asansör gereksinimi, takvim ve güvence seçeneklerini yazılı teklifle planlayın.',
         ],
     ];
 }

@@ -9,15 +9,13 @@
  *   3) authors tablosunu oluşturur (yoksa).
  *   4) blog_posts.author_id sütununu ekler (yoksa).
  *   5) Default yazarı authors tablosuna seed eder.
- *   6) settings.google_place_rating + settings.google_total_reviews +
- *      blog_default_author_* anahtarlarını doğru biçimde set eder.
- *   7) cache/gbp_data.json içeriğini koruyup günceller (manual_seed).
+ *   6) blog_default_author_* anahtarlarını kurumsal içerik kaynağıyla set eder.
+ *   7) Puan ve yorum verisini değiştirmez; doğrulanmış veri Places Details API ile senkronize edilir.
  *   8) blog_posts.author_id IS NULL satırlarına default author_id atar.
  *
  * Idempotent: defalarca çalıştırılabilir.
  *
  *   php scripts/llm_seo_migrate.php
- *   php scripts/llm_seo_migrate.php --rating=5.0 --reviews=265
  */
 declare(strict_types=1);
 
@@ -26,21 +24,19 @@ if (PHP_SAPI !== 'cli') {
 }
 
 require __DIR__ . '/../config/db.php';
-/** @var mysqli $conn */
+if (!isset($conn) || !($conn instanceof mysqli)) {
+    throw new RuntimeException('Veritabanı bağlantısı kurulamadı.');
+}
 
-$rating = '5.0';
-$reviews = '265';
-foreach ($argv ?? [] as $a) {
-    if (preg_match('/^--rating=(.+)$/', $a, $m)) {
-        $rating = trim($m[1]);
-    }
-    if (preg_match('/^--reviews=(\d+)$/', $a, $m)) {
-        $reviews = trim($m[1]);
+foreach ($argv ?? [] as $argument) {
+    if (str_starts_with($argument, '--rating=') || str_starts_with($argument, '--reviews=')) {
+        fwrite(STDERR, "Manuel puan/yorum kabul edilmez; scripts/seed_gbp_settings.php kullanın.\n");
+        exit(1);
     }
 }
 
 echo "== LLM SEO migrasyonu ==\n";
-echo "Hedef: rating={$rating}  reviews={$reviews}\n\n";
+echo "GBP puanı değiştirilmeden devam ediliyor.\n\n";
 
 /* ------------------------------------------------------------------ */
 /* 1) settings.id AUTO_INCREMENT garantisi                            */
@@ -149,16 +145,16 @@ if ($colCheck && $colCheck->num_rows === 0) {
 /* 5) Default yazar seed                                               */
 /* ------------------------------------------------------------------ */
 $author = [
-    'name' => 'My Nakliyat Müşteri İlişkileri',
+    'name' => 'MY Nakliyat İçerik Ekibi',
     'slug' => 'my-nakliyat-musteri-iliskileri',
-    'title' => 'Nakliyat Uzmanları',
-    'bio' => '25 yıllık nakliyat sektörü deneyimiyle müşterilerimizin taşıma süreçlerine uzman gözüyle eşlik ediyor; güncel taşıma yöntemleri, fiyatlama ve müşteri memnuniyeti konularında içerikler hazırlıyoruz.',
+    'title' => 'Kurumsal İçerik Birimi',
+    'bio' => 'MY Nakliyat hizmetleri, taşıma hazırlığı, fiyatlama etkenleri ve müşteri süreçleri hakkında kurumsal rehber içerikleri hazırlar.',
     'url' => '/hakkimizda',
     'email' => 'info@mynakliyat.com.tr',
     'photo_url' => '',
     'linkedin' => '',
     'twitter' => '',
-    'knows_about' => 'izmir evden eve nakliyat, şehirler arası nakliyat, parça eşya taşıma, asansörlü taşıma, ofis taşıma, eşya depolama, izmir nakliye, en iyi izmir evden eve nakliyat firmaları, profesyonel taşımacılık',
+    'knows_about' => 'izmir evden eve nakliyat, şehirler arası nakliyat, parça eşya taşıma, asansörlü taşıma, ofis taşıma, eşya depolama, izmir nakliye',
 ];
 
 $existing = $conn->query("SELECT id FROM authors WHERE slug = '" . $conn->real_escape_string($author['slug']) . "' LIMIT 1");
@@ -212,7 +208,7 @@ if ($existing && $existing->num_rows > 0) {
 $conn->query("UPDATE authors SET is_default = 0 WHERE id != {$authorId}");
 
 /* ------------------------------------------------------------------ */
-/* 6) settings: rating + reviews + default author meta                 */
+/* 6) settings: default author meta                                   */
 /* ------------------------------------------------------------------ */
 function mynak_settings_upsert(mysqli $conn, string $name, string $value, string $description): void
 {
@@ -243,8 +239,6 @@ if ($siteUrl === '') {
 }
 
 $settingsPairs = [
-    ['google_place_rating', $rating, 'GBP yıldız ortalaması (manuel/otomatik sync)'],
-    ['google_total_reviews', $reviews, 'GBP toplam yorum sayısı (manuel/otomatik sync)'],
     ['blog_default_author_name', $author['name'], 'BlogPosting.author varsayılan ad'],
     ['blog_default_author_url', $siteUrl . $author['url'], 'BlogPosting.author varsayılan URL'],
     ['blog_default_author_email', $author['email'], 'BlogPosting.author varsayılan e-posta'],
@@ -257,33 +251,7 @@ foreach ($settingsPairs as [$n, $v, $d]) {
     echo "  settings: {$n} = " . substr($v, 0, 80) . "\n";
 }
 
-/* ------------------------------------------------------------------ */
-/* 7) cache/gbp_data.json                                              */
-/* ------------------------------------------------------------------ */
-$cacheDir = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'cache';
-if (!is_dir($cacheDir)) {
-    @mkdir($cacheDir, 0775, true);
-}
-$cachePath = $cacheDir . DIRECTORY_SEPARATOR . 'gbp_data.json';
-$existing = is_readable($cachePath) ? (json_decode((string) file_get_contents($cachePath), true) ?: []) : [];
-$payload = array_merge(
-    [
-        'opening_hours_spec' => [],
-        'weekday_text' => [],
-        'place_id' => $existing['place_id'] ?? '',
-        'source' => 'manual_seed',
-        'http_status' => 0,
-        'error' => null,
-    ],
-    $existing,
-    [
-        'synced_at' => time(),
-        'rating' => (float) $rating,
-        'user_ratings_total' => (int) $reviews,
-    ]
-);
-file_put_contents($cachePath, json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
-echo "[7] cache/gbp_data.json güncellendi.\n";
+echo "[7] GBP cache ve puan ayarları değiştirilmedi.\n";
 
 /* ------------------------------------------------------------------ */
 /* 8) blog_posts: author_id IS NULL satırlarına default ata             */

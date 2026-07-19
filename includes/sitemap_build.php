@@ -6,6 +6,17 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/seo_runtime.php';
+require_once __DIR__ . '/mynak_canonical_slug_redirects.php';
+
+function sitemap_build_is_redirect_source_slug(string $slug): bool
+{
+    static $sources = null;
+    if (!is_array($sources)) {
+        $sources = array_fill_keys(array_keys(mynak_seo_cannibalization_redirect_map()), true);
+    }
+
+    return isset($sources[strtolower(trim($slug, '/'))]);
+}
 
 /**
  * @param array<string, bool> $opts
@@ -127,16 +138,12 @@ function sitemap_build_main_urlset(mysqli $conn, string $site_url, array $opts =
     // 4 — Hizmetler
     if ($opts['include_services'] && $tableExists($conn, 'services')) {
         $hasU = $hasCol($conn, 'services', 'updated_at');
-        // Kanonikleştirme: .htaccess ile 301 yönlenen çift/eski hizmet slug'larını
-        // sitemap'e KOYMA (sitemap yalnızca 200 dönen kanonik URL içermeli).
-        // 'sehirlerarasi-nakliyat' (services id=3) → 'sehirler-arasi-nakliyat' (pages id=16).
-        $redirectingServiceSlugs = ['sehirlerarasi-nakliyat'];
         $sql = 'SELECT ana_baslik, slug, created_at, foto' . ($hasU ? ', updated_at' : '') . ' FROM services WHERE status = 1 ORDER BY id ASC';
         $res = $conn->query($sql);
         if ($res) {
             while ($row = $res->fetch_assoc()) {
                 $slug = !empty($row['slug']) ? (string) $row['slug'] : $mkSlug((string) $row['ana_baslik']);
-                if (in_array(strtolower($slug), $redirectingServiceSlugs, true)) {
+                if (sitemap_build_is_redirect_source_slug($slug)) {
                     continue;
                 }
                 $lm = $today;
@@ -168,6 +175,9 @@ function sitemap_build_main_urlset(mysqli $conn, string $site_url, array $opts =
         if ($res) {
             while ($row = $res->fetch_assoc()) {
                 $slug = !empty($row['slug']) ? (string) $row['slug'] : $mkSlug((string) $row['baslik']);
+                if (sitemap_build_is_redirect_source_slug($slug)) {
+                    continue;
+                }
                 $plain = trim(strip_tags((string) ($row['icerik'] ?? '')));
                 $plain = preg_replace('/\s+/u', ' ', $plain) ?? $plain;
                 $wordCount = $plain === '' ? 0 : count(preg_split('/\s+/u', $plain) ?: []);
@@ -218,7 +228,7 @@ function sitemap_build_main_urlset(mysqli $conn, string $site_url, array $opts =
         if ($res) {
             while ($row = $res->fetch_assoc()) {
                 $slug = !empty($row['slug']) ? (string) $row['slug'] : $mkSlug((string) $row['title']);
-                if ($slug === '' || in_array(strtolower($slug), $skipSlugs, true)) {
+                if ($slug === '' || in_array(strtolower($slug), $skipSlugs, true) || sitemap_build_is_redirect_source_slug($slug)) {
                     continue;
                 }
                 $lm = $today;

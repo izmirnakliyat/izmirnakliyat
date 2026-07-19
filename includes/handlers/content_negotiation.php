@@ -58,7 +58,16 @@ function mynak_cn_emit_markdown(string $title, string $contentMd, array $meta = 
         echo "_" . trim((string) $meta['description']) . "_\n\n";
     }
     if (!empty($meta['url'])) {
-        echo "Source: " . (string) $meta['url'] . "\n\n";
+        echo "Source: " . (string) $meta['url'] . "\n";
+    }
+    if (!empty($meta['entity_id'])) {
+        echo "Entity-ID: " . (string) $meta['entity_id'] . "\n";
+    }
+    if (!empty($meta['entity_type'])) {
+        echo "Entity-Type: " . (string) $meta['entity_type'] . "\n";
+    }
+    if (!empty($meta['url']) || !empty($meta['entity_id']) || !empty($meta['entity_type'])) {
+        echo "\n";
     }
     if (!empty($meta['author'])) {
         echo "Author: " . (string) $meta['author'] . "\n\n";
@@ -115,6 +124,18 @@ function mynak_cn_try_emit_blog_markdown(mysqli $conn, string $slug): bool
 
     $siteUrl = defined('SITE_URL') ? rtrim((string) SITE_URL, '/') : '';
     $url = $siteUrl !== '' ? $siteUrl . '/' . ltrim((string) $row['slug'], '/') : '';
+    require_once dirname(__DIR__) . '/seo_runtime/author_resolver.php';
+    $organizationName = function_exists('mynak_schema_brand') ? mynak_schema_brand() : 'MY Nakliyat';
+    $authorName = trim((string) ($row['author_name'] ?? ''));
+    if (seo_runtime_author_is_organization_identity($authorName, $organizationName)) {
+        $authorName = $organizationName;
+    }
+    require_once dirname(__DIR__) . '/seo_runtime/service_guide_hubs.php';
+    $serviceContext = mynak_blog_service_context($row);
+    if ($serviceContext !== null && $siteUrl !== '') {
+        $contentMd .= "\n\n## İlgili Hizmet\n\n- [" . $serviceContext['service_name'] . ']('
+            . $siteUrl . '/' . $serviceContext['service_slug'] . ")\n";
+    }
 
     return mynak_cn_emit_markdown(
         (string) ($row['seo_title'] ?? $row['baslik'] ?? ''),
@@ -122,7 +143,9 @@ function mynak_cn_try_emit_blog_markdown(mysqli $conn, string $slug): bool
         [
             'description' => (string) ($row['meta_description'] ?? ''),
             'url' => $url,
-            'author' => (string) ($row['author_name'] ?? ''),
+            'entity_id' => $url !== '' ? $url . '#article' : '',
+            'entity_type' => 'BlogPosting',
+            'author' => $authorName,
             'category' => (string) ($row['kategori_ad'] ?? ''),
             'tags' => (string) ($row['etiketler'] ?? ''),
             'date_published' => (string) ($row['created_at'] ?? ''),
@@ -165,6 +188,27 @@ function mynak_cn_try_emit_service_markdown(mysqli $conn, string $slug): bool
 
     $siteUrl = defined('SITE_URL') ? rtrim((string) SITE_URL, '/') : '';
     $url = $siteUrl !== '' ? $siteUrl . '/' . ltrim((string) $row['slug'], '/') : '';
+    require_once dirname(__DIR__) . '/seo_runtime/default_service_faqs.php';
+    require_once dirname(__DIR__) . '/seo_runtime/service_guide_hubs.php';
+    $quickAnswer = seo_runtime_service_quick_answer($slug);
+    if ($quickAnswer !== '') {
+        $contentMd = "## Kısa Cevap\n\n" . $quickAnswer . "\n\n" . $contentMd;
+    }
+    $faqs = seo_runtime_service_published_faq_pairs($slug);
+    if ($faqs !== []) {
+        $contentMd .= "\n\n## Sık Sorulan Sorular\n";
+        foreach ($faqs as $faq) {
+            $contentMd .= "\n### " . (string) $faq['question'] . "\n\n" . (string) $faq['answer'] . "\n";
+        }
+    }
+    $guideDefinition = mynak_service_guide_hub_definitions()[mynak_service_guide_graph_slug($slug)] ?? null;
+    if (is_array($guideDefinition) && $siteUrl !== '') {
+        $contentMd .= "\n## İlgili Uzman Rehberleri\n";
+        foreach ($guideDefinition['guides'] as $guide) {
+            $contentMd .= "\n- [" . (string) $guide['title'] . '](' . $siteUrl . '/' . (string) $guide['slug'] . ')';
+        }
+        $contentMd .= "\n";
+    }
 
     return mynak_cn_emit_markdown(
         (string) ($row['seo_title'] ?? $row['ana_baslik'] ?? ''),
@@ -172,6 +216,8 @@ function mynak_cn_try_emit_service_markdown(mysqli $conn, string $slug): bool
         [
             'description' => (string) ($row['meta_description'] ?? $row['aciklama'] ?? ''),
             'url' => $url,
+            'entity_id' => $url !== '' ? $url . '#service' : '',
+            'entity_type' => 'Service',
         ]
     );
 }
@@ -210,6 +256,30 @@ function mynak_cn_try_emit_page_markdown(mysqli $conn, string $slug): bool
 
     $siteUrl = defined('SITE_URL') ? rtrim((string) SITE_URL, '/') : '';
     $url = $siteUrl !== '' ? $siteUrl . '/' . ltrim((string) $row['slug'], '/') : '';
+    require_once dirname(__DIR__) . '/seo_runtime/default_service_faqs.php';
+    require_once dirname(__DIR__) . '/seo_runtime/service_guide_hubs.php';
+    $guideDefinition = mynak_service_guide_hub_definitions()[mynak_service_guide_graph_slug($slug)] ?? null;
+    $entityType = is_array($guideDefinition) ? 'Service' : 'WebPage';
+    if (is_array($guideDefinition)) {
+        $quickAnswer = seo_runtime_service_quick_answer($slug);
+        if ($quickAnswer !== '') {
+            $contentMd = "## Kısa Cevap\n\n" . $quickAnswer . "\n\n" . $contentMd;
+        }
+        $faqs = seo_runtime_service_published_faq_pairs($slug);
+        if ($faqs !== []) {
+            $contentMd .= "\n\n## Sık Sorulan Sorular\n";
+            foreach ($faqs as $faq) {
+                $contentMd .= "\n### " . (string) $faq['question'] . "\n\n" . (string) $faq['answer'] . "\n";
+            }
+        }
+        if ($siteUrl !== '') {
+            $contentMd .= "\n## İlgili Uzman Rehberleri\n";
+            foreach ($guideDefinition['guides'] as $guide) {
+                $contentMd .= "\n- [" . (string) $guide['title'] . '](' . $siteUrl . '/' . (string) $guide['slug'] . ')';
+            }
+            $contentMd .= "\n";
+        }
+    }
 
     return mynak_cn_emit_markdown(
         (string) ($row['seo_title'] ?? $row['title'] ?? ''),
@@ -217,6 +287,8 @@ function mynak_cn_try_emit_page_markdown(mysqli $conn, string $slug): bool
         [
             'description' => (string) ($row['meta_description'] ?? ''),
             'url' => $url,
+            'entity_id' => $url !== '' ? $url . ($entityType === 'Service' ? '#service' : '#webpage') : '',
+            'entity_type' => $entityType,
         ]
     );
 }

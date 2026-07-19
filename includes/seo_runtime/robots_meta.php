@@ -79,6 +79,19 @@ function seo_runtime_document_meta_robots(array $ctx): ?string
     return null;
 }
 
+function seo_runtime_apply_discover_robots_directive(?string $robots): string
+{
+    $robots = trim((string) $robots);
+    if ($robots === '') {
+        return 'index, follow, max-image-preview:large';
+    }
+    if (stripos($robots, 'noindex') !== false || stripos($robots, 'max-image-preview:') !== false) {
+        return $robots;
+    }
+
+    return rtrim($robots, ', ') . ', max-image-preview:large';
+}
+
 function seo_rt_canonical_path_key(string $url): string
 {
     $p = parse_url($url);

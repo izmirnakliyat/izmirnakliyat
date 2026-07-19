@@ -12,6 +12,7 @@ declare(strict_types=1);
  *   /api/v1/manifest.json
  *   /api/v1/organization.json
  *   /api/v1/services.json
+ *   /api/v1/entities.json
  *   /api/v1/blog.json
  *   /api/v1/blog/{slug}.json
  *   /api/v1/authors.json
@@ -47,6 +48,9 @@ function mynak_api_dispatch(mysqli $conn, string $slug): bool
     }
     if ($rest === 'services') {
         return mynak_api_emit_services($conn);
+    }
+    if ($rest === 'entities' || $rest === 'entity-graph') {
+        return mynak_api_emit_entities($conn);
     }
     if ($rest === 'blog') {
         return mynak_api_emit_blog_list($conn);
@@ -135,6 +139,26 @@ function mynak_api_strip_html_excerpt(string $html, int $max = 280): string
     return $t;
 }
 
+function mynak_api_canonical_public_slug(string $slug): string
+{
+    $slug = trim($slug, '/');
+    if (!function_exists('mynak_seo_cannibalization_redirect_map')) {
+        require_once dirname(__DIR__) . '/mynak_canonical_slug_redirects.php';
+    }
+    $map = mynak_seo_cannibalization_redirect_map() + [
+        'sehirlerarasi-nakliyat' => 'sehirler-arasi-nakliyat',
+        'antika-ve-piyano-tasima' => 'antika-piyano-tasimaciligi',
+        'kurumsal-nakliye-ofis-tasima' => 'kurumsal-nakliye-hizmetleri',
+    ];
+    $seen = [];
+    while (isset($map[$slug]) && !isset($seen[$slug])) {
+        $seen[$slug] = true;
+        $slug = (string) $map[$slug];
+    }
+
+    return $slug;
+}
+
 function mynak_api_word_count(string $html): int
 {
     $t = trim(strip_tags($html));
@@ -182,7 +206,8 @@ function mynak_api_emit_manifest(): bool
         'endpoints' => [
             ['path' => '/api/v1/manifest.json', 'description' => 'Bu manifest dosyası.'],
             ['path' => '/api/v1/organization.json', 'description' => 'Kuruluş bilgileri (Schema.org MovingCompany — tam şema).'],
-            ['path' => '/api/v1/services.json', 'description' => 'Tüm aktif hizmetler (primary bayrağı ile).'],
+            ['path' => '/api/v1/services.json', 'description' => 'Tüm aktif hizmetler (kanonik URL ve primary bayrağı ile).'],
+            ['path' => '/api/v1/entities.json', 'description' => 'Organization, Brand, Service ve Place düğümlerinden oluşan bağlı @graph.'],
             ['path' => '/api/v1/blog.json', 'description' => 'Yayınlanmış blog yazıları (özet).'],
             ['path' => '/api/v1/blog/{slug}.json', 'description' => 'Tek bir blog yazısının tam içeriği.'],
             ['path' => '/api/v1/authors.json', 'description' => 'İçerik yazarları (Schema.org Person).'],
@@ -232,9 +257,159 @@ function mynak_api_emit_organization(mysqli $conn): bool
     return true;
 }
 
+function mynak_api_emit_entities(mysqli $conn): bool
+{
+    $cached = mynak_api_cache_read('entities', 3600);
+    if ($cached !== null) {
+        mynak_api_send_json($cached, 200, 3600);
+        return true;
+    }
+
+    require_once dirname(__DIR__) . '/seo_runtime/jsonld_encode_and_schema.php';
+    require_once dirname(__DIR__) . '/seo_runtime/default_service_faqs.php';
+    require_once dirname(__DIR__) . '/seo_runtime/service_guide_hubs.php';
+    if (!function_exists('canonical_seo_pipeline_location_vector')) {
+        require_once dirname(__DIR__) . '/seo_runtime/pipeline_page_type.php';
+    }
+
+    $settings = mynak_api_load_settings($conn);
+    $base = mynak_api_site_url();
+    $organizationId = seo_runtime_schema_organization_id($base);
+    $locationVector = canonical_seo_pipeline_location_vector('global');
+    $organization = schema_factory_build_moving_company_graph($settings, $base, $locationVector, $organizationId);
+    unset($organization['@context']);
+    $organization['@id'] = $organizationId;
+    $website = seo_runtime_schema_website_home_graph($base, $settings, $organizationId);
+    unset($website['@context']);
+
+    $services = seo_runtime_schema_canonical_service_nodes($base, $organizationId);
+    $serviceGraphSlugsByUrl = [];
+    foreach (seo_runtime_canonical_service_definitions() as $definition) {
+        $serviceUrl = seo_rt_primary_service_public_url($base, (string) $definition['graph_slug']);
+        $serviceGraphSlugsByUrl[rtrim($serviceUrl, '/')] = (string) $definition['graph_slug'];
+    }
+    $serviceIds = array_values(array_filter(array_map(
+        static fn(array $node): string => (string) ($node['@id'] ?? ''),
+        $services
+    )));
+    $contentNodes = [];
+    foreach ($services as $index => $service) {
+        $serviceUrl = rtrim((string) ($service['url'] ?? ''), '/');
+        $graphSlug = $serviceGraphSlugsByUrl[$serviceUrl]
+            ?? seo_runtime_schema_graph_slug_from_pipeline(
+                [],
+                trim((string) parse_url($serviceUrl, PHP_URL_PATH), '/')
+            );
+        $related = [];
+        foreach ($serviceIds as $serviceId) {
+            if ($serviceId !== (string) ($service['@id'] ?? '')) {
+                $related[] = ['@id' => $serviceId];
+            }
+        }
+        if ($related !== []) {
+            $services[$index]['isRelatedTo'] = $related;
+        }
+        $serviceUrl = (string) ($service['url'] ?? '');
+        $serviceId = (string) ($service['@id'] ?? '');
+        $faqId = rtrim($serviceUrl, '/') . '#faq';
+        $subjectRefs = [['@id' => $faqId]];
+        $guideRefs = mynak_service_guide_article_refs($base, $graphSlug);
+        $subjectRefs = array_merge($subjectRefs, $guideRefs);
+        $services[$index]['subjectOf'] = $subjectRefs;
+        $services[$index]['mainEntityOfPage'] = ['@id' => rtrim($serviceUrl, '/') . '#webpage'];
+
+        $faqEntities = [];
+        foreach (seo_runtime_service_published_faq_pairs($graphSlug) as $faq) {
+            $faqEntities[] = [
+                '@type' => 'Question',
+                'name' => (string) $faq['question'],
+                'acceptedAnswer' => [
+                    '@type' => 'Answer',
+                    'text' => (string) $faq['answer'],
+                ],
+            ];
+        }
+        if ($faqEntities !== []) {
+            $contentNodes[] = [
+                '@type' => 'FAQPage',
+                '@id' => $faqId,
+                'url' => $serviceUrl . '#sss',
+                'about' => ['@id' => $serviceId],
+                'mainEntity' => $faqEntities,
+            ];
+        }
+
+        $breadcrumbId = rtrim($serviceUrl, '/') . '#breadcrumb';
+        $contentNodes[] = [
+            '@type' => 'BreadcrumbList',
+            '@id' => $breadcrumbId,
+            'itemListElement' => [
+                ['@type' => 'ListItem', 'position' => 1, 'name' => 'Ana Sayfa', 'item' => $base . '/'],
+                ['@type' => 'ListItem', 'position' => 2, 'name' => (string) ($service['name'] ?? ''), 'item' => $serviceUrl],
+            ],
+        ];
+        $contentNodes[] = [
+            '@type' => 'WebPage',
+            '@id' => rtrim($serviceUrl, '/') . '#webpage',
+            'url' => $serviceUrl,
+            'name' => (string) ($service['name'] ?? ''),
+            'isPartOf' => ['@id' => $base . '/#website'],
+            'about' => ['@id' => $serviceId],
+            'breadcrumb' => ['@id' => $breadcrumbId],
+            'speakable' => [
+                '@type' => 'SpeakableSpecification',
+                'cssSelector' => ['.mynak-answer-box', '.mynak-service-faq'],
+            ],
+        ];
+
+        $guideDefinition = mynak_service_guide_hub_definitions()[$graphSlug] ?? null;
+        if (is_array($guideDefinition)) {
+            foreach ($guideDefinition['guides'] as $guide) {
+                $articleUrl = $base . '/' . (string) $guide['slug'];
+                $contentNodes[] = [
+                    '@type' => 'Article',
+                    '@id' => $articleUrl . '#article',
+                    'url' => $articleUrl,
+                    'headline' => (string) $guide['title'],
+                    'about' => ['@id' => $serviceId],
+                    'publisher' => ['@id' => $organizationId],
+                    'isPartOf' => ['@id' => $base . '/#website'],
+                ];
+            }
+        }
+    }
+
+    $nodes = array_merge(
+        [$organization, seo_runtime_schema_brand_node($base), $website],
+        $services,
+        $contentNodes,
+        seo_runtime_schema_place_nodes_for_page($base, 'izmir-evden-eve-nakliyat', $settings, $locationVector)
+    );
+    $seen = [];
+    $graph = [];
+    foreach ($nodes as $node) {
+        $id = (string) ($node['@id'] ?? '');
+        if ($id !== '' && isset($seen[$id])) {
+            continue;
+        }
+        if ($id !== '') {
+            $seen[$id] = true;
+        }
+        $graph[] = $node;
+    }
+
+    $payload = [
+        '@context' => 'https://schema.org',
+        '@graph' => $graph,
+    ];
+    mynak_api_cache_write('entities', $payload);
+    mynak_api_send_json($payload, 200, 3600);
+    return true;
+}
+
 function mynak_api_emit_services(mysqli $conn): bool
 {
-    $cached = mynak_api_cache_read('services', 1800);
+    $cached = mynak_api_cache_read('services_v12', 1800);
     if ($cached !== null) {
         mynak_api_send_json($cached);
         return true;
@@ -244,18 +419,22 @@ function mynak_api_emit_services(mysqli $conn): bool
     if (!function_exists('seo_runtime_primary_services_api_rows')) {
         require_once dirname(__DIR__) . '/seo_runtime/jsonld_encode_and_schema.php';
     }
+    if (!function_exists('seo_runtime_service_quick_answer')) {
+        require_once dirname(__DIR__) . '/seo_runtime/default_service_faqs.php';
+    }
     $primaryByPublicSlug = [];
     foreach (seo_runtime_primary_services_api_rows($base) as $primaryRow) {
         $primaryByPublicSlug[(string) $primaryRow['public_slug']] = $primaryRow;
     }
 
-    $items = [];
+    $itemsByCanonicalSlug = [];
     $r = $conn->query("SELECT slug, ana_baslik, ust_baslik, aciklama, meta_description, focus_keyword, icerik, foto, order_number, created_at, updated_at FROM services WHERE status = 1 ORDER BY order_number ASC, ana_baslik ASC");
     if ($r) {
         while ($row = $r->fetch_assoc()) {
-            $slug = (string) $row['slug'];
+            $sourceSlug = (string) $row['slug'];
+            $slug = mynak_api_canonical_public_slug($sourceSlug);
             $primaryMeta = $primaryByPublicSlug[$slug] ?? null;
-            $items[] = [
+            $item = [
                 'slug' => $slug,
                 'graph_slug' => is_array($primaryMeta) ? (string) ($primaryMeta['graph_slug'] ?? '') : null,
                 'primary' => is_array($primaryMeta),
@@ -266,6 +445,10 @@ function mynak_api_emit_services(mysqli $conn): bool
                 'excerpt' => mynak_api_strip_html_excerpt((string) ($row['icerik'] ?? $row['aciklama'] ?? ''), 320),
                 'word_count' => mynak_api_word_count((string) ($row['icerik'] ?? '')),
                 'focus_keyword' => (string) ($row['focus_keyword'] ?? ''),
+                'quick_answer' => is_array($primaryMeta)
+                    ? (string) ($primaryMeta['quick_answer'] ?? '')
+                    : seo_runtime_service_quick_answer($slug),
+                'entity_id' => $base . '/' . $slug . '#service',
                 'image_url' => !empty($row['foto'])
                     ? $base . '/uploads/services/' . ltrim((string) $row['foto'], '/')
                     : null,
@@ -274,18 +457,22 @@ function mynak_api_emit_services(mysqli $conn): bool
                 'created_at' => (string) ($row['created_at'] ?? ''),
                 'updated_at' => (string) ($row['updated_at'] ?? ''),
             ];
+            if (!isset($itemsByCanonicalSlug[$slug]) || $sourceSlug === $slug) {
+                $itemsByCanonicalSlug[$slug] = $item;
+            }
         }
     }
+    $items = array_values($itemsByCanonicalSlug);
 
     $payload = [
-        'version' => '1.1',
+        'version' => '1.2',
         'generated_at' => gmdate('c'),
         'count' => count($items),
         'primary_count' => count($primaryByPublicSlug),
         'primary_services' => array_values($primaryByPublicSlug),
         'items' => $items,
     ];
-    mynak_api_cache_write('services', $payload);
+    mynak_api_cache_write('services_v12', $payload);
     mynak_api_send_json($payload);
     return true;
 }
@@ -413,6 +600,27 @@ function mynak_api_emit_blog_single(mysqli $conn, string $slug): bool
     }
 
     $base = mynak_api_site_url();
+    if (!function_exists('seo_runtime_author_is_organization_identity')) {
+        require_once dirname(__DIR__) . '/seo_runtime/author_resolver.php';
+    }
+    $organizationName = function_exists('mynak_schema_brand') ? mynak_schema_brand() : 'MY Nakliyat';
+    $author = [
+        '@type' => 'Organization',
+        '@id' => $base . '/#organization',
+        'name' => $organizationName,
+        'url' => $base . '/',
+    ];
+    $authorName = trim((string) ($row['author_name'] ?? ''));
+    if ($authorName !== '' && !seo_runtime_author_is_organization_identity($authorName, $organizationName)) {
+        $author = [
+            '@type' => 'Person',
+            'name' => $authorName,
+            'slug' => (string) ($row['author_slug'] ?? ''),
+            'jobTitle' => (string) ($row['author_title'] ?? ''),
+            'description' => (string) ($row['author_bio'] ?? ''),
+            'url' => $row['author_url'] ? (string) $row['author_url'] : null,
+        ];
+    }
     $payload = [
         'version' => '1.0',
         'generated_at' => gmdate('c'),
@@ -432,17 +640,7 @@ function mynak_api_emit_blog_single(mysqli $conn, string $slug): bool
             'name' => (string) $row['kategori_ad'],
             'slug' => (string) $row['kategori_slug'],
         ] : null,
-        'author' => $row['author_name'] ? [
-            'name' => (string) $row['author_name'],
-            'slug' => (string) $row['author_slug'],
-            'title' => (string) $row['author_title'],
-            'bio' => (string) $row['author_bio'],
-            'url' => $row['author_url'] ? (string) $row['author_url'] : null,
-            'email' => $row['author_email'] ? (string) $row['author_email'] : null,
-            'knows_about' => $row['author_knows_about']
-                ? array_values(array_filter(array_map('trim', explode(',', (string) $row['author_knows_about']))))
-                : [],
-        ] : null,
+        'author' => $author,
         'tags' => array_values(array_filter(array_map('trim', explode(',', (string) ($row['etiketler'] ?? ''))))),
         'url' => $base . '/' . $slug,
         'markdown_url' => $base . '/' . $slug . '?format=markdown',
@@ -470,10 +668,17 @@ function mynak_api_emit_authors(mysqli $conn): bool
     }
 
     $base = mynak_api_site_url();
+    if (!function_exists('seo_runtime_author_is_organization_identity')) {
+        require_once dirname(__DIR__) . '/seo_runtime/author_resolver.php';
+    }
+    $organizationName = function_exists('mynak_schema_brand') ? mynak_schema_brand() : 'MY Nakliyat';
     $items = [];
     $r = $conn->query("SELECT a.*, (SELECT COUNT(*) FROM blog_posts WHERE author_id = a.id AND durum = 3) AS post_count FROM authors a WHERE a.status = 1 ORDER BY a.is_default DESC, a.name ASC");
     if ($r) {
         while ($row = $r->fetch_assoc()) {
+            if (seo_runtime_author_is_organization_identity((string) ($row['name'] ?? ''), $organizationName)) {
+                continue;
+            }
             $url = trim((string) ($row['url'] ?? ''));
             if ($url !== '' && $url[0] === '/') {
                 $url = $base . $url;
@@ -550,7 +755,7 @@ function mynak_api_emit_locations(): bool
             'İstanbul', 'Ankara', 'Bursa', 'Antalya', 'Muğla', 'Aydın', 'Manisa', 'Denizli',
             'Eskişehir', 'Konya', 'Kocaeli', 'Sakarya', 'Tekirdağ', 'Balıkesir',
         ],
-        'note' => 'Tüm 81 il için şehirler arası nakliyat hizmeti verilir. Listede sık tercih edilen iller var.',
+        'note' => 'Yayımlanan şehir sayfaları ve şehirler arası hizmet kapsamı kanonik bağlantılar üzerinden sunulur.',
     ];
     mynak_api_cache_write('locations', $payload);
     mynak_api_send_json($payload);

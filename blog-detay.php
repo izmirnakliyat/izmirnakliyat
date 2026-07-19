@@ -172,6 +172,8 @@ require_once 'includes/header.php';
                             echo mynak_google_reviews_render($gbpReviewsData, 'grid');
                         }
                     }
+                    require_once __DIR__ . '/includes/seo_runtime/service_guide_hubs.php';
+                    echo mynak_blog_related_service_html($blog);
                     if (!function_exists('seo_runtime_primary_services_links_html')) {
                         require_once __DIR__ . '/includes/seo_runtime/internal_linking.php';
                     }

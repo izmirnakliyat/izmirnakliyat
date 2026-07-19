@@ -87,7 +87,7 @@ function seo_runtime_default_service_faq_map(): array
             ],
             [
                 'q' => 'Hangi şehirlere taşıma hizmeti veriyorsunuz?',
-                'a' => 'Türkiye\'nin 81 iline şehirler arası nakliyat hizmeti veriyoruz. Sık güzergahlarımız: İzmir-İstanbul, İzmir-Ankara, İzmir-Bursa, İzmir-Antalya, İzmir-Muğla, İzmir-Aydın ve İzmir-Manisa.',
+                'a' => 'Şehirler arası hizmet kapsamı çıkış ve varış adresi, eşya hacmi, araç erişimi ve takvime göre teyit edilir. İzmir çıkışlı talebiniz için güzergâh bilgilerini paylaşarak yazılı teklif alabilirsiniz.',
             ],
             [
                 'q' => 'Şehirler arası taşımada sigorta nasıl çalışır?',
@@ -253,6 +253,14 @@ function seo_runtime_default_service_faq_map(): array
                 'q' => 'Antika ve değerli mobilya taşımacılığı yapıyor musunuz?',
                 'a' => 'Evet. Antika konsol, ayna, tablo, biblo gibi değerli eşyalar için özel ahşap sandık imalatı, çift kat ambalaj ve değer sigortası seçeneği sunulur.',
             ],
+            [
+                'q' => 'Antika veya piyano taşıması öncesinde keşif gerekir mi?',
+                'a' => 'Evet. Eşyanın ölçüsü ve ağırlığıyla birlikte kapı, merdiven, asansör ve araç yaklaşım alanı incelenir. Keşif sonucunda ekip sayısı, koruyucu malzeme, taşıma güzergâhı ve gerekiyorsa dış cephe asansörü ihtiyacı belirlenir.',
+            ],
+            [
+                'q' => 'Antika ve piyano taşımasında sigorta kapsamı nasıl belirlenir?',
+                'a' => 'Eşyanın beyan edilen değeri, taşıma koşulları ve seçilen güvence kapsamı yazılı teklif aşamasında değerlendirilir. Poliçe limiti, istisnalar ve hasar bildirimi koşulları taşıma başlamadan önce müşteriyle açıkça paylaşılır.',
+            ],
         ],
         'mobilya-montaj-kurulum' => [
             [
@@ -302,43 +310,18 @@ function seo_runtime_default_service_faq_map(): array
  */
 function seo_runtime_default_faq_pairs_for_service_slug(string $slug): array
 {
-    $slug = trim($slug, "/ \t");
-    if ($slug === '') {
+    $key = seo_runtime_service_content_key($slug);
+    if ($key === '') {
         return [];
     }
     $map = seo_runtime_default_service_faq_map();
-
-    // 1) Tam slug eşleşmesi
-    if (isset($map[$slug])) {
-        return seo_runtime_default_faq_normalize($map[$slug]);
+    if (isset($map[$key])) {
+        return seo_runtime_complete_service_faqs(seo_runtime_default_faq_normalize($map[$key]), $key);
     }
 
-    // 2) Bilinen alias eşleştirmeleri (eski → yeni)
-    static $aliases = [
-        'izmir-evden-eve-nakliyat' => 'izmir-evden-eve-nakliyat-hizmeti',
-        'evden-eve-nakliyat' => 'izmir-evden-eve-nakliyat-hizmeti',
-        'ofis-tasima' => 'kurumsal-nakliye-ofis-tasima',
-        'ofis-tasimaciligi' => 'kurumsal-nakliye-ofis-tasima',
-        'sehirler-arasi-nakliyat' => 'sehirlerarasi-nakliyat',
-        'sehirler-arasi' => 'sehirlerarasi-nakliyat',
-        'piyano-tasima' => 'antika-piyano-tasimaciligi',
-        'piyano-tasimaciligi' => 'antika-piyano-tasimaciligi',
-        'antika-tasima' => 'antika-piyano-tasimaciligi',
-        'mobilya-montaj' => 'mobilya-montaj-kurulum',
-        'esya-deposu' => 'esya-depolama',
-        'depolama' => 'esya-depolama',
-        'asansorlu-tasima' => 'asansorlu-nakliyat',
-        'vinc-kiralama' => 'sepetli-vinc-kiralama',
-        'mobil-asansor' => 'mobil-asansor-kiralama',
-    ];
-    if (isset($aliases[$slug], $map[$aliases[$slug]])) {
-        return seo_runtime_default_faq_normalize($map[$aliases[$slug]]);
-    }
-
-    // 3) Fuzzy contains: slug'da geçen anahtar kelimelere göre en yakın hizmet.
-    foreach ($map as $key => $pairs) {
-        if (strpos($slug, $key) === 0 || strpos($key, $slug) === 0) {
-            return seo_runtime_default_faq_normalize($pairs);
+    foreach ($map as $candidate => $pairs) {
+        if (strpos($key, $candidate) === 0 || strpos($candidate, $key) === 0) {
+            return seo_runtime_complete_service_faqs(seo_runtime_default_faq_normalize($pairs), $candidate);
         }
     }
 
@@ -368,4 +351,216 @@ function seo_runtime_default_faq_normalize(array $pairs): array
         ];
     }
     return $out;
+}
+
+function seo_runtime_service_content_key(string $slug): string
+{
+    $slug = trim($slug, "/ \t");
+    if ($slug === '') {
+        return '';
+    }
+    $aliases = [
+        'izmir-evden-eve-nakliyat' => 'izmir-evden-eve-nakliyat-hizmeti',
+        'evden-eve-nakliyat' => 'izmir-evden-eve-nakliyat-hizmeti',
+        'ofis-tasima' => 'kurumsal-nakliye-ofis-tasima',
+        'ofis-tasimaciligi' => 'kurumsal-nakliye-ofis-tasima',
+        'izmir-ofis-tasimaciligi' => 'kurumsal-nakliye-ofis-tasima',
+        'sehirler-arasi-nakliyat' => 'sehirlerarasi-nakliyat',
+        'sehirler-arasi' => 'sehirlerarasi-nakliyat',
+        'piyano-tasima' => 'antika-piyano-tasimaciligi',
+        'piyano-tasimaciligi' => 'antika-piyano-tasimaciligi',
+        'antika-tasima' => 'antika-piyano-tasimaciligi',
+        'antika-ve-piyano-tasima' => 'antika-piyano-tasimaciligi',
+        'mobilya-montaj' => 'mobilya-montaj-kurulum',
+        'esya-deposu' => 'esya-depolama',
+        'izmir-esya-depolama' => 'esya-depolama',
+        'depolama' => 'esya-depolama',
+        'asansorlu-tasima' => 'asansorlu-nakliyat',
+        'vinc-kiralama' => 'sepetli-vinc-kiralama',
+        'mobil-asansor' => 'mobil-asansor-kiralama',
+    ];
+
+    return $aliases[$slug] ?? $slug;
+}
+
+/** @return list<array{slug:string,graph_slug:string}> */
+function seo_runtime_canonical_service_definitions(): array
+{
+    return [
+        ['slug' => 'izmir-evden-eve-nakliyat', 'graph_slug' => 'izmir-evden-eve-nakliyat'],
+        ['slug' => 'sehirler-arasi-nakliyat', 'graph_slug' => 'sehirler-arasi-nakliyat'],
+        ['slug' => 'kurumsal-nakliye-hizmetleri', 'graph_slug' => 'izmir-ofis-tasimaciligi'],
+        ['slug' => 'parca-esya-tasima', 'graph_slug' => 'parca-esya-tasima'],
+        ['slug' => 'asansorlu-nakliyat', 'graph_slug' => 'asansorlu-nakliyat'],
+        ['slug' => 'sepetli-vinc-kiralama', 'graph_slug' => 'sepetli-vinc-kiralama'],
+        ['slug' => 'mobil-asansor-kiralama', 'graph_slug' => 'mobil-asansor-kiralama'],
+        ['slug' => 'esya-depolama', 'graph_slug' => 'izmir-esya-depolama'],
+        ['slug' => 'antika-piyano-tasimaciligi', 'graph_slug' => 'antika-ve-piyano-tasima'],
+        ['slug' => 'mobilya-montaj-kurulum', 'graph_slug' => 'mobilya-montaj-kurulum'],
+        ['slug' => 'sehir-ici-nakliyat', 'graph_slug' => 'sehir-ici-nakliyat'],
+    ];
+}
+
+function seo_runtime_service_display_name(string $slug): string
+{
+    $names = [
+        'fiyat' => 'İzmir evden eve nakliyat fiyatları',
+        'izmir-evden-eve-nakliyat-hizmeti' => 'İzmir evden eve nakliyat',
+        'sehirlerarasi-nakliyat' => 'şehirler arası nakliyat',
+        'kurumsal-nakliye-ofis-tasima' => 'ofis taşıma',
+        'kurumsal-nakliye-hizmetleri' => 'kurumsal nakliye',
+        'parca-esya-tasima' => 'parça eşya taşıma',
+        'asansorlu-nakliyat' => 'asansörlü nakliyat',
+        'sepetli-vinc-kiralama' => 'sepetli vinç kiralama',
+        'mobil-asansor-kiralama' => 'mobil asansör kiralama',
+        'esya-depolama' => 'İzmir eşya depolama',
+        'antika-piyano-tasimaciligi' => 'antika ve piyano taşıma',
+        'mobilya-montaj-kurulum' => 'mobilya montaj ve kurulum',
+        'sehir-ici-nakliyat' => 'İzmir şehir içi nakliyat',
+    ];
+    $key = seo_runtime_service_content_key($slug);
+
+    return $names[$key] ?? '';
+}
+
+/**
+ * @param list<array{q:string,a:string,question:string,answer:string}> $pairs
+ * @return list<array{q:string,a:string,question:string,answer:string}>
+ */
+function seo_runtime_complete_service_faqs(array $pairs, string $slug): array
+{
+    $name = seo_runtime_service_display_name($slug);
+    if ($name === '' || count($pairs) >= 5) {
+        return array_slice($pairs, 0, 10);
+    }
+    $questionName = mb_strtoupper(mb_substr($name, 0, 1, 'UTF-8'), 'UTF-8')
+        . mb_substr($name, 1, null, 'UTF-8');
+    $extras = [
+        [
+            'q' => $questionName . ' hizmeti için nasıl teklif alabilirim?',
+            'a' => 'Taşınacak eşyanın yaklaşık hacmi, mevcut ve yeni adres, kat bilgileri ile tercih edilen tarihi paylaşın. MY Nakliyat bu bilgilerle ön değerlendirme yapar; gerektiğinde ücretsiz yerinde veya görüntülü keşif sonrasında hizmet kapsamını ve fiyatı yazılı olarak netleştirir.',
+        ],
+        [
+            'q' => $questionName . ' öncesinde hangi bilgiler gerekir?',
+            'a' => 'Adresler, bina erişimi, kat ve asansör durumu, büyük veya hassas eşyalar, paketleme ihtiyacı ve istenen tarih planlama için gereklidir. Bu bilgiler uygun araç, ekip, ekipman ve tahmini operasyon süresinin doğru belirlenmesini sağlar.',
+        ],
+    ];
+    foreach ($extras as $extra) {
+        if (count($pairs) >= 5) {
+            break;
+        }
+        $pairs[] = [
+            'q' => $extra['q'],
+            'a' => $extra['a'],
+            'question' => $extra['q'],
+            'answer' => $extra['a'],
+        ];
+    }
+
+    return array_slice($pairs, 0, 10);
+}
+
+/** @return list<array{question:string,answer:string}> */
+function seo_runtime_service_published_faq_pairs(string $slug): array
+{
+    $pairs = [];
+    foreach (seo_runtime_default_faq_pairs_for_service_slug($slug) as $faq) {
+        $question = trim((string) ($faq['question'] ?? ''));
+        $answer = trim((string) ($faq['answer'] ?? ''));
+        if ($question === '' || $answer === '') {
+            continue;
+        }
+        $pairs[] = [
+            'question' => $question,
+            'answer' => $answer,
+        ];
+    }
+
+    return $pairs;
+}
+
+/** @return list<array{question:string,answer:string}> */
+function seo_runtime_service_faq_pairs(string $slug, string $visibleHtml = ''): array
+{
+    $pairs = [];
+    if ($visibleHtml !== '' && function_exists('seo_runtime_extract_faq_pairs_from_html')) {
+        $pairs = seo_runtime_extract_faq_pairs_from_html($visibleHtml, 10);
+    }
+    $seen = [];
+    foreach ($pairs as $pair) {
+        $seen[mb_strtolower(trim((string) ($pair['question'] ?? '')), 'UTF-8')] = true;
+    }
+    foreach (seo_runtime_default_faq_pairs_for_service_slug($slug) as $fallback) {
+        $question = trim((string) ($fallback['question'] ?? ''));
+        $key = mb_strtolower($question, 'UTF-8');
+        if ($question === '' || isset($seen[$key])) {
+            continue;
+        }
+        $pairs[] = [
+            'question' => $question,
+            'answer' => trim((string) ($fallback['answer'] ?? '')),
+        ];
+        $seen[$key] = true;
+        if (count($pairs) >= 10) {
+            break;
+        }
+    }
+
+    return $pairs;
+}
+
+function seo_runtime_service_quick_answer(string $slug): string
+{
+    $answers = [
+        'fiyat' => 'İzmir evden eve nakliyat fiyatı; eşya hacmi, kat ve asansör durumu, iki adres arasındaki mesafe, paketleme kapsamı ve sigorta tercihine göre hesaplanır. MY Nakliyat ücretsiz keşif sonrasında taşınma planını ve hizmet kapsamını içeren yazılı teklif sunar. Araç, ekip ve tahmini operasyon süresi de aynı değerlendirmede açıkça belirtilir.',
+        'izmir-evden-eve-nakliyat-hizmeti' => 'İzmir evden eve nakliyat; eşyaların keşif, paketleme, demontaj, taşıma, montaj ve yerleştirme adımlarıyla bir adresten diğerine planlı biçimde taşınmasıdır. MY Nakliyat, İzmir ilçelerinde ihtiyaca göre asansörlü ve sigorta seçenekli, sözleşmeli taşıma hizmeti sunar. Bina erişimi ve hassas eşya bilgileri keşifte kayda alınarak uygun araç, ekip ve taşıma takvimi netleştirilir.',
+        'sehirlerarasi-nakliyat' => 'Şehirler arası nakliyat, eşyaların şehirler arasında paketlenerek uygun araçla kapıdan kapıya taşınmasıdır. MY Nakliyat İzmir çıkışlı veya İzmir varışlı taşımaları eşya hacmi, güzergâh, bina erişimi ve teslimat planına göre organize eder; kapsam keşif ve yazılı teklifle netleşir. Planlanan yükleme, varış ve teslim bilgileri taşıma öncesinde müşteriyle paylaşılır.',
+        'kurumsal-nakliye-ofis-tasima' => 'Ofis taşıma; mobilya, arşiv ve elektronik ekipmanın iş sürekliliğini koruyacak takvimle sökülmesi, paketlenmesi, taşınması ve yeni adreste kurulmasıdır. MY Nakliyat operasyonu keşif sonrasında departman, ekipman ve erişim koşullarına göre planlayarak mesai dışı taşıma seçeneği de sunar. Etiketleme, oda yerleşimi ve sorumlu kişiler proje planında yazılı olarak eşleştirilir.',
+        'kurumsal-nakliye-hizmetleri' => 'Kurumsal nakliye, işletmelerin ofis, mağaza, depo veya operasyon ekipmanlarının proje planıyla taşınmasıdır. MY Nakliyat araç, ekip, özel ekipman, paketleme, demontaj-montaj ve teslim adımlarını keşif verilerine göre kapsamlandırır; sözleşme ve faturalandırma süreci yazılı yürütülür. İş güvenliği, saha erişimi ve operasyon sorumluları taşıma takviminden önce belirlenir.',
+        'parca-esya-tasima' => 'Parça eşya taşıma, tam ev taşımaya göre daha az hacimli mobilya, beyaz eşya veya kolilerin planlı şekilde taşınmasıdır. MY Nakliyat şehir içi ve şehirler arası taleplerde hacim, mesafe, kat ve paketleme ihtiyacına göre uygun araç ve hizmet planı oluşturur. Teslim alma ve bırakma koşulları önceden doğrulanarak gereksiz araç veya ekip maliyeti önlenir.',
+        'asansorlu-nakliyat' => 'Asansörlü nakliyat, eşyaların mobil dış cephe asansörüyle balkon veya uygun açıklıktan doğrudan araca indirilmesi ya da kata çıkarılmasıdır. Dar merdiven ve yüksek kat koşullarında taşıma süresini ve temas riskini azaltır; uygunluk bina cephesi ve kurulum alanı incelenerek belirlenir. Zemin güvenliği, araç yaklaşımı ve hava koşulları operasyon başlamadan önce kontrol edilir.',
+        'sepetli-vinc-kiralama' => 'Sepetli vinç kiralama, yüksek noktalarda güvenli erişim gerektiren montaj, bakım, tabela, dış cephe veya taşıma işleri için operatörlü platform hizmetidir. Uygun araç; erişim yüksekliği, yatay uzanım, zemin, çalışma alanı ve iş süresine göre belirlenir. Saha çevresi, trafik ve çalışma güvenliği koşulları işe başlamadan önce değerlendirilir.',
+        'mobil-asansor-kiralama' => 'Mobil asansör kiralama, eşya veya malzemenin bina dış cephesinden kat seviyesine taşınması için operatörlü dış cephe asansörü sağlanmasıdır. Kat yüksekliği, cephe erişimi, zemin ve kurulum alanı değerlendirilerek uygun kapasite ve çalışma süresi planlanır. Balkon veya pencere açıklığı ile araç yerleşimi keşif sırasında ölçülerek operasyon güvenliği doğrulanır.',
+        'esya-depolama' => 'İzmir eşya depolama; ev veya ofis eşyalarının belirlenen süre boyunca kapalı alanda korunması, gerektiğinde paketlenip taşınması hizmetidir. MY Nakliyat depolama planını eşya hacmi, saklama süresi, erişim ihtiyacı ve özel koruma taleplerine göre oluşturur. Envanter, teslim koşulları ve erişim talepleri sözleşmede kayıt altına alınır.',
+        'antika-piyano-tasimaciligi' => 'Antika ve piyano taşıma; ağırlık merkezi, yüzey hassasiyeti ve iç mekanizması nedeniyle özel ekipman ve paketleme gerektiren uzmanlık hizmetidir. Taşıma güzergâhı, merdiven ve kapı ölçüleri, kat durumu ile eşyanın değeri keşifte değerlendirilerek koruma planı hazırlanır. Kullanılacak sabitleme, taşıma aparatı ve sigorta seçeneği yazılı kapsamda belirtilir.',
+        'mobilya-montaj-kurulum' => 'Mobilya montaj ve kurulum; modüler veya demonte ürünlerin parça kontrolü, birleştirme, seviyeleme ve gerektiğinde güvenli sabitleme adımlarıyla kullanıma hazır hale getirilmesidir. Kapsam ürün sayısı, model, duvar yapısı ve ek demontaj ihtiyacına göre belirlenir. Eksik veya hasarlı parçalar montaj öncesinde tespit edilerek kullanıcıya bildirilir.',
+        'sehir-ici-nakliyat' => 'İzmir şehir içi nakliyat, eşyaların İzmir sınırları içindeki iki adres arasında paketleme, yükleme, taşıma ve yerleştirme planıyla taşınmasıdır. Fiyat ve süre; hacim, ilçeler arası mesafe, kat, asansör durumu ve ek hizmetlere göre ön değerlendirme sonrasında netleşir. Trafik, bina çalışma saatleri ve park koşulları operasyon takvimine dahil edilir.',
+    ];
+
+    return $answers[seo_runtime_service_content_key($slug)] ?? '';
+}
+
+function seo_runtime_service_quick_answer_html(string $slug): string
+{
+    $answer = seo_runtime_service_quick_answer($slug);
+    if ($answer === '') {
+        return '';
+    }
+
+    return '<section class="mynak-answer-box border rounded bg-light p-4 mb-4" aria-labelledby="mynak-quick-answer">'
+        . '<h2 id="mynak-quick-answer" class="h4 mb-3">Kısa Cevap</h2>'
+        . '<p class="mb-0">' . htmlspecialchars($answer, ENT_QUOTES, 'UTF-8') . '</p>'
+        . '</section>';
+}
+
+function seo_runtime_service_generated_faq_html(string $slug, string $visibleHtml = ''): string
+{
+    $generated = seo_runtime_service_published_faq_pairs($slug);
+    if ($generated === []) {
+        return '';
+    }
+
+    $id = 'mynak-service-faq-' . preg_replace('/[^a-z0-9-]+/', '-', seo_runtime_service_content_key($slug));
+    $html = '<section class="mynak-service-faq mt-5" aria-labelledby="' . $id . '">'
+        . '<h2 id="' . $id . '" class="h3 mb-4">Sık Sorulan Sorular</h2>';
+    foreach ($generated as $pair) {
+        $html .= '<details class="border rounded p-3 mb-3">'
+            . '<summary class="fw-semibold">'
+            . htmlspecialchars((string) $pair['question'], ENT_QUOTES, 'UTF-8')
+            . '</summary><p class="mt-3 mb-0">'
+            . htmlspecialchars((string) $pair['answer'], ENT_QUOTES, 'UTF-8')
+            . '</p></details>';
+    }
+
+    return $html . '</section>';
 }

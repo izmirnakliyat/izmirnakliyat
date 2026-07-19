@@ -28,7 +28,11 @@ if (!isset($mynak_layout) || !is_array($mynak_layout)) {
     if (isset($hide_title_suffix)) {
         $layoutInject['hide_title_suffix'] = $hide_title_suffix;
     }
+    if (isset($personJsonLd) && is_array($personJsonLd)) {
+        $GLOBALS['mynak_person_jsonld'] = $personJsonLd;
+    }
     $mynak_layout = mynak_public_layout_context($conn, $layoutInject);
+    unset($GLOBALS['mynak_person_jsonld']);
 }
 
 extract($mynak_layout, EXTR_OVERWRITE);
@@ -129,11 +133,23 @@ $favicon = isset($site_settings['favicon']) ? (string) $site_settings['favicon']
         echo '<meta property="og:title" content="' . mynak_esc_html((string) $ogTitle) . '">' . "\n    ";
         echo '<meta property="og:description" content="' . mynak_esc_html((string) $ogDesc) . '">' . "\n    ";
         echo '<meta property="og:url" content="' . htmlspecialchars((string) $ogUrl, ENT_QUOTES, 'UTF-8') . '">' . "\n    ";
-        echo '<meta property="og:image" content="' . htmlspecialchars($og['image'], ENT_QUOTES, 'UTF-8') . '">' . "\n    ";
+        $ogImage = htmlspecialchars($og['image'], ENT_QUOTES, 'UTF-8');
+        $ogImageAlt = htmlspecialchars((string) ($og['image_alt'] ?? $ogTitle), ENT_QUOTES, 'UTF-8');
+        echo '<meta property="og:image" content="' . $ogImage . '">' . "\n    ";
+        echo '<meta property="og:image:secure_url" content="' . $ogImage . '">' . "\n    ";
+        if (!empty($og['image_width']) && !empty($og['image_height'])) {
+            echo '<meta property="og:image:width" content="' . (int) $og['image_width'] . '">' . "\n    ";
+            echo '<meta property="og:image:height" content="' . (int) $og['image_height'] . '">' . "\n    ";
+        }
+        if (!empty($og['image_type'])) {
+            echo '<meta property="og:image:type" content="' . htmlspecialchars((string) $og['image_type'], ENT_QUOTES, 'UTF-8') . '">' . "\n    ";
+        }
+        echo '<meta property="og:image:alt" content="' . $ogImageAlt . '">' . "\n    ";
         echo '<meta name="twitter:card" content="' . htmlspecialchars((string) $twCard, ENT_QUOTES, 'UTF-8') . '">' . "\n    ";
         echo '<meta name="twitter:title" content="' . mynak_esc_html((string) $ogTitle) . '">' . "\n    ";
         echo '<meta name="twitter:description" content="' . mynak_esc_html((string) $ogDesc) . '">' . "\n    ";
-        echo '<meta name="twitter:image" content="' . htmlspecialchars($og['image'], ENT_QUOTES, 'UTF-8') . '">' . "\n    ";
+        echo '<meta name="twitter:image" content="' . $ogImage . '">' . "\n    ";
+        echo '<meta name="twitter:image:alt" content="' . $ogImageAlt . '">' . "\n    ";
     }
     $mynakContentNode = null;
     if (isset($blog) && is_array($blog) && (!empty($blog['id']) || isset($blog['slug']))) {
