@@ -112,7 +112,9 @@ function seo_runtime_document_head(array $ctx): array
     if (!isset($ctx['canonical_seo_pipeline']) && function_exists('seo_runtime_trace_record_page_type_decision')) {
         seo_runtime_trace_record_page_type_decision($pipeline['decision']);
     }
-    $moving_company_at_id = rtrim($canonical_origin, '/') . '/#mynak-moving-company';
+    $moving_company_at_id = function_exists('seo_runtime_moving_company_entity_id')
+        ? seo_runtime_moving_company_entity_id($canonical_origin)
+        : rtrim($canonical_origin, '/') . '/#mynak-moving-company';
     $legacy_readonly_placeholder = '';
 
     $mynak_base_path = (function_exists('mynak_url_path_prefix') && defined('SITE_URL'))
