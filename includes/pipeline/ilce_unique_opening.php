@@ -387,6 +387,36 @@ Ofis taşımacılığı
 Eşya depolama
 Asansörlü taşımacılık',
 
+        'menemen-evden-eve-nakliyat' => 'Menemen’de yerleşim geniş ova ve organize sanayi bölgeleriyle şekillenir; merkeze mesafe ve sanayi-TIR trafiği, taşınmayı şehir içi modelden ayırır.
+
+Yapı ağırlıkla yatay ve az katlı; yeni toplu konut alanları ise farklı erişim ister. Bu ikili doku, tek tip yerine mesafe ve rota bazlı yaklaşım gerektirir.
+
+MY Nakliyat güzergâhı mesafe ve sanayi akışına göre planlar; çıkış noktası, araç konumu ve gerekiyorsa etaplar önceden netleşir, uzun rotada bekleme kısalır.
+
+Hizmet kapsamı:
+
+Evden eve nakliyat (mesafe ve sanayi trafiğine göre planlı)
+Parça eşya taşıma
+Ofis taşımacılığı
+Şehirler arası nakliyat
+Eşya depolama
+Asansörlü taşımacılık (yeni toplu konutlarda)',
+
+        'narlidere-evden-eve-nakliyat' => 'Narlıdere’de sahil şeridi boyunca modern siteler ve yüksek katlı toplu konut yoğun; üst mahallelerde ise eğimli, yamaç yerleşim öne çıkar.
+
+Bu doku iki ayrı zorluk üretir: sitelerde asansör ve erişim saatleri, yamaç kesimlerde araç yaklaşımı ve rampa yönetimi. Sahil bağlantısındaki yoğunluk zamanlamayı etkiler.
+
+MY Nakliyat operasyonu bina tipine göre böler: sitelerde dikey lojistik ve asansör penceresi, eğimli kesimlerde araç konumu ve taşıma sırası önceden planlanır.
+
+Hizmet yapısı:
+
+Evden eve nakliyat
+Parça eşya taşıma
+Ofis taşımacılığı
+Şehirler arası nakliyat
+Eşya depolama
+Asansörlü taşımacılık (yüksek katlı sitelerde)',
+
         'seferihisar-evden-eve-nakliyat' => 'Seferihisar’da geniş ve dağınık yerleşim; villa ve mesafe, planı açar.
 
 MY Nakliyat alan ve erişim yönetimini üstlenir: yükleme noktası, kontrollü akış; hız değil düzen, asansörlü taşımacılık ise ihtiyaca göre hız katar.
