@@ -230,18 +230,13 @@ Taşınma saatini bu trafiğe göre seçmek, gün içinde beklenmedik gecikmeler
 
 Gaziemir’de evden eve taşımayı, sanayi ile konutun iç içe olduğu bu yapıya göre planlıyoruz.',
 
-        'guzelbahce-evden-eve-nakliyat' => 'Güzelbahçe’de villa, bahçe ve büyük hacim, standart daire taşımasına dönük değil; erişim ve iç mesafe süreyi yönetir.
+        'guzelbahce-evden-eve-nakliyat' => 'Güzelbahçe’de konutların önemli bölümü bahçeli ev ve villadır; siteler de yaygındır. Nüfus görece düşük, yerleşim ferahtır.
 
-MY Nakliyat alan bazlı lojistik kurgular: konum, yükleme bölümleri, hacimde asansörlü taşımacılık. Amaç, geniş alanı kontrollü operasyon fırsatına çevirmek.
+Bahçeli ev ve villalarda eşya hacmi çoğu zaman yüksektir; bu da taşımada daha fazla planlama gerektirir.
 
-Hizmet kapsamı:
+Adresin bir villa mı yoksa site içinde bir daire mi olduğunu bilmek, ekip ve araç seçimini belirler.
 
-Evden eve nakliyat
-Parça eşya taşıma
-Ofis taşımacılığı
-Şehirler arası nakliyat
-Eşya depolama
-Asansörlü taşımacılık',
+Güzelbahçe’de evden eve taşımayı, konut tipine ve eşya hacmine göre planlıyoruz.',
 
         'izmir-evden-eve-nakliyat' => 'İzmir’de her ilçe ayrı dinamik: Konak trafiği, Bayraklı kat yükü, Urla mesafesi, Bornova hareketi, farklı operasyon ister.
 
@@ -268,18 +263,13 @@ Yüksek katta asansörlü taşımacılık
 
 MY Nakliyat süreci planlanmış operasyon sayar; parça eşya, ofis taşımacılığı ve şehirler arası ile bütüncül ilerler.',
 
-        'karabaglar-evden-eve-nakliyat' => 'Karabağlar’da apartman ve dar sokak yoğun; eş zamanlı taşınmalar, planı zorlaştırabilir.
+        'karabaglar-evden-eve-nakliyat' => 'Karabağlar’da sokaklar dar, apartmanlar sıktır; İzmir’in en kalabalık ilçelerinden biridir. Aynı gün, aynı çevrede birden fazla taşınma yaşanabilir.
 
-MY Nakliyat bina bazlı ilerir: yükleme sırası, kat, araç erişimi; yüksek katlarda asansörlü taşımacılık, yoğun yapıda kontrollü ve kesintisiz akış hedefi.
+Böyle bir yoğunlukta en kritik konu, aracın binaya yakın durabileceği bir yer bulmaktır.
 
-Hizmet kapsamı:
+Taşınma saatini trafiğin ve park durumunun daha uygun olduğu bir zamana denk getirmek işi kolaylaştırır.
 
-Evden eve nakliyat
-Parça eşya taşıma
-Ofis taşımacılığı
-Şehirler arası nakliyat
-Eşya depolama
-Asansörlü taşımacılık',
+Karabağlar’da evden eve taşımayı, yoğun apartman dokusuna ve park koşullarına göre planlıyoruz.',
 
         'karsiyaka-evden-eve-nakliyat' => 'Karşıyaka, İzmir’in sahilinde yer alan; hem yoğun çarşı bölgeleri hem de siteleşmiş konut alanları olan bir ilçedir.
 
@@ -297,18 +287,13 @@ Bu yüzden yükleme için uygun saati ve aracın durabileceği noktayı önceden
 
 Konak’ta evden eve taşımayı, merkezin yoğunluğuna ve sokakların erişim durumuna göre planlıyoruz.',
 
-        'menderes-evden-eve-nakliyat' => 'Menderes’te geniş alan ve değişken mesafe; ev aralığı süre üretir.
+        'menderes-evden-eve-nakliyat' => 'Menderes çok geniş bir alana yayılır; havalimanı çevresinden kıyıdaki Özdere ve Gümüldür’e kadar farklı yerleşimleri içine alır.
 
-MY Nakliyat mesafe tabanlı planlar; araç ve etap, kontrolsüz zaman kaybı olmadan ilerletilir.
+Bu yüzden taşınmada ilk belirleyici şey, adresin ilçenin hangi bölgesinde olduğudur; merkez, köy ve kıyı arasındaki mesafe epeyce değişir.
 
-Sunulan hizmetler:
+Çıkış ve varış noktalarını baştan netleştirmek, yol süresini ve güzergâhı öngörülebilir kılar.
 
-Evden eve nakliyat
-Parça eşya taşıma
-Ofis taşımacılığı
-Şehirler arası nakliyat
-Eşya depolama
-Asansörlü taşımacılık',
+Menderes’te bir taşınmayı, adresin bulunduğu bölgeye ve mesafeye göre ele alıyoruz.',
 
         'menemen-evden-eve-nakliyat' => 'Menemen, İzmir’in kuzeyinde ovaya yayılan bir ilçedir. Yapılaşma çoğunlukla az katlı; son yıllarda ilçe merkezine yeni siteler de eklendi.
 
@@ -382,18 +367,13 @@ Aracın adrese ne kadar yaklaşabildiğinin önceden bilinmesi, planı netleşti
 
 Tire’de evden eve taşımada tarihi merkezin erişim koşullarını göz önünde tutuyoruz.',
 
-        'seferihisar-evden-eve-nakliyat' => 'Seferihisar’da geniş ve dağınık yerleşim; villa ve mesafe, planı açar.
+        'seferihisar-evden-eve-nakliyat' => 'Seferihisar, düşük katlı yapısı ve geniş bir alana yayılan mahalleleriyle öne çıkar; kıyıdaki Sığacık çevresinde yazlık hareketi artar.
 
-MY Nakliyat alan ve erişim yönetimini üstlenir: yükleme noktası, kontrollü akış; hız değil düzen, asansörlü taşımacılık ise ihtiyaca göre hız katar.
+Düşük katlı evlerde asansör çoğu zaman gündeme gelmez; asıl konu, dağınık yerleşimde adresler arasındaki mesafedir.
 
-Hizmet kapsamı:
+Yaz aylarında kıyı bölgesindeki yoğunluk da taşınma saatini etkiler.
 
-Evden eve nakliyat
-Parça eşya taşıma
-Ofis taşımacılığı
-Şehirler arası nakliyat
-Eşya depolama
-Asansörlü taşımacılık',
+Seferihisar’daki taşınmalarda dağınık yerleşimi ve kıyının sezon yoğunluğunu göz önünde tutuyoruz.',
 
         'torbali-evden-eve-nakliyat' => 'Torbalı, İzmir’in güneyinde geniş bir ovaya kuruludur; büyük sanayi bölgeleri ile tarım alanlarını bir arada barındırır ve kendi hareketli bir merkezi vardır.
 
