@@ -152,8 +152,12 @@ function seo_ei_izmir_metro_district_location_defs(): array
 function seo_ei_izmir_district_names_local_pack_order(): array
 {
     return [
-        'Konak', 'Karşıyaka', 'Bornova', 'Buca', 'Çiğli', 'Gaziemir', 'Balçova',
-        'Narlıdere', 'Güzelbahçe', 'Bayraklı', 'Alsancak',
+        // Merkez / yüksek yoğunluklu metropol ilçeleri (yerel paket önceliği)
+        'Konak', 'Karşıyaka', 'Bornova', 'Buca', 'Bayraklı', 'Karabağlar',
+        'Gaziemir', 'Balçova', 'Narlıdere', 'Çiğli', 'Güzelbahçe', 'Alsancak',
+        // Genişletilmiş İzmir hizmet bölgesi ilçeleri (areaServed kapsamı)
+        'Menemen', 'Torbalı', 'Menderes', 'Kemalpaşa', 'Urla', 'Aliağa',
+        'Seferihisar', 'Foça',
     ];
 }
 
