@@ -131,6 +131,16 @@ final class EntityGraphSchemaTest extends TestCase
         $this->assertSame('sirnak', seo_runtime_schema_entity_slug('Şırnak'));
     }
 
+    public function testProvinceMatchingRequiresAnExactSlugToken(): void
+    {
+        $this->assertTrue(seo_runtime_schema_slug_has_location_token('izmir-istanbul-nakliyat', 'istanbul'));
+        $this->assertTrue(seo_runtime_schema_slug_has_location_token('van-evden-eve-nakliyat', 'van'));
+        $this->assertFalse(seo_runtime_schema_slug_has_location_token('karsiyaka-evden-eve-nakliyat', 'kars'));
+        $this->assertFalse(seo_runtime_schema_slug_has_location_token('musteri-yorumlari', 'mus'));
+        $this->assertFalse(seo_runtime_schema_slug_has_location_token('asansorlu-nakliyat-avantajlari', 'van'));
+        $this->assertFalse(seo_runtime_schema_slug_has_location_token('esyalar-kaybolur-mu', 'bolu'));
+    }
+
     public function testServiceGraphUsesCanonicalIdsAndConnectedNodes(): void
     {
         $decoded = $this->serviceGraph('izmir-evden-eve-nakliyat', 'izmir-evden-eve-nakliyat');

@@ -98,6 +98,17 @@ function seo_runtime_schema_place_id(string $canonicalOrigin, string $placeName,
     return seo_runtime_schema_origin($canonicalOrigin) . '/#' . implode('-', array_filter($parts));
 }
 
+function seo_runtime_schema_slug_has_location_token(string $slug, string $locationSlug): bool
+{
+    $slug = trim($slug, '-/');
+    $locationSlug = trim($locationSlug, '-/');
+    if ($slug === '' || $locationSlug === '') {
+        return false;
+    }
+
+    return preg_match('/(?:^|-)' . preg_quote($locationSlug, '/') . '(?:-|$)/', $slug) === 1;
+}
+
 function seo_runtime_infer_service_type_label(string $slug): string
 {
     $slug = trim($slug, '/');
@@ -586,7 +597,7 @@ function seo_runtime_schema_place_nodes_for_page(
     );
     foreach (seo_runtime_schema_turkiye_province_names() as $province) {
         $provinceSlug = seo_runtime_schema_entity_slug($province);
-        if ($provinceSlug === '' || !str_contains($slug, $provinceSlug)) {
+        if (!seo_runtime_schema_slug_has_location_token($slug, $provinceSlug)) {
             continue;
         }
         $nodes[] = [
