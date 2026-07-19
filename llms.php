@@ -70,6 +70,51 @@ echo '  curl -H "Accept: text/markdown" ' . $site_url . "/izmir-evden-eve-nakliy
 echo '  ' . $site_url . "/{slug}?format=markdown\n";
 echo "X-Robots-Tag: noindex,follow — Google indexlemez, LLM/AI okuyabilir.\n\n";
 
+/*
+ * Coğrafi kapsam + hizmet envanteri (AI/LLM okunabilir).
+ * SSOT: includes/llms_izmir_data.php (İzmir ilçeleri + hizmet tipleri),
+ *       includes/llms_turkiye_iller.php (81 il). llms-full-tr.txt ile aynı kaynak → tutarlı.
+ * Yalnızca /llms.txt metnine yazılır; hiçbir render/HTML/URL etkilenmez.
+ */
+$izmirGeoData = @include __DIR__ . '/includes/llms_izmir_data.php';
+$trIllerData = @include __DIR__ . '/includes/llms_turkiye_iller.php';
+$izmirDistricts = (is_array($izmirGeoData) && isset($izmirGeoData['districts']) && is_array($izmirGeoData['districts']))
+    ? $izmirGeoData['districts'] : [];
+$serviceLeafTypes = (is_array($izmirGeoData) && isset($izmirGeoData['service_leaf_types']) && is_array($izmirGeoData['service_leaf_types']))
+    ? $izmirGeoData['service_leaf_types'] : [];
+$trProvinces = (is_array($trIllerData) && isset($trIllerData['provinces_plate_order']) && is_array($trIllerData['provinces_plate_order']))
+    ? $trIllerData['provinces_plate_order'] : [];
+
+if (!empty($serviceLeafTypes)) {
+    echo "## Hizmet envanteri (birincil hizmet tipleri)\n\n";
+    foreach ($serviceLeafTypes as $svc) {
+        echo '- ' . (string) $svc . "\n";
+    }
+    echo 'Yapılandırılmış hizmet listesi (canlı): ' . $site_url . "/api/v1/services.json\n\n";
+}
+
+if (!empty($izmirDistricts)) {
+    echo '## İzmir ilçe kapsamı (' . count($izmirDistricts) . " ilçe — evden eve + tüm hizmetler)\n\n";
+    echo "MY Nakliyat, İzmir Büyükşehir'in tüm ilçelerinde evden eve nakliyat, asansörlü taşımacılık, eşya depolama ve ofis taşıma hizmeti verir.\n";
+    echo "İlçe hizmet sayfası deseni: " . $site_url . "/{ilçe-slug}-evden-eve-nakliyat\n";
+    echo 'Yapılandırılmış konum verisi (canlı): ' . $site_url . "/api/v1/locations.json\n\n";
+    foreach ($izmirDistricts as $d) {
+        echo '- ' . (string) $d . ", İzmir\n";
+    }
+    echo "\n";
+}
+
+if (!empty($trProvinces)) {
+    $sehirlerarasiPath = function_exists('seo_rt_graph_path_for_slug')
+        ? seo_rt_graph_path_for_slug('sehirler-arasi-nakliyat') : '/sehirlerarasi-nakliyat';
+    if ($sehirlerarasiPath === '' || ($sehirlerarasiPath[0] ?? '') !== '/') {
+        $sehirlerarasiPath = '/' . ltrim($sehirlerarasiPath, '/');
+    }
+    echo '## Türkiye şehirler arası kapsam (' . count($trProvinces) . " il)\n\n";
+    echo 'İzmir merkezli şehirler arası nakliyat, 81 ilin tamamına hizmet verir: ' . $site_url . $sehirlerarasiPath . "\n";
+    echo 'Kapsanan iller (plaka sırası): ' . implode(', ', array_map('strval', $trProvinces)) . "\n\n";
+}
+
 $b = null;
 $payload = null;
 
