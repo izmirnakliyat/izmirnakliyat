@@ -158,14 +158,14 @@ RewriteRule ^teklif-al/?$ /mynakliyat/teklif-alin [R=301,L]
 RewriteCond %{HTTP_HOST} !^localhost(:[0-9]+)?$ [NC]
 RewriteRule ^teklif-al/?$ /teklif-alin [R=301,L]
 
-# 2026-04-24: Duplicate slug canonical — pages tablosunda eski kayıt, services canonical.
-#   /sehirler-arasi-nakliyat    -> /sehirlerarasi-nakliyat    (301, yerel + canli)
-#   /antika-ve-piyano-tasima    -> /antika-piyano-tasimaciligi (301, yerel + canli)
-# Her iki duplicate pages kaydı status=0 yapıldı; içerik DB'de yedek.
+# 2026-07: Şehirlerarası kanonik = /sehirler-arasi-nakliyat (pages id=16, zengin içerik 32KB,
+# sitemap'in baskın tireli URL stiliyle uyumlu). Tiresiz sürüm → tireli kanonik 301.
+#   /sehirlerarasi-nakliyat  -> /sehirler-arasi-nakliyat  (301, yerel + canli)
+#   /antika-ve-piyano-tasima -> /antika-piyano-tasimaciligi (301, yerel + canli)
 RewriteCond %{HTTP_HOST} ^localhost(:[0-9]+)?$ [NC]
-RewriteRule ^sehirler-arasi-nakliyat/?$ /mynakliyat/sehirlerarasi-nakliyat [R=301,L]
+RewriteRule ^sehirlerarasi-nakliyat/?$ /mynakliyat/sehirler-arasi-nakliyat [R=301,L]
 RewriteCond %{HTTP_HOST} !^localhost(:[0-9]+)?$ [NC]
-RewriteRule ^sehirler-arasi-nakliyat/?$ /sehirlerarasi-nakliyat [R=301,L]
+RewriteRule ^sehirlerarasi-nakliyat/?$ /sehirler-arasi-nakliyat [R=301,L]
 
 RewriteCond %{HTTP_HOST} ^localhost(:[0-9]+)?$ [NC]
 RewriteRule ^antika-ve-piyano-tasima/?$ /mynakliyat/antika-piyano-tasimaciligi [R=301,L]
@@ -186,16 +186,17 @@ RewriteRule ^kurumsal-nakliye-ofis-tasima/?$ /mynakliyat/kurumsal-nakliye-hizmet
 RewriteCond %{HTTP_HOST} !^localhost(:[0-9]+)?$ [NC]
 RewriteRule ^kurumsal-nakliye-ofis-tasima/?$ /kurumsal-nakliye-hizmetleri [R=301,L]
 
-# 2026-06: İç rekabet — zayıf blog slug'ları → kanonik hizmet /sehirici-nakliyat (döngü yok; hedef kaynak listede değil)
+# 2026-07: Şehir içi kanonik = /sehir-ici-nakliyat (canlı services id=12 / pages id=45).
+# 'sehirici-nakliyat' DB'de yok (410 dönüyordu) → eski/hatalı slug'lar kanonik sayfaya 301.
 RewriteCond %{HTTP_HOST} ^localhost(:[0-9]+)?$ [NC]
-RewriteRule ^sehir-ici-nakliyat/?$ /mynakliyat/sehirici-nakliyat [R=301,L]
+RewriteRule ^sehirici-nakliyat/?$ /mynakliyat/sehir-ici-nakliyat [R=301,L]
 RewriteCond %{HTTP_HOST} !^localhost(:[0-9]+)?$ [NC]
-RewriteRule ^sehir-ici-nakliyat/?$ /sehirici-nakliyat [R=301,L]
+RewriteRule ^sehirici-nakliyat/?$ /sehir-ici-nakliyat [R=301,L]
 
 RewriteCond %{HTTP_HOST} ^localhost(:[0-9]+)?$ [NC]
-RewriteRule ^profesyonel-ve-ozenli-sehir-ici-nakliyat/?$ /mynakliyat/sehirici-nakliyat [R=301,L]
+RewriteRule ^profesyonel-ve-ozenli-sehir-ici-nakliyat/?$ /mynakliyat/sehir-ici-nakliyat [R=301,L]
 RewriteCond %{HTTP_HOST} !^localhost(:[0-9]+)?$ [NC]
-RewriteRule ^profesyonel-ve-ozenli-sehir-ici-nakliyat/?$ /sehirici-nakliyat [R=301,L]
+RewriteRule ^profesyonel-ve-ozenli-sehir-ici-nakliyat/?$ /sehir-ici-nakliyat [R=301,L]
 
 # .php uzantılı istekler → uzantısız URL (admin hariç)
 RewriteCond %{REQUEST_URI} !^/[A-Za-z](?:\:|%3A)/
@@ -240,7 +241,7 @@ RewriteRule ^ index.php [L,QSA]
   # HSTS: doğrudan HTTPS veya Cloudflare/proxy (X-Forwarded-Proto). <If> yerine SetEnvIf — uyumsuz hostlarda satırları yorum satırı yapın.
   SetEnvIf HTTPS "on" MYNAK_HSTS=1
   SetEnvIf X-Forwarded-Proto "^https$" MYNAK_HSTS=1
-  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains" env=MYNAK_HSTS
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" env=MYNAK_HSTS
 </IfModule>
 
 # ----------------------------------------------------------------------

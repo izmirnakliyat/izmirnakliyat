@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+require_once dirname(__DIR__) . '/mynak_resource_link_fixer.php';
+
 /**
  * Gömülü formlar ve [blok:...] / [form id=] kısa kodları — DB erişimi bu pipeline dosyasında toplanır.
  * Bağımlılıklar: functions.php (html_etiketlerini_duzelt, demote_inline_h1_to_h2, mynak_normalize_html_href_attributes).
@@ -807,6 +809,9 @@ function mynak_blok_isle(mysqli $conn, string $content): string {
     }, $content);
 
     $content = mynak_normalize_html_href_attributes($content);
+
+    // Kaynak linkleri düzelt: <a href="resim.jpg">metin</a> → <img> (Semrush: "resource formatted as page link")
+    $content = mynak_convert_resource_links_to_media($content);
 
     // Şablonda tek <h1> (banner / yazı başlığı) kalsın; içerik ve [blok:...] çıktısındaki <h1> → <h2>
     $content = demote_inline_h1_to_h2($content);

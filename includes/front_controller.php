@@ -142,11 +142,30 @@ function mynak_public_front_controller_maybe_dispatch(mysqli $conn): void
     if ($slug === '') {
         return;
     }
-    if (mynak_fc_dispatch_special_endpoints($slug, $conn)) {
+    try {
+        if (mynak_fc_dispatch_special_endpoints($slug, $conn)) {
+            exit;
+        }
+        if (mynak_fc_try_legacy_page_include($conn, $slug)) {
+            exit;
+        }
+        mynak_fc_dispatch_slug($slug, $conn);
+    } catch (\Throwable $e) {
+        @error_log('[mynak][fc-dispatch] ' . get_class($e) . ': ' . $e->getMessage() . ' @ ' . $e->getFile() . ':' . $e->getLine());
+        if (!headers_sent()) {
+            http_response_code(404);
+            header('Content-Type: text/html; charset=UTF-8');
+            header('X-Robots-Tag: noindex, nofollow', true);
+        }
+        $homeHref = htmlspecialchars(rtrim((string) (defined('SITE_URL') ? SITE_URL : '/'), '/') . '/', ENT_QUOTES, 'UTF-8');
+        echo '<!doctype html><html lang="tr"><head><meta charset="UTF-8">'
+            . '<meta name="viewport" content="width=device-width, initial-scale=1">'
+            . '<meta name="robots" content="noindex, nofollow">'
+            . '<title>Sayfa bulunamadı</title></head><body>'
+            . '<h1>404 — Sayfa bulunamadı</h1>'
+            . '<p>Aradığınız sayfa bulunamadı veya kaldırılmış olabilir.</p>'
+            . '<p><a href="' . $homeHref . '">Ana sayfaya dön</a></p>'
+            . '</body></html>';
         exit;
     }
-    if (mynak_fc_try_legacy_page_include($conn, $slug)) {
-        exit;
-    }
-    mynak_fc_dispatch_slug($slug, $conn);
 }

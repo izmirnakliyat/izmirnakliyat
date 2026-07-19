@@ -12,6 +12,7 @@ declare(strict_types=1);
  * Sayfa türleri:
  *   - Blog yazısı (blog_posts.slug)
  *   - Hizmet sayfası (services.slug)
+ *   - Genel sayfa (pages.slug)
  *
  * Çıktı: `text/markdown; charset=utf-8`. X-Robots-Tag varsayılan olarak
  * `noindex, follow` (Google bu varyantı index etmesin, LLM erişebilsin).
@@ -170,6 +171,51 @@ function mynak_cn_try_emit_service_markdown(mysqli $conn, string $slug): bool
         $contentMd,
         [
             'description' => (string) ($row['meta_description'] ?? $row['aciklama'] ?? ''),
+            'url' => $url,
+        ]
+    );
+}
+
+/**
+ * Genel sayfa (pages tablosu) için markdown sun.
+ */
+function mynak_cn_try_emit_page_markdown(mysqli $conn, string $slug): bool
+{
+    if (!mynak_cn_wants_markdown() || $slug === '') {
+        return false;
+    }
+
+    $stmt = $conn->prepare('SELECT * FROM pages WHERE slug = ? AND status = 1 LIMIT 1');
+    if (!($stmt instanceof mysqli_stmt)) {
+        return false;
+    }
+    $stmt->bind_param('s', $slug);
+    $stmt->execute();
+    $res = $stmt->get_result();
+    $row = $res instanceof mysqli_result ? $res->fetch_assoc() : null;
+    $stmt->close();
+    if (!is_array($row)) {
+        return false;
+    }
+
+    if (!function_exists('mynak_html_to_markdown')) {
+        require_once dirname(__DIR__) . '/markdown/html_to_markdown.php';
+    }
+
+    $rawHtml = (string) ($row['icerik'] ?? $row['content'] ?? '');
+    if (function_exists('mynak_blok_isle') && isset($GLOBALS['conn']) && $GLOBALS['conn'] instanceof mysqli) {
+        $rawHtml = mynak_blok_isle($GLOBALS['conn'], $rawHtml);
+    }
+    $contentMd = mynak_html_to_markdown($rawHtml);
+
+    $siteUrl = defined('SITE_URL') ? rtrim((string) SITE_URL, '/') : '';
+    $url = $siteUrl !== '' ? $siteUrl . '/' . ltrim((string) $row['slug'], '/') : '';
+
+    return mynak_cn_emit_markdown(
+        (string) ($row['seo_title'] ?? $row['title'] ?? ''),
+        $contentMd,
+        [
+            'description' => (string) ($row['meta_description'] ?? ''),
             'url' => $url,
         ]
     );

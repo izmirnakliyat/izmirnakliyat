@@ -105,7 +105,7 @@ if ($mynakCaseSlug !== '') {
 
                                 <?php /* Detay metni */ ?>
                                 <div class="page-text">
-                                    <?php echo $cs['icerik']; ?>
+                                    <?php echo demote_inline_h1_to_h2((string) $cs['icerik']); ?>
                                 </div>
 
                                 <?php /* Musteri yorumu kutusu */ ?>
