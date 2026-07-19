@@ -206,20 +206,13 @@ Ofis taşımacılığı
 Eşya depolama
 Asansörlü taşımacılık (özellikle yüksek katlı bölgelerde)',
 
-        'buca-evden-eve-nakliyat' => 'Buca’da evden eve nakliyat, yoğun yerleşim ve öğrenci hareketi nedeniyle sabit operasyon modeliyle yönetilemez; gün içinde aynı mahallede bile trafik ve erişim değişir.
+        'buca-evden-eve-nakliyat' => 'Buca, İzmir’in en kalabalık ilçelerinden biridir; üniversite kampüsleri ve öğrenci nüfusu yıl boyunca hareketli bir yerleşim oluşturur.
 
-Kritik mesele araç erişimidir: birçok sokakta bina önü yok, süreç yalnızca yükleme–boşaltma değil ara lojistik akış yönetimidir.
+Apartmanların sık olduğu mahallelerde sokaklar dardır; bazı adreslerde taşıma aracı binanın önüne kadar yaklaşamaz.
 
-MY Nakliyat çok katmanlı planlama yürütür: erişim noktası, bina içi rota ve ekip sahada buna göre; yüksek katlarda asansörlü taşımacılık süreci hızlandırır. Amaç, yoğun yapıda operasyonu kesintisiz ve kontrollü tutmaktır.
+Bu yüzden aracın nereye kadar girebildiğini ve kat durumunu önceden bilmek, taşınma gününü daha rahat planlamaya yardımcı olur.
 
-Hizmet kapsamı:
-
-Evden eve nakliyat
-Parça eşya taşıma
-Ofis taşımacılığı
-Şehirler arası nakliyat
-Eşya depolama
-Asansörlü taşımacılık',
+Buca’da evden eve taşımayı, mahallenin yoğunluğuna ve adresin erişimine göre planlıyoruz.',
 
         'cesme-evden-eve-nakliyat' => 'Çeşme’de sezonluk yoğunluk değişir; yaz trafiği, site ve erişim saatleri operasyonu yönetir.
 
@@ -286,18 +279,13 @@ Ofis taşımacılığı
 Eşya depolama
 Asansörlü taşımacılık',
 
-        'gaziemir-evden-eve-nakliyat' => 'Gaziemir’de sanayi ve konut aynı hatta; ağır ve bireysel trafik, plan zorunlu kılar.
+        'gaziemir-evden-eve-nakliyat' => 'Gaziemir, İzmir’in güneyinde, havalimanına ve şehir merkezine yakın bir ilçedir. Sanayi tesisleri ile konut alanları çoğu yerde iç içe geçmiştir.
 
-MY Nakliyat saat analizi ve yedek rota ile ilerler; yüksek katlarda asansörlü taşımacılık, süre ve güveni dengeler.
+Bu karışık doku, hem yük araçlarının hem de günlük trafiğin aynı yollarda yoğunlaşmasına yol açar.
 
-Hizmet kapsamı:
+Taşınma saatini bu trafiğe göre seçmek, gün içinde beklenmedik gecikmeleri azaltmaya yardımcı olur.
 
-Evden eve nakliyat
-Parça eşya taşıma
-Ofis taşımacılığı
-Şehirler arası nakliyat
-Eşya depolama
-Asansörlü taşımacılık',
+Gaziemir’de evden eve taşımayı, sanayi ile konutun iç içe olduğu bu yapıya göre planlıyoruz.',
 
         'guzelbahce-evden-eve-nakliyat' => 'Güzelbahçe’de villa, bahçe ve büyük hacim, standart daire taşımasına dönük değil; erişim ve iç mesafe süreyi yönetir.
 
@@ -350,18 +338,13 @@ Ofis taşımacılığı
 Eşya depolama
 Asansörlü taşımacılık',
 
-        'karsiyaka-evden-eve-nakliyat' => 'Karşıyaka’da site, giriş ve asansör planı, zamanı belirler; prosedür siteye göre değişir.
+        'karsiyaka-evden-eve-nakliyat' => 'Karşıyaka, İzmir’in sahilinde yer alan; hem yoğun çarşı bölgeleri hem de siteleşmiş konut alanları olan bir ilçedir.
 
-MY Nakliyat saat, site yönetimi ve asansörlü ekipmanı önden hizalar; hedef, zaman kaybı olmadan kontrollü, premium taşımacılık.
+Sitelerde asansörün uygunluğu ve giriş saatleri, çarşıya yakın kalabalık sokaklarda ise araç erişimi taşınmayı etkiler.
 
-Hizmetler:
+Adresin bir site içinde mi yoksa cadde üstü bir binada mı olduğunu önceden bilmek, uygun ekip ve saati belirlemeyi kolaylaştırır.
 
-Evden eve nakliyat
-Parça eşya taşıma
-Ofis taşımacılığı
-Şehirler arası nakliyat
-Eşya depolama
-Asansörlü taşımacılık',
+Karşıyaka’da evden eve taşımayı, binanızın türüne ve çevresinin yoğunluğuna göre planlıyoruz.',
 
         'konak-evden-eve-nakliyat' => 'Konak’ta trafik ve erişim kısıtı, standart modeli zorlaştırır; dar sokak ve tek yönlü akış belirleyicidir.
 
@@ -472,18 +455,13 @@ Ofis taşımacılığı
 Eşya depolama
 Asansörlü taşımacılık',
 
-        'torbali-evden-eve-nakliyat' => 'Torbalı’da sanayi ve ağır trafik, rota ve saati yönetir; gün içi akış değişkendir.
+        'torbali-evden-eve-nakliyat' => 'Torbalı, İzmir’in güneyinde geniş bir ovaya kuruludur; büyük sanayi bölgeleri ile tarım alanlarını bir arada barındırır ve kendi hareketli bir merkezi vardır.
 
-MY Nakliyat saat analizi ve yedek rota ile ilerir; hedef, sanayi hattında kesintisiz operasyon, yüksek katlarda asansörlü taşımacılık.
+Sanayi yollarındaki ağır araç trafiği ve ilçenin şehir merkezine uzaklığı, taşınmada yol süresini öne çıkarır.
 
-Sunulan hizmetler:
+Çıkış ve varış noktalarını önceden konuşmak, günün nasıl ilerleyeceğini daha net gösterir.
 
-Evden eve nakliyat
-Parça eşya taşıma
-Ofis taşımacılığı
-Şehirler arası nakliyat
-Eşya depolama
-Asansörlü taşımacılık',
+Torbalı’da evden eve taşımayı, ilçenin sanayi ile tarım dokusuna ve mesafesine göre planlıyoruz.',
 
         'urla-evdeneve-nakliyat' => 'Urla’da dağınık yerleşim ve mesafe, standart modele uymaz; adımlar arası süre oynar.
 
