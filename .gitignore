@@ -5,7 +5,8 @@ admin/error_log
 
 # Log ve önbellek
 logs/
-cache/
+cache/*
+!cache/.htaccess
 *.log
 error_log
 
