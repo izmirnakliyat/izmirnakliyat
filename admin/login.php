@@ -12,54 +12,76 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
 
 $error = '';
 
+// Brute-force koruması: IP başına başarısız giriş denemesi sınırı.
+$login_throttle_max = 5;      // pencere içinde izin verilen başarısız deneme
+$login_throttle_window = 900; // 15 dakika
+$login_throttle_key = 'admin_login|' . (function_exists('mynak_client_ip') ? mynak_client_ip() : ($_SERVER['REMOTE_ADDR'] ?? '0.0.0.0'));
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = trim($_POST['username']);
-    $password = $_POST['password'];
+    $throttle = function_exists('mynak_rate_limit_status')
+        ? mynak_rate_limit_status($login_throttle_key, $login_throttle_max, $login_throttle_window)
+        : ['ok' => true, 'retry_after' => 0];
 
-    if (empty($username) || empty($password)) {
-        $error = 'Lütfen tüm alanları doldurun.';
+    if (!$throttle['ok']) {
+        $wait_min = max(1, (int) ceil(((int) $throttle['retry_after']) / 60));
+        $error = 'Çok fazla başarısız giriş denemesi. Lütfen ' . $wait_min . ' dakika sonra tekrar deneyin.';
     } else {
-        $stmt = $conn->prepare("SELECT id, username, password, totp_enabled FROM admin_users WHERE username = ?");
-        $stmt->bind_param("s", $username);
-        $stmt->execute();
-        $login_rows = mysqli_stmt_fetch_all_assoc($stmt);
-        $stmt->close();
+        $username = trim((string) ($_POST['username'] ?? ''));
+        $password = (string) ($_POST['password'] ?? '');
 
-        if (count($login_rows) === 1) {
-            $user = $login_rows[0];
-            if (password_verify($password, $user['password'])) {
-                session_regenerate_id(true);
+        if ($username === '' || $password === '') {
+            $error = 'Lütfen tüm alanları doldurun.';
+        } else {
+            $stmt = $conn->prepare("SELECT id, username, password, totp_enabled FROM admin_users WHERE username = ?");
+            $stmt->bind_param("s", $username);
+            $stmt->execute();
+            $login_rows = mysqli_stmt_fetch_all_assoc($stmt);
+            $stmt->close();
 
-                // Madde 4: 2FA aktif ise once challenge ekranina gonder
-                if (!empty($user['totp_enabled'])) {
-                    $_SESSION['pending_2fa_user_id'] = (int) $user['id'];
-                    $_SESSION['pending_2fa_username'] = $user['username'];
-                    $_SESSION['pending_2fa_started_at'] = time();
-                    if (isset($_GET['redirect'])) {
-                        $_SESSION['pending_2fa_redirect'] = (string) $_GET['redirect'];
-                    } else {
-                        unset($_SESSION['pending_2fa_redirect']);
+            $login_ok = false;
+            if (count($login_rows) === 1) {
+                $user = $login_rows[0];
+                if (password_verify($password, $user['password'])) {
+                    $login_ok = true;
+                    if (function_exists('mynak_rate_limit_clear')) {
+                        mynak_rate_limit_clear($login_throttle_key);
                     }
-                    header('Location: login_2fa.php');
+                    session_regenerate_id(true);
+
+                    // Madde 4: 2FA aktif ise once challenge ekranina gonder
+                    if (!empty($user['totp_enabled'])) {
+                        $_SESSION['pending_2fa_user_id'] = (int) $user['id'];
+                        $_SESSION['pending_2fa_username'] = $user['username'];
+                        $_SESSION['pending_2fa_started_at'] = time();
+                        if (isset($_GET['redirect'])) {
+                            $_SESSION['pending_2fa_redirect'] = (string) $_GET['redirect'];
+                        } else {
+                            unset($_SESSION['pending_2fa_redirect']);
+                        }
+                        header('Location: login_2fa.php');
+                        exit;
+                    }
+
+                    $_SESSION['admin_logged_in'] = true;
+                    $_SESSION['admin_id'] = $user['id'];
+                    $_SESSION['admin_username'] = $user['username'];
+
+                    $updateStmt = $conn->prepare("UPDATE admin_users SET last_login = NOW() WHERE id = ?");
+                    $updateStmt->bind_param("i", $user['id']);
+                    $updateStmt->execute();
+
+                    $redirect = admin_login_safe_redirect($_GET['redirect'] ?? null);
+                    header('Location: ' . $redirect);
                     exit;
                 }
+            }
 
-                $_SESSION['admin_logged_in'] = true;
-                $_SESSION['admin_id'] = $user['id'];
-                $_SESSION['admin_username'] = $user['username'];
-
-                $updateStmt = $conn->prepare("UPDATE admin_users SET last_login = NOW() WHERE id = ?");
-                $updateStmt->bind_param("i", $user['id']);
-                $updateStmt->execute();
-
-                $redirect = admin_login_safe_redirect($_GET['redirect'] ?? null);
-                header('Location: ' . $redirect);
-                exit;
-            } else {
+            if (!$login_ok) {
+                if (function_exists('mynak_rate_limit_register')) {
+                    mynak_rate_limit_register($login_throttle_key, $login_throttle_window);
+                }
                 $error = 'Geçersiz kullanıcı adı veya şifre.';
             }
-        } else {
-            $error = 'Geçersiz kullanıcı adı veya şifre.';
         }
     }
 }

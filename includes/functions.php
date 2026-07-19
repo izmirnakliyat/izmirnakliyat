@@ -7,6 +7,7 @@
 require_once __DIR__ . '/blog_post_status.php';
 require_once __DIR__ . '/mynak_gbp_sync.php';
 require_once __DIR__ . '/mynak_seo_length_helpers.php';
+require_once __DIR__ . '/mynak_rate_limit.php';
 
 /**
  * header.php öncesi $site_settings kullanımı için (mysqli bağlı olmalı).
