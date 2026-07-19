@@ -680,6 +680,8 @@ function mynak_schema_video_object_ld_fragment(
 
         );
 
+        $out .= seo_runtime_ld_script_from_array($videoNode);
+
         $watchPage = mynak_schema_build_watch_webpage_node(rtrim($canonical, '/'), $title, $videoNode);
 
         if ($watchPage !== []) {

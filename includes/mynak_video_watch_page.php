@@ -123,12 +123,17 @@ function mynak_schema_build_watch_webpage_node(string $pageUrl, string $pageTitl
         return [];
     }
 
+    $videoId = trim((string) ($videoNode['@id'] ?? ''));
+    if ($videoId === '') {
+        return [];
+    }
+
     return [
         '@context' => 'https://schema.org',
         '@type' => 'WebPage',
         '@id' => $pageUrl . '#webpage',
         'url' => $pageUrl,
         'name' => mb_substr(trim($pageTitle), 0, 110),
-        'mainEntity' => $videoNode,
+        'mainEntity' => ['@id' => $videoId],
     ];
 }

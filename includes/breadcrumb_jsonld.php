@@ -359,6 +359,20 @@ function mynak_breadcrumb_build_generic(array $segs, string $canonical_origin, s
 /**
  * @return list<array{name:string,url:string}>
  */
+function mynak_breadcrumb_build_video_watch(array $segs, string $canonical_origin, string $canonical_full): array
+{
+    return [
+        ['name' => 'Ana Sayfa', 'url' => rtrim($canonical_origin, '/') . '/'],
+        ['name' => 'Video', 'url' => rtrim($canonical_origin, '/') . '/video-galeri'],
+        [
+            'name' => mynak_breadcrumb_resolve_entity_title(
+                mynak_breadcrumb_slug_to_title((string) ($segs[1] ?? ''))
+            ),
+            'url' => $canonical_full,
+        ],
+    ];
+}
+
 function mynak_breadcrumb_build_items(string $relPath, string $canonical_full, string $canonical_origin): array
 {
     global $blog;
@@ -381,6 +395,9 @@ function mynak_breadcrumb_build_items(string $relPath, string $canonical_full, s
 
     if (($segs[0] ?? '') === 'blog') {
         return mynak_breadcrumb_build_blog_branch($segs, $canonical_origin, $canonical_full);
+    }
+    if (($segs[0] ?? '') === 'video' && count($segs) === 2) {
+        return mynak_breadcrumb_build_video_watch($segs, $canonical_origin, $canonical_full);
     }
 
     return mynak_breadcrumb_build_generic($segs, $canonical_origin, $canonical_full);

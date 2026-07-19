@@ -2030,6 +2030,16 @@ function seo_runtime_schema_connected_graph_nodes(
         $mainEntityId = seo_runtime_schema_service_id_for_url($canonical);
     } elseif ($pageType === 'blog_post') {
         $mainEntityId = rtrim($canonical, '/') . '#article';
+    } elseif ($pageType === 'video_watch') {
+        foreach ($nodes as $candidateNode) {
+            $candidateTypes = isset($candidateNode['@type']) && is_array($candidateNode['@type'])
+                ? $candidateNode['@type']
+                : [($candidateNode['@type'] ?? '')];
+            if (in_array('VideoObject', $candidateTypes, true) && is_string($candidateNode['@id'] ?? null)) {
+                $mainEntityId = (string) $candidateNode['@id'];
+                break;
+            }
+        }
     } elseif ($pageType === 'home') {
         $mainEntityId = rtrim($canonicalOrigin, '/') . '/#services';
     } elseif ($reviewNode !== null) {
