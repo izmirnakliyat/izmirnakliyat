@@ -113,46 +113,29 @@ function mynak_ilce_unique_opening_html(string $slug): string
 function mynak_ilce_unique_opening_map(): array
 {
     return [
-        'aliaga-evden-eve-nakliyat' => 'Aliağa’da evden eve nakliyat, sanayi ve liman trafiğiyle belirlenir; ağır araç hareketi şehir içi zamanlamayı riskli kılar.
+        'aliaga-evden-eve-nakliyat' => 'Aliağa, İzmir’in kuzeyinde denize kıyısı olan bir ilçedir; ama kimliğini büyük ölçüde limanından, rafinerisinden ve ağır sanayi tesislerinden alır. İlçede yaşayanların önemli bir bölümü bu tesislerde çalışır ve gün çoğu zaman vardiyalara göre şekillenir.
 
-Taşınma “saat değil, trafik penceresi” ile planlanır.
+Sanayi bölgelerine giden yollarda ağır araç trafiği yoğundur. Konut alanları ise merkezde ve yeni sitelerde toplanır.
 
-MY Nakliyat dinamik rota, sanayi akışına göre çıkış noktası ve ekip konumunu aynı operasyon çizgisinde toplar.
+Bir taşınmada hem bu trafiği hem de vardiya saatlerini hesaba katmak, planı gerçeğe daha yakın hâle getirir.
 
-Hizmet yaklaşımı:
+Aliağa’da bir taşınmayı, ilçenin sanayi temposu ve yol yoğunluğuyla birlikte ele alıyoruz.',
 
-Evden eve nakliyat (sanayi trafiğine göre planlı)
-Parça eşya taşıma
-Ofis taşımacılığı
-Şehirler arası nakliyat
-Eşya depolama
-Asansörlü taşımacılık (yüksek katlı yapılarda)',
+        'balcova-evden-eve-nakliyat' => 'Balçova, İzmir merkezine çok yakın, sınırları dar ama günlük yaşamı hareketli bir ilçedir. Termal kaplıcaları, teleferiği ve üniversitesiyle tanınır; konut dokusu ağırlıkla sitelerden oluşur.
 
-        'balcova-evden-eve-nakliyat' => 'Balçova’da “erişim planlaması” gerekir; site kuralları ve asansör saatleri operasyon hızını belirler.
+Site yaşamının yaygın olması, taşınmada asansör sırasını ve site giriş kurallarını öne çıkarır.
 
-MY Nakliyat bina yönetimiyle ilerler; gün, önceden netleşen erişim planıyla, bekleme olmadan akar.
+Hangi sitede ve kaçıncı katta oturulduğu önceden bilinirse, uygun ekip ve saat buna göre ayarlanabilir.
 
-Hizmet yapısı:
+Balçova’da evden eve taşımayı, site düzenine ve merkeze yakın konumuna göre planlıyoruz.',
 
-Evden eve nakliyat
-Parça eşya taşıma
-Ofis taşımacılığı
-Şehirler arası nakliyat
-Eşya depolama
-Asansörlü taşımacılık (yüksek kat avantajı)',
+        'bayındır-evden-eve-nakliyat-hizmetleri' => 'Bayındır, İzmir’in doğusunda, çiçek ve fidan yetiştiriciliğiyle tanınan bir tarım ilçesidir. İlçe merkezi küçük ve sakindir; çevresi ise seralara, bahçelere ve köylere yayılır.
 
-        'bayındır-evden-eve-nakliyat-hizmetleri' => 'Bayındır’da yarı kırsal lojistik modeli geçerli; değişken mesafe, standart süre planını çoğu kez dışlar.
+Yerleşimin dağınık olması ve merkeze mesafe, taşınmada yol süresini belirleyen başlıca konudur.
 
-MY Nakliyat “mesafe tabanlı akış” uygular: rota, erişim noktaları ve gerekirse etaplar önceden belli.
+Çıkış ve varış adreslerinin köyde mi yoksa merkezde mi olduğunu önceden konuşmak, günün planını netleştirir.
 
-Hizmet kapsamı:
-
-Evden eve nakliyat
-Parça eşya taşıma
-Ofis taşımacılığı
-Şehirler arası nakliyat
-Eşya depolama
-Asansörlü taşımacılık (uygun yapılarda)',
+Bayındır’daki taşınmalarda ilçenin tarımsal ve dağınık yerleşim yapısını göz önünde tutuyoruz.',
 
         'bayrakli-evden-eve-nakliyat' => 'Bayraklı, son yıllarda yüksek katlı iş kuleleri ve rezidanslarla öne çıkan, aynı zamanda eski mahalleleri de bulunan bir ilçedir.
 
@@ -162,18 +145,13 @@ Yeni bir rezidansta mı yoksa eski bir binada mı oturulduğu, hazırlanacak eki
 
 Bayraklı’da evden eve taşımayı, binanın türüne ve bulunduğu bölgeye göre planlıyoruz.',
 
-        'bergama-evden-eve-nakliyat' => 'Bergama’da tarihi doku ve yeni mahalleler iç içe; dar sokak veya mesafe, erişimi farklı kılar.
+        'bergama-evden-eve-nakliyat' => 'Bergama, antik Pergamon’un mirasını taşıyan, tarih ve turizmle iç içe köklü bir ilçedir. İlçenin kendine ait hareketli bir merkezi vardır; çevresinde ise tarım ve kırsal mahalleler yer alır.
 
-MY Nakliyat taşımayı, yapı tipine göre lojistik plana bağlar: bina erişimi, araç konumu ve akış taslakta netleşir.
+Tarihi merkezdeki eski ve dar sokaklar ile ilçenin İzmir’e uzaklığı, taşınmada araç erişimini ve yol süresini öne çıkarır.
 
-Hizmet yapısı:
+Aracın adrese ne kadar yaklaşabildiğini ve mesafeyi baştan bilmek, planı netleştirir.
 
-Evden eve nakliyat
-Parça eşya taşıma
-Ofis taşımacılığı
-Şehirler arası nakliyat
-Eşya depolama
-Asansörlü taşımacılık (yüksek katlı yapılarda)',
+Bergama’da bir taşınmayı, tarihi merkezin erişim koşulları ve ilçe mesafesiyle birlikte değerlendiriyoruz.',
 
         'beydag-evden-eve-nakliyat' => 'Beydağ’da kırsal yapı ve mesafeler şehir içi modelden ayrışır; süreyi yol ve ev aralığı belirler.
 
