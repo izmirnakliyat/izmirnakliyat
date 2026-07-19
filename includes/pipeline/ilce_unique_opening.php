@@ -387,21 +387,77 @@ Ofis taşımacılığı
 Eşya depolama
 Asansörlü taşımacılık',
 
-        'menemen-evden-eve-nakliyat' => 'Menemen, İzmir merkezinden biraz uzakta, ovaya yayılmış bir ilçe. Binalar çoğunlukla az katlı; son yıllarda yeni siteler de eklendi.
+        'menemen-evden-eve-nakliyat' => 'Menemen, İzmir’in kuzeyinde ovaya yayılan bir ilçedir. Yapılaşma çoğunlukla az katlı; son yıllarda ilçe merkezine yeni siteler de eklendi.
 
-Merkeze olan mesafe ve çevredeki sanayi yollarının yoğun araç trafiği, taşınma gününü etkiler. Yola çıkış saatini şehir içindeki bir taşınmadan farklı düşünmek gerekir.
+Şehir merkezine mesafe ve çevredeki sanayi yollarının araç yoğunluğu, taşınma planını etkileyen başlıca etkenlerdir.
 
-Bunu baştan konuşup planladığınızda eşyalarınız erkenden yola çıkar, gün içinde yolda vakit kaybetmeden yeni evinize ulaşır.
+Bu nedenle çıkış saatini şehir içindeki bir taşınmadan farklı düşünmek, günün akışını daha öngörülebilir kılar.
 
-Menemen’de evden eve taşınmanızı da tam bu mesafe ve trafik gerçeğine göre, size uygun saatte planlıyoruz.',
+Menemen’de evden eve taşımayı bu mesafe ve trafik koşullarına göre sizinle birlikte planlıyoruz.',
 
-        'narlidere-evden-eve-nakliyat' => 'Narlıdere, İzmir’in batısında deniz kenarında bir ilçe. Sahil boyunca yeni ve yüksek katlı siteler var; yukarı mahallelere çıktıkça sokaklar yokuşlu ve eğimli.
+        'narlidere-evden-eve-nakliyat' => 'Narlıdere denince akla önce deniz kıyısı ve sahil boyunca yükselen siteler gelir; yukarı mahallelere çıkıldıkça sokaklar yokuşlu ve eğimli hâle gelir.
 
-Bu iki farklı doku taşınmayı doğrudan etkiler. Sitelerde asansörün uygunluğu ve giriş saatleri, yokuş yukarı mahallelerde ise aracın eve ne kadar yaklaşabildiği önem kazanır.
+Bu iki farklı yerleşim biçimi taşınmayı doğrudan etkiler: sitelerde asansör uygunluğu ve giriş saatleri, yamaç mahallelerde ise aracın eve yaklaşabildiği mesafe önem taşır.
 
-Adresinizi önceden konuşursak doğru ekip ve ekipmanla geliriz; ister yüksek kattan inin ister dar bir yokuşta oturun, eşyanız zorlanmadan taşınır.
+Adresin özelliklerini önceden konuşmak, hangi ekip ve ekipmanın uygun olacağını netleştirir.
 
-Narlıdere’de evden eve taşınmanızı, sitenizin ya da sokağınızın bu özelliklerine göre planlıyoruz.',
+Narlıdere’de evden eve taşımayı, binanızın ve sokağınızın bu koşullarına göre planlıyoruz.',
+
+        'karaburun-evden-eve-nakliyat' => 'Karaburun, İzmir’in en batısına uzanan ince ve uzun bir yarımadadır. Yerleşim, kıyı boyunca dağılmış köyler ve küçük merkezlerden oluşur; arazi genellikle engebelidir.
+
+Şehir merkezine olan uzaklık ve kıvrımlı sahil yolu, bir taşınmada mesafeyi ve zamanlamayı öne çıkarır.
+
+Bu koşullar, yol güzergâhının ve varış saatinin işin başında konuşulmasını gerektirir.
+
+Karaburun’a ya da yarımada içindeki bir adrese taşınmada yolu ve mesafeyi önceden birlikte konuşmayı tercih ediyoruz.',
+
+        'kemalpasa-evden-eve-nakliyat' => 'Doğuda, Nif Dağı’nın eteğinde kurulu Kemalpaşa, tarım alanları ile organize sanayi bölgelerini bir arada barındırır. İlçede hem kırsal mahalleler hem de sanayiye yakın konut bölgeleri vardır.
+
+Sanayi yollarındaki ağır araç trafiği ve ilçenin geniş yayılımı, taşınma gününün planında etkilidir.
+
+Çıkış ve varış noktalarının konumu, güzergâhın baştan belirlenmesinde belirleyici olur.
+
+Kemalpaşa’daki taşınmalarda ilçenin bu tarım ve sanayi dokusunu hesaba katarak ilerliyoruz.',
+
+        'kinik-evden-eve-nakliyat' => 'İzmir’in kuzey ucundaki Kınık, büyük ölçüde kırsal ve tarıma dayalı bir ilçedir. Yerleşim, ilçe merkezi ile çevredeki köyler arasında dağılmıştır.
+
+Şehir merkezine uzaklık ve köyler arası mesafeler, taşınmada yol süresini belirleyen temel unsurdur.
+
+Bu yüzden güzergâh ve zamanlama, işin başında netleştirilir.
+
+Kınık’ta evden eve taşımanın planını bu kırsal yapıya ve mesafeye göre çıkarıyoruz.',
+
+        'kiraz-evden-eve-nakliyat' => 'Kiraz, ilin doğu sınırına yakın, dağlık bir bölgede yer alır. İlçe merkezi ile dağ köyleri arasında yükseklik ve yol farkları belirgindir.
+
+Engebeli arazi ve şehir merkezine uzaklık, bir taşınmada güzergâh seçimini öne çıkarır.
+
+Yolun durumu ve varış noktasının konumu, planlamanın önceden yapılmasını gerektirir.
+
+Kiraz’da bir taşınmayı, bölgenin dağlık yapısı ve mesafesiyle birlikte değerlendiriyoruz.',
+
+        'odemis-evden-eve-nakliyat' => 'Küçük Menderes Ovası’nın ortasındaki Ödemiş, kendi kent merkezi bulunan köklü ve büyük bir ilçedir. Merkezde yoğun bir yerleşim, çevrede ise geniş tarım alanları görülür.
+
+İlçenin İzmir merkezine uzaklığı ve kendi içindeki hareketli merkez trafiği, taşınmayı iki ayrı açıdan etkiler.
+
+Adresin merkezde mi yoksa kırsalda mı olduğuna göre güzergâh ve zamanlama değişir.
+
+Ödemiş’te ilçe içi ve şehirler arası taşımaları bu ölçeğe göre ele alıyoruz.',
+
+        'selcuk-evden-eve-nakliyat' => 'Selçuk, Efes’in hemen yanında, tarih ve turizmle iç içe geçmiş küçük bir ilçedir. İlçe merkezi kompakt, çevresi ise tarım alanları ve ören yerleriyle çevrilidir.
+
+Turizm sezonundaki hareketlilik ve merkezdeki dar yollar, taşınma gününün zamanlamasını etkiler.
+
+Sezonun ve saatin önceden konuşulması, güzergâhın buna göre ayarlanmasına imkân verir.
+
+Selçuk’ta taşınma planını sezon ve merkezdeki yol durumuna göre yapıyoruz.',
+
+        'tire-evden-eve-nakliyat' => 'Tire, dar sokaklı tarihi merkeziyle ve çevresindeki tarım alanlarıyla tanınan bir ilçedir. Eski mahallelerde sokaklar dar, çevre mahallelerde ise yerleşim daha dağınıktır.
+
+Tarihi merkezdeki dar geçitler ve şehir merkezine uzaklık, bir taşınmada araç erişimini öne çıkarır.
+
+Aracın adrese ne kadar yaklaşabildiğinin önceden bilinmesi, planı netleştirir.
+
+Tire’de evden eve taşımada tarihi merkezin erişim koşullarını göz önünde tutuyoruz.',
 
         'seferihisar-evden-eve-nakliyat' => 'Seferihisar’da geniş ve dağınık yerleşim; villa ve mesafe, planı açar.
 
