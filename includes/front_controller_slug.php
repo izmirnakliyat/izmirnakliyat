@@ -5,6 +5,7 @@ require_once __DIR__ . '/mynak_legacy_url_recovery.php';
 require_once __DIR__ . '/mynak_gsc_404_slug_redirects.php';
 require_once __DIR__ . '/mynak_gsc_legacy_path_redirects.php';
 require_once __DIR__ . '/mynak_canonical_slug_redirects.php';
+require_once __DIR__ . '/mynak_broken_link_recovery.php';
 
 /**
  * Slug çözümleyici (eski slug-router.php mantığı). Çağıran mutlaka exit eder.
@@ -316,10 +317,14 @@ function mynak_fc_dispatch_slug(string $slug, mysqli $conn): void
     }
 
     $stmt = $conn->prepare('SELECT * FROM services WHERE slug = ? AND status = 1');
-    $stmt->bind_param('s', $slug);
-    $stmt->execute();
-    $service_rows = mysqli_stmt_fetch_all_assoc($stmt);
-    $stmt->close();
+    if (!$stmt) {
+        $service_rows = [];
+    } else {
+        $stmt->bind_param('s', $slug);
+        $stmt->execute();
+        $service_rows = mysqli_stmt_fetch_all_assoc($stmt);
+        $stmt->close();
+    }
 
     if (!empty($service_rows)) {
         $service = $service_rows[0];
@@ -355,10 +360,14 @@ function mynak_fc_dispatch_slug(string $slug, mysqli $conn): void
     if (preg_match('#^blog-detay/(.+)$#', $slug, $blogDetayMatch)) {
         $blogSlug = $blogDetayMatch[1];
         $stmt = $conn->prepare('SELECT slug FROM blog_posts WHERE slug = ? AND durum = 3 LIMIT 1');
-        $stmt->bind_param('s', $blogSlug);
-        $stmt->execute();
-        $bd_rows = mysqli_stmt_fetch_all_assoc($stmt);
-        $stmt->close();
+        if ($stmt) {
+            $stmt->bind_param('s', $blogSlug);
+            $stmt->execute();
+            $bd_rows = mysqli_stmt_fetch_all_assoc($stmt);
+            $stmt->close();
+        } else {
+            $bd_rows = [];
+        }
         if (!empty($bd_rows)) {
             header('Location: ' . mynak_abs_url_from_public_path(mynak_public_path($blogSlug)), true, 301);
             exit;
@@ -366,10 +375,14 @@ function mynak_fc_dispatch_slug(string $slug, mysqli $conn): void
     }
 
     $stmt = $conn->prepare('SELECT * FROM blog_posts WHERE slug = ? AND durum = 3');
-    $stmt->bind_param('s', $slug);
-    $stmt->execute();
-    $blog_rows = mysqli_stmt_fetch_all_assoc($stmt);
-    $stmt->close();
+    if (!$stmt) {
+        $blog_rows = [];
+    } else {
+        $stmt->bind_param('s', $slug);
+        $stmt->execute();
+        $blog_rows = mysqli_stmt_fetch_all_assoc($stmt);
+        $stmt->close();
+    }
 
     if (!empty($blog_rows)) {
         $blog = $blog_rows[0];
@@ -479,6 +492,9 @@ function mynak_fc_dispatch_slug(string $slug, mysqli $conn): void
 
     mynak_fc_try_wp_appendage_redirect($conn, $slug);
     mynak_fc_try_fuzzy_blog_slug_redirect($conn, $slug, false);
+
+    // Son seans: normalize + partial match ile kirik link kurtarma
+    mynak_fc_try_broken_link_recovery($conn, $slug);
 
     // Blog-stili slug (3+ tire, 16+ karakter, sadece tek segment) → 410 Gone
     // Bu tür slug'lar genellikle silinmiş WP yazıları. 410 Google'ın indeksten daha hızlı düşürmesini sağlar.
