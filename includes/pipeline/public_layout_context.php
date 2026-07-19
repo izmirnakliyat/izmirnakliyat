@@ -409,6 +409,29 @@ function mynak_public_layout_context(mysqli $conn, array $inject = []): array
         $seo_description = $page_meta_description;
     }
 
+    // Meta açıklama uzunluk tutarlılığı (merkezi/runtime):
+    // - Uzun açıklamaları kelime sınırında 160'a kırpar (Google zaten ~160'ta keser).
+    // - Açıklama boşsa veya zayıf global varsayılan kaldıysa, sayfa başlığından
+    //   anlamlı bir açıklama üretir (çok kısa/eksik meta sorununu giderir).
+    if (!function_exists('mynak_meta_description_clamp')) {
+        $__metaHelper = __DIR__ . '/../mynak_meta_description.php';
+        if (is_readable($__metaHelper)) {
+            require_once $__metaHelper;
+        }
+        unset($__metaHelper);
+    }
+    if (function_exists('mynak_meta_description_clamp')) {
+        $__desc = trim((string) $seo_description);
+        $__weakDefaultDesc = 'İzmir MY Nakliyat Evden Eve Nakliyat Firması';
+        if (($__desc === '' || $__desc === $__weakDefaultDesc) && function_exists('mynak_default_meta_description_for_page')) {
+            $__slugForMeta = mb_strtolower(trim((string) $mynak_header_rel, '/'));
+            $__desc = mynak_default_meta_description_for_page((string) $page_title, $__slugForMeta);
+            unset($__slugForMeta);
+        }
+        $seo_description = mynak_meta_description_clamp($__desc, 160);
+        unset($__desc, $__weakDefaultDesc);
+    }
+
     $mobile_menu_items = [];
     $mobile_menu_result = $conn->query(
         'SELECT id, title, icon, link, target, bg_color, order_number FROM mobile_bottom_menu WHERE status = 1 ORDER BY order_number ASC, id ASC LIMIT 5'
