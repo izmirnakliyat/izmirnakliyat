@@ -153,18 +153,13 @@ Aracın adrese ne kadar yaklaşabildiğini ve mesafeyi baştan bilmek, planı ne
 
 Bergama’da bir taşınmayı, tarihi merkezin erişim koşulları ve ilçe mesafesiyle birlikte değerlendiriyoruz.',
 
-        'beydag-evden-eve-nakliyat' => 'Beydağ’da kırsal yapı ve mesafeler şehir içi modelden ayrışır; süreyi yol ve ev aralığı belirler.
+        'beydag-evden-eve-nakliyat' => 'Beydağ, İzmir’in doğu ucunda, dağlık ve büyük ölçüde kırsal bir ilçedir. Nüfus azdır; yerleşim, küçük ilçe merkezi ile dağ köyleri arasında dağılır.
 
-MY Nakliyat rota ve erişimi kilitler: güzergâh, yükleme noktası ve akış, kontrollü ilerler.
+Şehir merkezine uzaklık ve köyleri bağlayan yolların yapısı, bir taşınmada en çok yol süresini ve güzergâhı belirler.
 
-Hizmetler:
+Adresin merkezde mi yoksa yukarı köylerden birinde mi olduğu, günün nasıl planlanacağını doğrudan değiştirir.
 
-Evden eve nakliyat
-Parça eşya taşıma
-Ofis taşımacılığı
-Şehirler arası nakliyat
-Eşya depolama
-Asansörlü taşımacılık (uygun yapılarda)',
+Beydağ’da bir taşınmayı, ilçenin dağlık yapısı ve mesafesiyle birlikte ele alıyoruz.',
 
         'bornova-evden-eve-nakliyat' => 'Bornova, İzmir’in doğusunda yer alan büyük ve kalabalık bir ilçedir. Üniversite çevresindeki öğrenci nüfusu, eski mahalleler ve yeni yükselen siteler bir arada bulunur.
 
@@ -182,18 +177,13 @@ Bu yüzden aracın nereye kadar girebildiğini ve kat durumunu önceden bilmek, 
 
 Buca’da evden eve taşımayı, mahallenin yoğunluğuna ve adresin erişimine göre planlıyoruz.',
 
-        'cesme-evden-eve-nakliyat' => 'Çeşme’de sezonluk yoğunluk değişir; yaz trafiği, site ve erişim saatleri operasyonu yönetir.
+        'cesme-evden-eve-nakliyat' => 'Çeşme, yılın büyük bölümünde sakin; yaz aylarında ise nüfusu ve trafiği belirgin biçimde artan bir ilçedir. Konutların önemli kısmı yazlık ve site tipindedir.
 
-MY Nakliyat sezon ve saat planı kurgular; villa ve büyük hacim, saatle birlikte netleşir.
+Bu mevsimsel fark taşınmayı doğrudan etkiler: yaz döneminde yollar yoğunlaşır, site giriş saatleri ve otopark sınırlı olur.
 
-Hizmet kapsamı:
+Taşınmanın hangi mevsimde ve günün hangi saatinde yapılacağını önceden belirlemek, bu yoğunluğu yönetmeye yardımcı olur.
 
-Evden eve nakliyat
-Parça eşya taşıma
-Ofis taşımacılığı
-Şehirler arası nakliyat
-Eşya depolama
-Asansörlü taşımacılık',
+Çeşme’de evden eve taşımayı, sezon durumuna ve site erişim koşullarına göre planlıyoruz.',
 
         'cigli-evden-eve-nakliyat' => 'Çiğli, İzmir’in kuzeyinde; büyük konut siteleri, sanayi bölgeleri ve açık alanların bir arada bulunduğu geniş bir ilçedir.
 
@@ -203,18 +193,13 @@ Yükleme noktasının bir site içinde mi yoksa daha açık bir alanda mı oldu�
 
 Çiğli’de evden eve taşımayı, ilçenin bu karma yapısına göre planlıyoruz.',
 
-        'dikili-evden-eve-nakliyat' => 'Dikili’de yaz hareketi sezonluk fark yaratır; sahil hattı yoğunluğu zamanlamayı etkiler.
+        'dikili-evden-eve-nakliyat' => 'Dikili, sahil kesiminde yazlık hareketliliğin, iç kesimlerde ise tarımın öne çıktığı bir ilçedir. Kıyıdaki yerleşim yaz aylarında dolar, kış aylarında seyrelir.
 
-MY Nakliyat sezona ve trafiğe göre saatleri ayarlar; büyük hacimde asansörlü taşımacılık operasyonu kısaltır.
+Yaz döneminde sahil yolundaki yoğunluk ve ilçenin İzmir’e mesafesi, taşınmada zamanlamayı önemli kılar.
 
-Hizmetler:
+Adresin sahilde mi yoksa iç mahallelerde mi olduğunu bilmek, güzergâhı ve saati netleştirir.
 
-Evden eve nakliyat
-Parça eşya taşıma
-Ofis taşımacılığı
-Şehirler arası nakliyat
-Eşya depolama
-Asansörlü taşımacılık',
+Dikili’deki taşınmalarda mevsim yoğunluğunu ve ilçenin konumunu göz önünde tutuyoruz.',
 
         'evden-eve-nakliyat' => 'İzmir’de her ilçenin zorluğu ayrıdır: Konak trafiği, Bayraklı yüksek kat, Urla mesafesi, Bornova yoğunluğu ayrı ayrı yönetilmeli.
 
@@ -229,18 +214,13 @@ Ofis taşımacılığı
 Eşya depolama
 Asansörlü taşımacılık',
 
-        'foca-evden-eve-nakliyat' => 'Foça’da dar sokak ve kıyı, araç her eve kadar sokmaz; yaz trafiği de değişkendir.
+        'foca-evden-eve-nakliyat' => 'Foça, eski ve dar sokaklı yerleşimiyle bilinen bir sahil ilçesidir; bu doku, taşınmada aracın her kapıya kadar yaklaşamamasına yol açabilir. Yaz aylarında ilçenin hareketi belirgin biçimde artar.
 
-MY Nakliyat etaplı model ve gerekirse ara lojistik noktayla operasyonu kesintisiz tutar.
+Dar sokaklarda taşıma çoğu zaman aracın durabildiği en yakın noktadan yürütülür; bu da ek taşıma mesafesi anlamına gelir.
 
-Hizmetler:
+Adresin sokak genişliğini ve aracın nereye kadar girebileceğini önceden bilmek, günün planını gerçekçi kılar.
 
-Evden eve nakliyat
-Parça eşya taşıma
-Ofis taşımacılığı
-Şehirler arası nakliyat
-Eşya depolama
-Asansörlü taşımacılık',
+Foça’da bir taşınmayı, dar sokak erişimi ve sezon yoğunluğuyla birlikte değerlendiriyoruz.',
 
         'gaziemir-evden-eve-nakliyat' => 'Gaziemir, İzmir’in güneyinde, havalimanına ve şehir merkezine yakın bir ilçedir. Sanayi tesisleri ile konut alanları çoğu yerde iç içe geçmiştir.
 
