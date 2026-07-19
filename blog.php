@@ -462,6 +462,18 @@ if ($stmt) {
     <div class="blog-container">
         <!-- Sol Taraf - Blog Yazıları (%75) -->
         <div class="blog-main">
+            <?php
+            // Erişilebilir bölüm başlığı: yazı listesi bölgesini adlandırır (H1→H2→H3 hiyerarşisi).
+            // visually-hidden: yalnızca ekran okuyucu/makine; görsel/spacing/responsive değişmez.
+            if ($current_category) {
+                $blog_list_section_heading = mynak_esc_html((string) $current_category['ad']) . ' kategorisindeki yazılar';
+            } elseif ($current_tag) {
+                $blog_list_section_heading = mynak_esc_html((string) $current_tag) . ' ile ilgili yazılar';
+            } else {
+                $blog_list_section_heading = 'Blog Yazıları';
+            }
+            ?>
+            <h2 class="visually-hidden"><?php echo $blog_list_section_heading; ?></h2>
             <div class="blog-grid">
                 <?php if (!empty($blog_posts)): ?>
                     <?php foreach ($blog_posts as $blog): ?>
