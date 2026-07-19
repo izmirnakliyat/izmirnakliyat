@@ -387,35 +387,21 @@ Ofis taşımacılığı
 Eşya depolama
 Asansörlü taşımacılık',
 
-        'menemen-evden-eve-nakliyat' => 'Menemen’de yerleşim geniş ova ve organize sanayi bölgeleriyle şekillenir; merkeze mesafe ve sanayi-TIR trafiği, taşınmayı şehir içi modelden ayırır.
+        'menemen-evden-eve-nakliyat' => 'Menemen, İzmir merkezinden biraz uzakta, ovaya yayılmış bir ilçe. Binalar çoğunlukla az katlı; son yıllarda yeni siteler de eklendi.
 
-Yapı ağırlıkla yatay ve az katlı; yeni toplu konut alanları ise farklı erişim ister. Bu ikili doku, tek tip yerine mesafe ve rota bazlı yaklaşım gerektirir.
+Merkeze olan mesafe ve çevredeki sanayi yollarının yoğun araç trafiği, taşınma gününü etkiler. Yola çıkış saatini şehir içindeki bir taşınmadan farklı düşünmek gerekir.
 
-MY Nakliyat güzergâhı mesafe ve sanayi akışına göre planlar; çıkış noktası, araç konumu ve gerekiyorsa etaplar önceden netleşir, uzun rotada bekleme kısalır.
+Bunu baştan konuşup planladığınızda eşyalarınız erkenden yola çıkar, gün içinde yolda vakit kaybetmeden yeni evinize ulaşır.
 
-Hizmet kapsamı:
+Menemen’de evden eve taşınmanızı da tam bu mesafe ve trafik gerçeğine göre, size uygun saatte planlıyoruz.',
 
-Evden eve nakliyat (mesafe ve sanayi trafiğine göre planlı)
-Parça eşya taşıma
-Ofis taşımacılığı
-Şehirler arası nakliyat
-Eşya depolama
-Asansörlü taşımacılık (yeni toplu konutlarda)',
+        'narlidere-evden-eve-nakliyat' => 'Narlıdere, İzmir’in batısında deniz kenarında bir ilçe. Sahil boyunca yeni ve yüksek katlı siteler var; yukarı mahallelere çıktıkça sokaklar yokuşlu ve eğimli.
 
-        'narlidere-evden-eve-nakliyat' => 'Narlıdere’de sahil şeridi boyunca modern siteler ve yüksek katlı toplu konut yoğun; üst mahallelerde ise eğimli, yamaç yerleşim öne çıkar.
+Bu iki farklı doku taşınmayı doğrudan etkiler. Sitelerde asansörün uygunluğu ve giriş saatleri, yokuş yukarı mahallelerde ise aracın eve ne kadar yaklaşabildiği önem kazanır.
 
-Bu doku iki ayrı zorluk üretir: sitelerde asansör ve erişim saatleri, yamaç kesimlerde araç yaklaşımı ve rampa yönetimi. Sahil bağlantısındaki yoğunluk zamanlamayı etkiler.
+Adresinizi önceden konuşursak doğru ekip ve ekipmanla geliriz; ister yüksek kattan inin ister dar bir yokuşta oturun, eşyanız zorlanmadan taşınır.
 
-MY Nakliyat operasyonu bina tipine göre böler: sitelerde dikey lojistik ve asansör penceresi, eğimli kesimlerde araç konumu ve taşıma sırası önceden planlanır.
-
-Hizmet yapısı:
-
-Evden eve nakliyat
-Parça eşya taşıma
-Ofis taşımacılığı
-Şehirler arası nakliyat
-Eşya depolama
-Asansörlü taşımacılık (yüksek katlı sitelerde)',
+Narlıdere’de evden eve taşınmanızı, sitenizin ya da sokağınızın bu özelliklerine göre planlıyoruz.',
 
         'seferihisar-evden-eve-nakliyat' => 'Seferihisar’da geniş ve dağınık yerleşim; villa ve mesafe, planı açar.
 
