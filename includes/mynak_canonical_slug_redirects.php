@@ -15,6 +15,7 @@ function mynak_seo_cannibalization_redirect_map(): array
         'izmir-ev-tasima-fiyatlari' => 'izmir-evden-eve-nakliyat-fiyatlari-2026',
         'sehirler-arasi-nakliyat-fiyatlari-2026' => '2026-sehirler-arasi-nakliyat-fiyatlari-guncel-rehber',
         'izmir-evden-eve-nakliyat-hizmeti' => 'izmir-evden-eve-nakliyat',
+        'izmir-evden-eve-nakliyat-fiyatlari' => 'fiyat',
         'izmir-ev-tasima-firmalari' => 'izmir-evden-eve-nakliyat',
         'izmir-evden-eve-nakliyat-platformu' => 'izmir-evden-eve-nakliyat',
         'en-iyi-izmir-evden-eve-nakliyat-firmalari' => 'izmir-evden-eve-nakliyat-yorumlari',
@@ -26,7 +27,10 @@ function mynak_seo_cannibalization_redirect_map(): array
         'profesyonel-ve-ozenli-sehir-ici-nakliyat' => 'sehir-ici-nakliyat',
         // Kırık iç link kurtarma → kanonik canlı hedef (final 200, sıçramasız)
         'evden-eve-nakliyat' => 'izmir-evden-eve-nakliyat',
+        'sehirlerarasi-nakliyat' => 'sehirler-arasi-nakliyat',
+        'antika-ve-piyano-tasima' => 'antika-piyano-tasimaciligi',
         'izmir-ofis-tasimaciligi' => 'kurumsal-nakliye-hizmetleri',
+        'kurumsal-nakliye-ofis-tasima' => 'kurumsal-nakliye-hizmetleri',
         'kurumsal-nakliyat-ofis-tasima' => 'kurumsal-nakliye-hizmetleri',
     ];
 }
