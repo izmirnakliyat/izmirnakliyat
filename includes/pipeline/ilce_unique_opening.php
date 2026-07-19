@@ -383,17 +383,12 @@ Sanayi yollarındaki ağır araç trafiği ve ilçenin şehir merkezine uzaklı�
 
 Torbalı’da evden eve taşımayı, ilçenin sanayi ile tarım dokusuna ve mesafesine göre planlıyoruz.',
 
-        'urla-evdeneve-nakliyat' => 'Urla’da dağınık yerleşim ve mesafe, standart modele uymaz; adımlar arası süre oynar.
+        'urla-evdeneve-nakliyat' => 'Urla’da eski taş evlerin bulunduğu dar sokaklı tarihi merkez ile yeni villa ve site bölgeleri bir arada bulunur. Kıyıdaki İskele çevresi ise yaz aylarında hareketlenir.
 
-MY Nakliyat etaplı lojistik kurgular: konum, yükleme ve erişim önceden belli, mesafeye bağlı gecikmeyi azaltma hedefi; yüksek katlarda asansörlü taşımacılık.
+Bu yüzden taşınmada adresin tarihi merkezde mi, kıyıda mı yoksa yeni yerleşimlerde mi olduğu belirleyicidir; sokak genişliği ve mesafe buna göre değişir.
 
-Hizmetler:
+Tarihi merkezde araç çoğu zaman kapının önüne kadar giremez; yeni bölgelerde erişim daha rahattır.
 
-Evden eve nakliyat
-Parça eşya taşıma
-Ofis taşımacılığı
-Şehirler arası nakliyat
-Eşya depolama
-Asansörlü taşımacılık',
+Urla’da bir taşınmayı, adresin bulunduğu bölgeye ve sokak yapısına göre planlıyoruz.',
     ];
 }
