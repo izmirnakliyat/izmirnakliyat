@@ -258,6 +258,53 @@ final class EntityGraphSchemaTest extends TestCase
         );
     }
 
+    public function testBlogServiceInferenceRejectsNoncanonicalPipelineIds(): void
+    {
+        $pipeline = ['internal_link_context' => [
+            'graph_key' => 'tasinirken-esya-depolamanin-avantajlari-izmir',
+            'anchor_slug' => 'tasinirken-esya-depolamanin-avantajlari-izmir',
+        ]];
+
+        $this->assertSame(
+            'izmir-esya-depolama',
+            seo_runtime_schema_infer_blog_service_graph_slug(
+                ['slug' => 'tasinirken-esya-depolamanin-avantajlari-izmir', 'baslik' => 'Taşınırken Eşya Depolamanın Avantajları'],
+                $pipeline
+            )
+        );
+        $this->assertSame(
+            'asansorlu-nakliyat',
+            seo_runtime_schema_infer_blog_service_graph_slug(
+                ['slug' => 'asansorlu-nakliyat-nedir-avantajlari-nelerdir', 'baslik' => 'Asansörlü Nakliyat Nedir?'],
+                $pipeline
+            )
+        );
+        $this->assertSame(
+            'parca-esya-tasima',
+            seo_runtime_schema_infer_blog_service_graph_slug(
+                ['slug' => 'parca-esya-tasima-maliyeti-bilmeniz-gerekenler', 'baslik' => 'Parça Eşya Taşıma Maliyeti'],
+                $pipeline
+            )
+        );
+        $this->assertSame(
+            '',
+            seo_runtime_schema_infer_blog_service_graph_slug(
+                ['slug' => 'nakliye-esnasinda-esyalar-kaybolur-mu', 'baslik' => 'Nakliye Esnasında Eşyalar Kaybolur mu?'],
+                $pipeline
+            )
+        );
+    }
+
+    public function testUnresolvedBlogServiceIsOmittedInsteadOfCreatingAPhantomNode(): void
+    {
+        $slug = 'nakliye-esnasinda-esyalar-kaybolur-mu';
+        $decoded = $this->blogGraph($slug, 'Nakliye Esnasında Eşyalar Kaybolur mu?');
+        $article = $this->nodeById($decoded['@graph'], self::ORIGIN . '/' . $slug . '#article');
+
+        $this->assertArrayNotHasKey('about', $article);
+        $this->assertNotContains(self::ORIGIN . '/' . $slug . '#service', array_column($decoded['@graph'], '@id'));
+    }
+
     public function testHomeGraphPublishesPrimaryServiceEntities(): void
     {
         $pipeline = [

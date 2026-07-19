@@ -418,10 +418,37 @@ function seo_runtime_schema_graph_slug_from_pipeline(array $pipelineCore, string
     return $fallbackSlug;
 }
 
+function seo_runtime_schema_canonical_service_graph_slug(string $candidate): string
+{
+    if (!function_exists('seo_runtime_canonical_service_definitions')) {
+        require_once __DIR__ . '/default_service_faqs.php';
+    }
+
+    $candidate = trim($candidate, '/');
+    foreach (seo_runtime_canonical_service_definitions() as $definition) {
+        if ($candidate === (string) $definition['graph_slug'] || $candidate === (string) $definition['slug']) {
+            return (string) $definition['graph_slug'];
+        }
+    }
+
+    return '';
+}
+
+function seo_runtime_schema_canonical_service_id(string $canonicalOrigin, string $candidate): string
+{
+    $graphSlug = seo_runtime_schema_canonical_service_graph_slug($candidate);
+
+    return $graphSlug !== ''
+        ? seo_runtime_schema_service_id_for_graph_slug($canonicalOrigin, $graphSlug)
+        : '';
+}
+
 function seo_runtime_schema_infer_blog_service_graph_slug(array $blog, array $pipelineCore): string
 {
-    $pipelineSlug = seo_runtime_schema_graph_slug_from_pipeline($pipelineCore);
-    if ($pipelineSlug !== '' && $pipelineSlug !== 'blog') {
+    $pipelineSlug = seo_runtime_schema_canonical_service_graph_slug(
+        seo_runtime_schema_graph_slug_from_pipeline($pipelineCore)
+    );
+    if ($pipelineSlug !== '') {
         return $pipelineSlug;
     }
     $haystack = seo_runtime_schema_entity_slug(
@@ -446,11 +473,11 @@ function seo_runtime_schema_infer_blog_service_graph_slug(array $blog, array $pi
     ];
     foreach ($terms as $term => $graphSlug) {
         if (str_contains($haystack, $term)) {
-            return $graphSlug;
+            return seo_runtime_schema_canonical_service_graph_slug($graphSlug);
         }
     }
     if (str_contains($haystack, 'evden-eve') || str_contains($haystack, 'nakliyat')) {
-        return seo_rt_money_page_pillar_slug();
+        return seo_runtime_schema_canonical_service_graph_slug(seo_rt_money_page_pillar_slug());
     }
 
     return '';
@@ -1482,10 +1509,9 @@ function schema_factory_page_type_ld_fragment(
                 $schema['url'] = $postUrl;
             }
             $articleGraphSlug = seo_runtime_schema_infer_blog_service_graph_slug($blog, $canonical_pipeline_core);
-            if ($articleGraphSlug !== '') {
-                $schema['about'] = [
-                    '@id' => seo_runtime_schema_service_id_for_graph_slug($canonical_origin, $articleGraphSlug),
-                ];
+            $articleServiceId = seo_runtime_schema_canonical_service_id($canonical_origin, $articleGraphSlug);
+            if ($articleServiceId !== '') {
+                $schema['about'] = ['@id' => $articleServiceId];
             }
             $schema['mentions'] = [
                 ['@id' => $moving_company_at_id],
@@ -1968,11 +1994,13 @@ function seo_runtime_schema_connected_graph_nodes(
         $nodes = array_merge($nodes, seo_runtime_schema_canonical_service_nodes($canonicalOrigin, $organizationId));
     } elseif ($pageType === 'blog_post' && is_array($blog)) {
         $relatedBlogGraphSlug = seo_runtime_schema_infer_blog_service_graph_slug($blog, $pipelineCore);
-        $relatedServiceId = seo_runtime_schema_service_id_for_graph_slug($canonicalOrigin, $relatedBlogGraphSlug);
-        foreach (seo_runtime_schema_canonical_service_nodes($canonicalOrigin, $organizationId) as $serviceNode) {
-            if (($serviceNode['@id'] ?? '') === $relatedServiceId) {
-                $nodes[] = $serviceNode;
-                break;
+        $relatedServiceId = seo_runtime_schema_canonical_service_id($canonicalOrigin, $relatedBlogGraphSlug);
+        if ($relatedServiceId !== '') {
+            foreach (seo_runtime_schema_canonical_service_nodes($canonicalOrigin, $organizationId) as $serviceNode) {
+                if (($serviceNode['@id'] ?? '') === $relatedServiceId) {
+                    $nodes[] = $serviceNode;
+                    break;
+                }
             }
         }
     }
