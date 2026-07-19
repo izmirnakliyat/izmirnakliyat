@@ -20,6 +20,16 @@ function seo_runtime_ld_script_from_array(array $schema): string
     return '<script type="application/ld+json">' . "\n" . $json . "\n" . '</script>' . "\n";
 }
 
+/**
+ * Tek kurumsal varlık kimliği (SSOT). Organization/MovingCompany/LocalBusiness için
+ * tüm JSON-LD, API ve HTML çıktılarında aynı kalıcı @id kullanılır → Google/AI aynı
+ * işletmeyi tek entity olarak algılar. Değer: {origin}/#mynak-moving-company
+ */
+function seo_runtime_moving_company_entity_id(string $canonical_origin): string
+{
+    return rtrim($canonical_origin, '/') . '/#mynak-moving-company';
+}
+
 function seo_runtime_infer_service_type_label(string $slug): string
 {
     $slug = trim($slug, '/');
@@ -915,7 +925,7 @@ function schema_factory_page_type_ld_fragment(
     ?array $blog
 ): string {
     if ($moving_company_at_id === '') {
-        $moving_company_at_id = rtrim($canonical_origin, '/') . '/#mynak-moving-company';
+        $moving_company_at_id = seo_runtime_moving_company_entity_id($canonical_origin);
     }
 
     $locVec = isset($canonical_pipeline_core['location_vector']) && is_array($canonical_pipeline_core['location_vector'])
@@ -1308,7 +1318,7 @@ function schema_factory(
     ?array $full_head_context = null
 ): string {
     if ($moving_company_at_id === '') {
-        $moving_company_at_id = rtrim($canonical_origin, '/') . '/#mynak-moving-company';
+        $moving_company_at_id = seo_runtime_moving_company_entity_id($canonical_origin);
     }
 
     $locVec = isset($canonical_pipeline_core['location_vector']) && is_array($canonical_pipeline_core['location_vector'])
@@ -1443,7 +1453,7 @@ function seo_runtime_pipeline_structured_head_markup(
     $page_title_ctx = (string) ($ctx['page_title'] ?? '');
     $moving_company_at_id = (string) ($ctx['moving_company_at_id'] ?? '');
     if ($moving_company_at_id === '') {
-        $moving_company_at_id = rtrim($canonical_origin, '/') . '/#mynak-moving-company';
+        $moving_company_at_id = seo_runtime_moving_company_entity_id($canonical_origin);
     }
 
     $canonical_page_type = (string) ($pipeline['page_type'] ?? 'global');

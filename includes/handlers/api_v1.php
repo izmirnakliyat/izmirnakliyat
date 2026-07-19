@@ -216,7 +216,10 @@ function mynak_api_emit_organization(mysqli $conn): bool
 
     $settings = mynak_api_load_settings($conn);
     $base = mynak_api_site_url();
-    $orgId = rtrim($base, '/') . '/#organization';
+    // Tek kurumsal @id (SSOT) — HTML JSON-LD ile aynı entity kimliği (#mynak-moving-company).
+    $orgId = function_exists('seo_runtime_moving_company_entity_id')
+        ? seo_runtime_moving_company_entity_id($base)
+        : rtrim($base, '/') . '/#mynak-moving-company';
     $locVec = canonical_seo_pipeline_location_vector('global');
     $graph = schema_factory_build_moving_company_graph($settings, $base, $locVec, $orgId);
     $graph['@id'] = $orgId;
